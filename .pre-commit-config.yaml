@@ -1,0 +1,34 @@
+repos:
+  - repo: local
+    hooks:
+      - id: make-fix
+        name: make fix
+        language: system
+        entry: make
+        args: [ fix ]
+        always_run: true
+        pass_filenames: false
+        stages: [ pre-commit ]
+      - id: make-check
+        name: make check
+        language: system
+        entry: make
+        args: [ check ]
+        always_run: true
+        pass_filenames: false
+        stages: [ pre-commit ]
+      - id: reminders
+        name: reminders
+        entry: echo
+        args: [ "Remember to run 'make ready' after any dataset changes and include the registry.json in your commit" ]
+        language: system
+        always_run: true
+        pass_filenames: false
+        verbose: true
+        stages: [ post-commit ]
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v4.2.2
+    hooks:
+      - id: commitizen
+        name: commit message check
+        stages: [ commit-msg ]

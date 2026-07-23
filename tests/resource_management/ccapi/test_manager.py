@@ -1,0 +1,221 @@
+"""Tests for aws_bench.resource_management.ccapi.manager."""
+
+from __future__ import annotations
+
+from unittest.mock import MagicMock, patch
+
+import pytest
+from botocore.exceptions import ClientError
+
+from aws_bench.resource_management.ccapi.exceptions import (
+    ResourceExistenceCheckError,
+    ResourceExistenceThrottledError,
+    ResourceExistenceUnsupportedError,
+)
+from aws_bench.resource_management.ccapi.manager import CloudControlManager
+from aws_bench.resource_management.ccapi.models import CCAPI_CLIENT_CONFIG, Resource
+
+# -- __init__ --
+
+
+def test_creates_cloudcontrol_client_with_retry_config():
+    session = MagicMock()
+    session.region_name = "us-east-1"
+    CloudControlManager(session)
+    session.client.assert_called_once_with(
+        "cloudcontrol", region_name="us-east-1", config=CCAPI_CLIENT_CONFIG
+    )
+
+
+def test_raises_on_client_failure():
+    session = MagicMock()
+    session.client.side_effect = Exception("no endpoint")
+    with pytest.raises(Exception, match="no endpoint"):
+        CloudControlManager(session)
+
+
+def test_passes_region_name_to_type_registry():
+    """TypeRegistry should receive region_name when CloudControlManager has an override."""
+    session = MagicMock()
+    session.region_name = "us-west-1"
+
+    with patch("aws_bench.resource_management.ccapi.manager.TypeRegistry") as MockTypeRegistry:
+        CloudControlManager(session, region_name="eu-west-1")
+
+        # TypeRegistry should be called with region_name matching manager's override
+        MockTypeRegistry.assert_called_once()
+        call_args = MockTypeRegistry.call_args
+        assert call_args[0][0] == session
+        assert call_args[1].get("region_name") == "eu-west-1"
+
+
+# -- resource_exists --
+
+
+def test_resource_exists_returns_true_when_found():
+    session = MagicMock()
+    ccm = CloudControlManager(session)
+    ccm._client.get_resource.return_value = {"ResourceDescription": {}}
+
+    result = ccm.resource_exists(Resource("AWS::S3::Bucket", "my-bucket"))
+
+    assert result is True
+    ccm._client.get_resource.assert_called_once_with(
+        TypeName="AWS::S3::Bucket",
+        Identifier="my-bucket",
+    )
+
+
+def test_resource_exists_returns_false_on_not_found():
+    session = MagicMock()
+    ccm = CloudControlManager(session)
+    error_response = {"Error": {"Code": "ResourceNotFoundException", "Message": "not found"}}
+    exc = ClientError(error_response, "GetResource")
+    ccm._client.get_resource.side_effect = exc
+    ccm._client.exceptions.ResourceNotFoundException = type(exc)
+
+    assert ccm.resource_exists(Resource("AWS::S3::Bucket", "gone-bucket")) is False
+
+
+def test_resource_exists_raises_custom_exception_on_non_not_found_errors():
+    session = MagicMock()
+    ccm = CloudControlManager(session)
+    # Mirrors a Cloud Control handler InternalFailure on GetResource. This must
+    # map to the generic (unverified) error, NOT the unsupported subclass — otherwise the
+    # deleter would skip and leak a live resource.
+    error_response = {
+        "Error": {"Code": "HandlerInternalFailureException", "Message": "Internal error occurred"}
+    }
+    exc = ClientError(error_response, "GetResource")
+    ccm._client.get_resource.side_effect = exc
+    ccm._client.exceptions.ResourceNotFoundException = type("RNF", (Exception,), {})
+
+    with pytest.raises(ResourceExistenceCheckError) as exc_info:
+        ccm.resource_exists(Resource("AWS::Kinesis::Stream", "bench-stream-193512"))
+    assert not isinstance(exc_info.value, ResourceExistenceUnsupportedError)
+
+
+@pytest.mark.parametrize(
+    "throttle_code",
+    ["ThrottlingException", "Throttling", "TooManyRequestsException", "RequestLimitExceeded"],
+)
+def test_resource_exists_raises_throttled_error_on_throttle_codes(throttle_code):
+    """A throttle raises the throttle subclass, not the generic unsupported error.
+
+    Otherwise verification buckets it as SKIPPED and silently drops the resource.
+    """
+    session = MagicMock()
+    ccm = CloudControlManager(session)
+    exc = ClientError({"Error": {"Code": throttle_code, "Message": "slow down"}}, "GetResource")
+    ccm._client.get_resource.side_effect = exc
+    ccm._client.exceptions.ResourceNotFoundException = type("RNF", (Exception,), {})
+
+    with pytest.raises(ResourceExistenceThrottledError):
+        ccm.resource_exists(Resource("AWS::S3::Bucket", "my-bucket"))
+
+
+def test_throttled_error_is_a_resource_existence_check_error():
+    """The throttle subclass stays catchable as ResourceExistenceCheckError.
+
+    Existing ``except ResourceExistenceCheckError`` handlers must keep working.
+    """
+    assert issubclass(ResourceExistenceThrottledError, ResourceExistenceCheckError)
+
+
+def test_resource_exists_raises_custom_exception_on_unsupported_action():
+    session = MagicMock()
+    ccm = CloudControlManager(session)
+    exc = ClientError(
+        {"Error": {"Code": "UnsupportedActionException", "Message": "unsupported"}},
+        "GetResource",
+    )
+    ccm._client.get_resource.side_effect = exc
+    ccm._client.exceptions.ResourceNotFoundException = type("RNF", (Exception,), {})
+    with pytest.raises(ResourceExistenceUnsupportedError):
+        ccm.resource_exists(Resource("AWS::Unsupported::Type", "x"))
+
+
+def test_resource_exists_returns_false_on_general_service_does_not_exist():
+    session = MagicMock()
+    ccm = CloudControlManager(session)
+    exc = ClientError(
+        {"Error": {"Code": "GeneralServiceException", "Message": "Resource does not exist"}},
+        "GetResource",
+    )
+    ccm._client.get_resource.side_effect = exc
+    ccm._client.exceptions.ResourceNotFoundException = type("RNF", (Exception,), {})
+    assert ccm.resource_exists(Resource("AWS::S3::Bucket", "gone")) is False
+
+
+def test_resource_exists_returns_false_on_general_service_not_found():
+    session = MagicMock()
+    ccm = CloudControlManager(session)
+    exc = ClientError(
+        {
+            "Error": {
+                "Code": "GeneralServiceException",
+                "Message": "Resource could not be found",
+            }
+        },
+        "GetResource",
+    )
+    ccm._client.get_resource.side_effect = exc
+    ccm._client.exceptions.ResourceNotFoundException = type("RNF", (Exception,), {})
+    assert ccm.resource_exists(Resource("AWS::EC2::Route", "rtb-123|0.0.0.0/0")) is False
+
+
+# -- delegation --
+
+
+@patch("aws_bench.resource_management.ccapi.manager.Scanner")
+def test_get_scannable_types_passes_session(MockScanner):
+    session = MagicMock()
+    mock_scanner_instance = MagicMock()
+    MockScanner.return_value = mock_scanner_instance
+    mock_scanner_instance.get_scannable_types.return_value = ["AWS::S3::Bucket"]
+
+    ccm = CloudControlManager(session)
+    result = ccm.get_scannable_types()
+
+    assert result == ["AWS::S3::Bucket"]
+    mock_scanner_instance.get_scannable_types.assert_called_once()
+
+
+@patch("aws_bench.resource_management.ccapi.manager.Scanner")
+def test_scan_resources_passes_types(MockScanner):
+    session = MagicMock()
+    mock_scanner_instance = MagicMock()
+    MockScanner.return_value = mock_scanner_instance
+    from aws_bench.resource_management.ccapi.models import ScanResult
+
+    expected = ScanResult(detected={"AWS::S3::Bucket": [{"Identifier": "b1"}]}, failed={})
+    mock_scanner_instance.scan_resources.return_value = expected
+
+    ccm = CloudControlManager(session)
+    result = ccm.scan_resources(["AWS::S3::Bucket"])
+
+    assert result == expected
+    mock_scanner_instance.scan_resources.assert_called_once_with(["AWS::S3::Bucket"])
+
+
+@patch("aws_bench.resource_management.ccapi.manager.Deleter")
+def test_delete_resources_delegates_to_deleter(MockDeleter):
+    session = MagicMock()
+    mock_deleter_instance = MagicMock()
+    MockDeleter.return_value = mock_deleter_instance
+    mock_deleter_instance.delete_resources.return_value = {}
+    resources = [Resource("AWS::S3::Bucket", "b")]
+
+    ccm = CloudControlManager(session)
+    ccm.delete_resources(resources)
+
+    mock_deleter_instance.delete_resources.assert_called_once_with(resources)
+
+
+@patch("aws_bench.resource_management.ccapi.manager.TypeRegistry")
+def test_generate_skip_types_delegates(MockTypeRegistry):
+    session = MagicMock()
+    MockTypeRegistry.return_value.generate_skip_types.return_value = {"AWS::Bad::Type"}
+    ccm = CloudControlManager(session)
+    result = ccm.generate_skip_types()
+    assert result == {"AWS::Bad::Type"}

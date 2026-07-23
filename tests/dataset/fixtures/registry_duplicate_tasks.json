@@ -1,0 +1,22 @@
+[
+  {
+    "name": "bad-dupes",
+    "version": "1.0.0",
+    "description": "Duplicate task names within one dataset.",
+    "tasks": [
+      {
+        "name": "my-task",
+        "git_url": "https://github.com/example/repo.git",
+        "git_commit_id": "abc1234",
+        "path": "tasks/my-task"
+      },
+      {
+        "name": "my-task",
+        "git_url": "https://github.com/example/repo.git",
+        "git_commit_id": "abc1234",
+        "path": "tasks/my-task-alt"
+      }
+    ],
+    "scenarios": []
+  }
+]

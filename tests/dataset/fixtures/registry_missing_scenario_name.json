@@ -1,0 +1,15 @@
+[
+  {
+    "name": "bad-scenario-missing-name",
+    "version": "1.0.0",
+    "description": "fixture: scenario entry missing its name",
+    "tasks": [],
+    "scenarios": [
+      {
+        "git_url": "https://github.com/example/repo.git",
+        "git_commit_id": "abc1234",
+        "path": "scenarios/foo"
+      }
+    ]
+  }
+]

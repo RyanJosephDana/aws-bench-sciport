@@ -1,0 +1,23 @@
+[
+  {
+    "name": "aws-bench",
+    "version": "1.0.0",
+    "description": "aws-bench evaluates agent performance on AWS tasks.",
+    "tasks": [
+      {
+        "name": "lambda-not-reading-appconfig-value",
+        "git_url": "https://github.com/example/aws-bench-datasets.git",
+        "git_commit_id": "a05de74eaaa55030bcc5ffeb5923fac8a77fd1fd",
+        "path": "tasks/lambda-not-reading-appconfig-value"
+      }
+    ],
+    "scenarios": [
+      {
+        "name": "lambda-with-broken-environment-variables",
+        "git_url": "https://github.com/example/aws-bench-datasets.git",
+        "git_commit_id": "a05de74eaaa55030bcc5ffeb5923fac8a77fd1fd",
+        "path": "scenarios/lambda-with-broken-environment-variables"
+      }
+    ]
+  }
+]

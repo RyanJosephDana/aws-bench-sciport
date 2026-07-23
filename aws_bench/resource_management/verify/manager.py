@@ -1,0 +1,560 @@
+"""Verification manager for account state validation."""
+
+from __future__ import annotations
+
+import dataclasses
+from concurrent.futures import as_completed
+from pathlib import Path
+from typing import Any
+
+import boto3
+
+from aws_bench.logging.logger import get_logger, log_context
+from aws_bench.resource_management.ccapi.models import MAX_WORKERS_HEAVY
+from aws_bench.resource_management.deferred import exclude_deferred
+from aws_bench.resource_management.exceptions import SnapshotNotFoundError
+from aws_bench.resource_management.scanner import make_scanner
+from aws_bench.resource_management.snapshot.manager import SnapshotManager
+from aws_bench.resource_management.snapshot.models import (
+    Snapshot,
+    SnapshotStage,
+)
+from aws_bench.resource_management.verify.comparators import count_resources, find_new_resources
+from aws_bench.resource_management.verify.drift_detector import DriftDetector
+from aws_bench.resource_management.verify.models import (
+    AccountVerifyResult,
+    RegionVerifyResult,
+    VerifyResult,
+)
+from aws_bench.resource_management.verify.ownership import AwsManagedOwnershipProbe
+from aws_bench.resource_management.verify.stack_inspector import StackInspector
+from aws_bench.scenario.hashing import compute_scenario_hash
+from aws_bench.utils.concurrent import interruptible_executor, raise_if_shutdown
+from aws_bench.utils.credentials_provider import create_regional_session
+
+logger = get_logger(__name__)
+
+
+class VerifyManager:
+    """Manages account state verification operations."""
+
+    def __init__(
+        self,
+        session: boto3.Session,
+        region_name: str | None = None,
+        account_id: str | None = None,
+    ):
+        """Initialize verification manager.
+
+        Args:
+            session: Boto3 session for AWS API calls (scan account)
+            region_name: Optional AWS region override for verification
+            account_id: Target account for the scan. Routes the fast-scan to the
+                management-account Lambda; without it the scan degrades to the
+                throttled host path, where a failed lister is swallowed into
+                ``scan_result.failed`` and skipped by ``find_new_resources`` —
+                making verify falsely pass.
+        """
+        self._session = session
+        self._region_name = region_name
+        self._account_id = account_id
+
+        self._snapshot_mgr = SnapshotManager()
+
+        scan_session = create_regional_session(session, region_name) if region_name else session
+        self._scan_mgr = make_scanner(scan_session, region_name=region_name, account_id=account_id)
+        self._stack_inspector = StackInspector(scan_session)
+        self._drift_detector = DriftDetector(session, region=region_name)
+
+    @property
+    def region_name(self) -> str | None:
+        """Get the region name used for verification."""
+        return self._region_name
+
+    def load_snapshot(self, env_name: str, account_id: str):
+        """Load snapshot for the given environment and account."""
+        return self._snapshot_mgr.load_snapshot(env_name, account_id)
+
+    def _check_region_compatibility(self, snapshot_regions: list[str]) -> VerifyResult | None:
+        """Check if verification region is compatible with snapshot regions.
+
+        Returns:
+            VerifyResult with failure if incompatible, None if compatible
+        """
+        if self._region_name and snapshot_regions:
+            if self._region_name not in snapshot_regions:
+                logger.warning(
+                    f"Region mismatch: verify using {self._region_name}, "
+                    f"snapshot has {snapshot_regions}"
+                )
+                return VerifyResult(
+                    success=False,
+                    reason="Region mismatch",
+                    details={
+                        "verify_region": self._region_name,
+                        "snapshot_regions": snapshot_regions,
+                    },
+                    suggestion=(
+                        f"Verify against one of the snapshot regions: {', '.join(snapshot_regions)}"
+                    ),
+                )
+        return None
+
+    def _check_dataset_version(
+        self, snapshot_hash: str, current_scenario_dir: Path | None = None
+    ) -> VerifyResult | None:
+        """Check if scenario version matches snapshot baseline.
+
+        Args:
+            snapshot_hash: Hash from snapshot
+            current_scenario_dir: Path to current scenario directory (optional)
+
+        Returns:
+            VerifyResult with failure if mismatch, None if compatible
+        """
+        if current_scenario_dir is None:
+            # No scenario path provided - skip version check
+            logger.debug("No scenario path provided, skipping version check")
+            return None
+
+        try:
+            current_hash = compute_scenario_hash(current_scenario_dir)
+        except Exception as e:
+            # Benign: the version check is skipped (not failed) and verify proceeds normally.
+            logger.debug(f"Failed to compute scenario hash, skipping version check: {e}")
+            return None
+
+        if current_hash != snapshot_hash:
+            return VerifyResult(
+                success=False,
+                reason="Scenario version mismatch",
+                details={
+                    "expected_hash": snapshot_hash,
+                    "current_hash": current_hash,
+                },
+                suggestion=(
+                    "Scenario folder has changed since setup. "
+                    "Run 'aws-bench env cleanup' and 'aws-bench env setup' to reset."
+                ),
+                is_dataset_mismatch=True,
+            )
+        return None
+
+    def _check_new_resources(
+        self,
+        baseline_resource_ids: dict[str, list[dict]],
+        baseline_failed: dict[str, str],
+        baseline_empty: set[str],
+    ) -> VerifyResult | None:
+        """Scan for new resources created after setup.
+
+        Args:
+            baseline_resource_ids: Resources from baseline snapshot
+            baseline_failed: Resource types that failed in baseline scan
+            baseline_empty: Resource types that were scanned but returned 0 resources
+
+        Returns:
+            VerifyResult with failure if new resources found, None if clean
+        """
+        # Scan resource types that were in baseline (had resources OR were empty)
+        # This avoids false positives from:
+        # - the scanner discovering new resource types since baseline
+        # - AWS-managed resources appearing in newly-discovered types
+        # - scanner inconsistencies between scans
+        # But still catches new resources in types that existed during setup
+        baseline_types = set(baseline_resource_ids.keys()) | baseline_empty
+        logger.debug(
+            f"Scanning for new resources via fast-scan "
+            f"({len(baseline_types)} resource types from baseline)"
+        )
+        scan_result = self._scan_mgr.scan_resources(resource_types=list(baseline_types))
+        new_resources = find_new_resources(
+            scan_result.detected, baseline_resource_ids, scan_result.failed, baseline_failed
+        )
+
+        # Drop residuals the account can't delete, so reset doesn't loop on them.
+        if new_resources:
+            probe = AwsManagedOwnershipProbe(self._session, self._region_name)
+            before = count_resources(new_resources)
+            new_resources = probe.exclude_aws_managed(new_resources)
+            excluded = before - count_resources(new_resources)
+            if excluded:
+                logger.debug(f"Excluded {excluded} AWS-managed resource(s) from new-resource set")
+
+        # Drop resources whose deletion was deferred this run (e.g. a Lambda@Edge
+        # function awaiting CloudFront replica teardown): a delete was issued, but the
+        # resource lingers for hours, so counting it as a residual would fail reset
+        # even though it will be reaped. See resource_management.deferred.
+        if new_resources:
+            before = count_resources(new_resources)
+            new_resources = exclude_deferred(new_resources)
+            deferred = before - count_resources(new_resources)
+            if deferred:
+                logger.debug(f"Excluded {deferred} deferred (eventually-consistent) resource(s)")
+
+        if new_resources:
+            resource_count = count_resources(new_resources)
+            # Log details of new resources (logs only, not console output)
+            for resource_type, resources in new_resources.items():
+                logger.debug(
+                    f"New resources detected - {resource_type}: {len(resources)} resource(s)"
+                )
+                for resource in resources:
+                    logger.debug(f"  - {resource.get('Identifier', 'unknown')}")
+
+            return VerifyResult(
+                success=False,
+                reason=f"Found {resource_count} new resource(s)",
+                details=new_resources,
+                suggestion="Run 'aws-bench env reset' to remove new resources",
+                new_resources=new_resources,
+            )
+        return None
+
+    def _check_stack_status(self, stack_metadata: dict) -> VerifyResult | None:
+        """Check CloudFormation stack status.
+
+        Returns:
+            VerifyResult with failure if status invalid, None if OK
+        """
+        status_result = self._stack_inspector.check_stack_status(stack_metadata)
+        if not status_result.success:
+            # Check if this is a list API failure vs actual stack status mismatches
+            is_api_error = (
+                isinstance(status_result.error_details, dict)
+                and "error" in status_result.error_details
+            )
+            if is_api_error:
+                # Failed to list stacks - can't reset this
+                return VerifyResult(
+                    success=False,
+                    reason=status_result.error_reason,
+                    details=status_result.error_details,
+                    suggestion="Check AWS permissions and connectivity",
+                )
+            # Stack status mismatches - reset can handle these
+            return VerifyResult(
+                success=False,
+                reason=status_result.error_reason,
+                details=status_result.error_details,
+                suggestion="Run 'aws-bench env reset' to restore stacks",
+                stack_status_failures=status_result.error_details,
+            )
+        return None
+
+    def _check_template_hash(self, stack_metadata: dict) -> VerifyResult | None:
+        """Check CloudFormation template hash matches baseline.
+
+        Returns:
+            VerifyResult with failure if hash mismatch, None if match
+        """
+        hash_result = self._stack_inspector.check_template_hash(stack_metadata)
+        if not hash_result.success:
+            # A template change is per-stack recoverable (reset delete+redeploys the named
+            # stacks); a get_template read failure carries no stack list and stays non-remediable.
+            details = hash_result.error_details
+            mismatch_stacks = (
+                details.get("template_mismatch_stacks") if isinstance(details, dict) else None
+            )
+            if mismatch_stacks:
+                return VerifyResult(
+                    success=False,
+                    reason=hash_result.error_reason,
+                    details=details,
+                    suggestion="Run 'aws-bench env reset' to recreate the changed stack(s)",
+                    is_template_mismatch=True,
+                    template_mismatch_stacks=mismatch_stacks,
+                )
+            return VerifyResult(
+                success=False,
+                reason=hash_result.error_reason,
+                details=details,
+                suggestion="Run 'aws-bench env cleanup' and re-setup with matching dataset",
+            )
+        return None
+
+    def _check_drift(self, drift_baseline: dict) -> VerifyResult | None:
+        """Check stack drift against baseline.
+
+        Returns:
+            VerifyResult with failure if drift differs from baseline, None if matching
+        """
+        drift_result = self._drift_detector.detect_and_compare_drift(drift_baseline)
+        if not drift_result.success:
+            return VerifyResult(
+                success=False,
+                reason=drift_result.error_reason,
+                details=drift_result.error_details,
+                suggestion="Run 'aws-bench env reset' to restore baseline drift",
+                drift_differences=drift_result.drift_differences,
+                drift_undetectable=drift_result.drift_undetectable,
+            )
+        return None
+
+    def verify_account_state(
+        self,
+        env_name: str,
+        account_id: str,
+        *,
+        snapshot: Snapshot | None = None,
+        scenario_dir: Path | None = None,
+        skip_early: bool = True,
+    ) -> VerifyResult:
+        """Verify account matches post-setup baseline snapshot.
+
+        Args:
+            env_name: Environment name
+            account_id: Account ID to verify
+            snapshot: Pre-loaded snapshot (optional, loads if None)
+            scenario_dir: Path to scenario directory for version check
+            skip_early: When True (the ``env verify`` gate) return on the first
+                failing check — one failure or many, the verdict is "not clean,
+                run reset", so running the rest gains nothing. When False
+                (reset's own diagnosis) run *every* remaining check and merge
+                their failures into one ``VerifyResult`` so reset can remediate
+                all categories (new resources, stack-status, drift) in a single
+                pass. Otherwise a short-circuit on one category (e.g. a
+                new-resource false positive) hides a DELETE_FAILED stack from
+                reset entirely.
+
+        Returns:
+            VerifyResult with success/failure details
+        """
+        logger.debug(f"Verifying account {account_id} state for environment {env_name}")
+
+        # Fail-fast check: ensure snapshot exists before scanning
+        if snapshot is None:
+            if not self._snapshot_mgr.snapshot_exists(
+                env_name, account_id, SnapshotStage.POST_SETUP
+            ):
+                logger.error(
+                    f"Snapshot not found for environment '{env_name}', account {account_id}"
+                )
+                return VerifyResult(
+                    success=False,
+                    reason="Snapshot not found",
+                    suggestion=(
+                        f"No baseline snapshot found for environment '{env_name}', "
+                        f"account {account_id}. Run 'aws-bench env setup {env_name}' first."
+                    ),
+                )
+            snapshot = self._snapshot_mgr.load_snapshot(env_name, account_id)
+
+        # Region compatibility check
+        region_check = self._check_region_compatibility(snapshot.regions)
+        if region_check is not None:
+            return region_check
+
+        # The dataset-version check is fail-fast in BOTH modes: a scenario-hash
+        # mismatch means the baseline itself no longer describes this account, so
+        # there is nothing coherent to aggregate the other checks against — reset
+        # must bail to full cleanup regardless.
+        dataset_result = self._check_dataset_version(snapshot.scenario_hash, scenario_dir)
+        if dataset_result is not None:
+            return dataset_result
+
+        # Remaining checks each surface one remediable category.
+        remediable_checks = [
+            lambda: self._check_new_resources(
+                snapshot.resource_ids,
+                snapshot.failed_resource_types,
+                snapshot.empty_resource_types,
+            ),
+            lambda: self._check_stack_status(snapshot.stack_metadata),
+            lambda: self._check_template_hash(snapshot.stack_metadata),
+            lambda: self._check_drift(snapshot.drift_baseline),
+        ]
+
+        failures: list[VerifyResult] = []
+        for check in remediable_checks:
+            result = check()
+            if result is not None:  # Check failed
+                if skip_early:
+                    return result
+                failures.append(result)
+
+        if failures:
+            return self._merge_failures(failures)
+
+        # All checks passed
+        logger.debug("All verification checks passed")
+        return VerifyResult(success=True, reason="Account state matches post-setup baseline")
+
+    @staticmethod
+    def _merge_failures(failures: list[VerifyResult]) -> VerifyResult:
+        """Combine per-check failures into one result carrying every category.
+
+        Reset reads ``new_resources``, ``stack_status_failures``,
+        ``drift_differences`` and ``drift_undetectable`` off a single
+        ``VerifyResult`` to drive its remediation phases, so a non-short-circuiting
+        diagnosis must fold all of them together rather than return just the first.
+        """
+        merged_details: dict[str, Any] = {}
+        new_resources: dict[str, list[dict]] | None = None
+        stack_status_failures: dict[str, dict[str, str]] | None = None
+        drift_differences: dict[str, dict] | None = None
+        drift_undetectable: list[str] | None = None
+        is_template_mismatch = False
+        template_mismatch_stacks: list[str] | None = None
+
+        for failure in failures:
+            if isinstance(failure.details, dict):
+                merged_details.update(failure.details)
+            if failure.new_resources:
+                new_resources = failure.new_resources
+            if failure.stack_status_failures:
+                stack_status_failures = failure.stack_status_failures
+            if failure.drift_differences:
+                drift_differences = failure.drift_differences
+            if failure.drift_undetectable:
+                drift_undetectable = failure.drift_undetectable
+            if failure.is_template_mismatch:
+                is_template_mismatch = True
+                template_mismatch_stacks = failure.template_mismatch_stacks
+
+        return VerifyResult(
+            success=False,
+            reason="; ".join(failure.reason for failure in failures),
+            details=merged_details or None,
+            suggestion="Run 'aws-bench env reset' to restore baseline state",
+            new_resources=new_resources,
+            stack_status_failures=stack_status_failures,
+            drift_differences=drift_differences,
+            drift_undetectable=drift_undetectable,
+            is_template_mismatch=is_template_mismatch,
+            template_mismatch_stacks=template_mismatch_stacks,
+        )
+
+    @staticmethod
+    def _filter_snapshot_to_region(snapshot: Snapshot, region: str) -> Snapshot:
+        """Return a copy of the snapshot scoped to a single region's stacks.
+
+        Stack-status / template-hash / drift checks scan only the verify region,
+        so the baseline they compare against must be limited to that region's
+        stacks — otherwise stacks in other regions look "missing". Resource ids
+        are left intact (the fast-scan is region-filtered separately).
+
+        Snapshots captured before stacks recorded a region (region == "") are
+        returned unchanged, preserving legacy single-region behavior.
+        """
+        # Check for legacy snapshot FIRST before filtering
+        if not any(meta.region for meta in snapshot.stack_metadata.values()):
+            return snapshot
+
+        region_stacks = {
+            name: meta for name, meta in snapshot.stack_metadata.items() if meta.region == region
+        }
+        region_drift = {
+            name: drift for name, drift in snapshot.drift_baseline.items() if name in region_stacks
+        }
+        return dataclasses.replace(
+            snapshot, stack_metadata=region_stacks, drift_baseline=region_drift
+        )
+
+    def verify_account_multiregion(
+        self,
+        env_name: str,
+        account_id: str,
+        environment_id: str,
+        regions: list[str] | None = None,
+        scenario_dir: Path | None = None,
+    ) -> AccountVerifyResult:
+        """Verify account across multiple regions.
+
+        Args:
+            env_name: Testing environment name
+            account_id: AWS account ID to verify
+            environment_id: Environment ID for display
+            regions: List of regions to verify, or None to use snapshot regions
+            scenario_dir: Path to scenario directory for version (hash) check
+
+        Returns:
+            AccountVerifyResult with per-region results
+        """
+        try:
+            # Load snapshot to get baseline regions if not specified
+            snapshot = self._snapshot_mgr.load_snapshot(env_name, account_id)
+            regions_to_verify = regions if regions else snapshot.regions
+
+            if not regions_to_verify:
+                # Benign legacy-snapshot compatibility default; verify continues normally.
+                logger.debug("Snapshot has no region info, defaulting to [us-east-1]")
+                regions_to_verify = ["us-east-1"]
+
+            logger.info(
+                f"Verifying account {account_id} across {len(regions_to_verify)} region(s): "
+                f"{', '.join(regions_to_verify)}"
+            )
+
+            # Each region scans against the snapshot filtered to its own stacks,
+            # so other regions' stacks aren't reported as "missing".
+            def _verify_region(region: str) -> RegionVerifyResult:
+                with log_context(region):
+                    raise_if_shutdown()
+                    # A region's scan error fails only that region, not the account
+                    # (a cancel is a BaseException, so it still propagates).
+                    try:
+                        region_session = create_regional_session(self._session, region)
+                        region_mgr = VerifyManager(
+                            region_session, region_name=region, account_id=account_id
+                        )
+                        region_snapshot = self._filter_snapshot_to_region(snapshot, region)
+                        result = region_mgr.verify_account_state(
+                            env_name,
+                            account_id,
+                            snapshot=region_snapshot,
+                            scenario_dir=scenario_dir,
+                        )
+                        return RegionVerifyResult(
+                            region=region,
+                            success=result.success,
+                            error_message=result.reason if not result.success else None,
+                            suggestion=result.suggestion,
+                        )
+                    except Exception as exc:
+                        logger.error(
+                            "Region %s verification failed: %s", region, exc, exc_info=True
+                        )
+                        return RegionVerifyResult(
+                            region=region,
+                            success=False,
+                            error_message=f"Verification failed: {exc}",
+                        )
+
+            results_by_region: dict[str, RegionVerifyResult] = {}
+            with interruptible_executor(max_workers=MAX_WORKERS_HEAVY) as executor:
+                future_to_region = {
+                    executor.submit(_verify_region, region): region for region in regions_to_verify
+                }
+                for future in as_completed(future_to_region):
+                    region = future_to_region[future]
+                    results_by_region[region] = future.result()
+
+            # Emit in input-region order (not completion order) so the persisted
+            # result is stable across runs.
+            region_results = [results_by_region[region] for region in regions_to_verify]
+            all_passed = all(r.success for r in region_results)
+
+            return AccountVerifyResult(
+                account_id=account_id,
+                environment_id=environment_id,
+                success=all_passed,
+                region_results=region_results,
+            )
+
+        except SnapshotNotFoundError as e:
+            return AccountVerifyResult(
+                account_id=account_id,
+                environment_id=environment_id,
+                success=False,
+                region_results=[],
+                error_message=str(e),
+            )
+        except Exception as e:
+            return AccountVerifyResult(
+                account_id=account_id,
+                environment_id=environment_id,
+                success=False,
+                region_results=[],
+                error_message=f"Verification failed: {str(e)}",
+            )

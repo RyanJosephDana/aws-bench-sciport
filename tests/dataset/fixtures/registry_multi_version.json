@@ -1,0 +1,30 @@
+[
+  {
+    "name": "aws-bench",
+    "version": "1.0.0",
+    "description": "aws-bench dataset",
+    "tasks": [],
+    "scenarios": []
+  },
+  {
+    "name": "aws-bench",
+    "version": "1.1.0",
+    "description": "aws-bench dataset",
+    "tasks": [],
+    "scenarios": []
+  },
+  {
+    "name": "aws-bench",
+    "version": "2.0.0",
+    "description": "aws-bench dataset",
+    "tasks": [],
+    "scenarios": []
+  },
+  {
+    "name": "aws-bench-troubleshooting",
+    "version": "1.0.0",
+    "description": "aws-bench troubleshooting dataset",
+    "tasks": [],
+    "scenarios": []
+  }
+]

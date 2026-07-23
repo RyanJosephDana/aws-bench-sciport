@@ -1,0 +1,23 @@
+---
+name: "📕 Documentation Issue"
+description: Report an issue in the documentation
+title: "(module name): (short issue description)"
+labels: [documentation, needs-triage]
+assignees: []
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the issue
+      description: A clear and concise description of the issue.
+    validations:
+      required: true
+
+  - type: textarea
+    id: links
+    attributes:
+      label: Links
+      description: |
+        Include links to affected documentation pages/sections.
+    validations:
+      required: true

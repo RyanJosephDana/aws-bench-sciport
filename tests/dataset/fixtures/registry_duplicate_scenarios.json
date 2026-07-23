@@ -1,0 +1,22 @@
+[
+  {
+    "name": "bad-dupes",
+    "version": "1.0.0",
+    "description": "Duplicate scenario names within one dataset.",
+    "tasks": [],
+    "scenarios": [
+      {
+        "name": "lambda-with-broken-env",
+        "git_url": "https://github.com/example/repo.git",
+        "git_commit_id": "abc1234",
+        "path": "scenarios/lambda-with-broken-env"
+      },
+      {
+        "name": "lambda-with-broken-env",
+        "git_url": "https://github.com/example/repo.git",
+        "git_commit_id": "def5678",
+        "path": "scenarios/lambda-with-broken-env-v2"
+      }
+    ]
+  }
+]

@@ -1,0 +1,30 @@
+[
+  {
+    "name": "aws-bench",
+    "version": "1.0.0",
+    "description": "aws-bench dataset",
+    "tasks": [],
+    "scenarios": [
+      {
+        "name": "shared-scenario",
+        "git_url": "https://github.com/example/repo.git",
+        "git_commit_id": "aaaa1111",
+        "path": "scenarios/shared-scenario"
+      }
+    ]
+  },
+  {
+    "name": "aws-bench-subset",
+    "version": "1.0.0",
+    "description": "aws-bench subset dataset",
+    "tasks": [],
+    "scenarios": [
+      {
+        "name": "shared-scenario",
+        "git_url": "https://github.com/example/repo.git",
+        "git_commit_id": "aaaa1111",
+        "path": "scenarios/shared-scenario"
+      }
+    ]
+  }
+]
