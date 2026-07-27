@@ -174,15 +174,39 @@ reward contract: /logs/verifier/reward.txt with 1.0 (all criteria pass) or
 Exit codes: 0 = judged (either reward); nonzero = judging itself failed.
 """
 
+import glob
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import tomllib
 from pathlib import Path
 
 VERIFIER_DIR = Path(os.environ.get("AWS_BENCH_VERIFIER_DIR", "/logs/verifier"))
+
+
+def find_claude() -> str:
+    """Locate the claude binary regardless of which user installed it.
+
+    Harbor installs Claude Code as the agent user (install.sh puts it in that
+    user's ``~/.local/bin``); the verifier may run as a different user whose
+    PATH does not include it.
+    """
+    on_path = shutil.which("claude")
+    if on_path:
+        return on_path
+    candidates = [
+        *glob.glob("/home/*/.local/bin/claude"),
+        "/root/.local/bin/claude",
+        "/usr/local/bin/claude",
+        "/usr/bin/claude",
+    ]
+    for candidate in candidates:
+        if os.access(candidate, os.X_OK):
+            return candidate
+    raise FileNotFoundError(f"claude binary not found on PATH or in {candidates}")
 
 
 def build_prompt(tests: Path, judge: dict, criteria: list[dict]) -> str:
@@ -225,7 +249,7 @@ def main() -> int:
 
     model = os.environ.get("AWS_BENCH_JUDGE_MODEL", "claude-sonnet-4-5")
     proc = subprocess.run(
-        ["claude", "-p", "--model", model, "--output-format", "json"],
+        [find_claude(), "-p", "--model", model, "--output-format", "json"],
         input=prompt,
         capture_output=True,
         text=True,
