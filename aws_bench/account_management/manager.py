@@ -27,8 +27,38 @@ from aws_bench.account_management.models import (
 from aws_bench.account_management.organizations import OrganizationsClient
 from aws_bench.account_management.utils import generate_account_email
 from aws_bench.logging.logger import get_logger
+from aws_bench import emulator
 
 logger = get_logger(__name__)
+
+
+def _emulated_test_environment(
+    ou_name: str, required_by_scenario: dict[str, set[str]]
+) -> TestEnvironment:
+    """A synthetic ``TestEnvironment`` for Floci emulator mode.
+
+    No Organizations calls: every required (scenario, tag) pair maps to the
+    emulator's single account. Uniqueness holds trivially.
+    """
+    accounts = {
+        scenario_name: {
+            tag: ScenarioAccount(
+                account_id=emulator.ACCOUNT_ID,
+                email="emulator@floci.local",
+                scenario_name=scenario_name,
+                account_tag=tag,
+            )
+            for tag in sorted(required_tags)
+        }
+        for scenario_name, required_tags in required_by_scenario.items()
+    }
+    org = OrgInfo(
+        org_id="o-floci",
+        root_id="r-floci",
+        management_account_id=emulator.ACCOUNT_ID,
+        management_account_email="emulator@floci.local",
+    )
+    return TestEnvironment(org=org, ou_id="ou-floci", ou_name=ou_name, accounts=accounts)
 
 
 def _is_email_collision(exc: BaseException) -> bool:
@@ -132,6 +162,9 @@ class AccountManager:
                 account in the OU, not just ``required_by_scenario``.
             TestEnvironmentNotFoundError: The OU does not exist.
         """
+        if emulator.is_active():
+            return _emulated_test_environment(ou_name, required_by_scenario or {})
+
         org_info = self._org.get_org_info()
         ou_id = self._require_ou(org_info, ou_name)
 

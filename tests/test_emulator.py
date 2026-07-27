@@ -82,3 +82,16 @@ def test_prime_process_env_noop_when_inactive(tmp_path):
     with mock.patch.dict(os.environ, env, clear=True):
         emulator.prime_process_env()
         assert "CLAUDE_CODE_OAUTH_TOKEN" not in os.environ
+
+
+def test_emulated_test_environment_maps_all_tags():
+    from aws_bench.account_management.manager import AccountManager
+
+    with mock.patch.dict(os.environ, {"AWS_BENCH_EMULATOR": "floci"}):
+        env = AccountManager().resolve_test_environment(
+            "any-ou", required_by_scenario={"ec2-multiregion": {"PRIMARY"}}
+        )
+    account = env.accounts["ec2-multiregion"]["PRIMARY"]
+    assert account.account_id == emulator.ACCOUNT_ID
+    assert account.status == "ACTIVE"
+    assert env.account_for("ec2-multiregion") == emulator.ACCOUNT_ID
