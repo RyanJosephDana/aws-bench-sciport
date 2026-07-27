@@ -16,6 +16,21 @@ it unrepresentable. Metric: tokens + wall-clock to green, per arm.
 | 5 | Subnet CIDR outside VPC CIDR | deploy failure | containment rule (chant#1140) + Floci CreateSubnet validation for fidelity |
 | 6 | Deny-policy contradiction | deploy succeeds; runtime 403; expensive live diagnosis | IAM-reasoning rule (chant#1140): deny intersects a required action |
 
+## CDK-tuned arm
+
+Per the with/without rule, CDK is also measured with the ecosystem's pre-synth
+toolchain in the workspace (cdk-nag, cfn-lint, cfn-guard) and a briefing that
+names them. This changes the expected outcomes honestly:
+
+- Injections 1 and 3 become catchable pre-deploy IF the agent assembles and
+  runs the pipeline (synth, then cfn-lint on the output) — the measurement then
+  captures the token cost of that discipline vs chant's single build command.
+- Injection 2 (typed-ref unrepresentability) and 6 (deny-policy contradiction)
+  remain uncatchable by any CFN linter — template-level tools cannot see intent
+  or reason across IAM semantics.
+- Injection 4 becomes a cdk-nag-vs-WAW comparison: both catch it; cost and
+  fix-hint quality differ.
+
 ## Dependencies
 
 - chant-deployed estate (tasks are mutation-style; both arms attempt the same
