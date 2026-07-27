@@ -1,0 +1,2597 @@
+{
+  "nodes": [
+    {
+      "id": "adminRole",
+      "kind": "AWS::IAM::Role",
+      "lexicon": "aws",
+      "attrs": {
+        "Arn": {
+          "$ref": "adminRole.Arn"
+        },
+        "RoleId": {
+          "$ref": "adminRole.RoleId"
+        },
+        "RoleName": "QALocalInvocationApplicationAdmin",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "$intrinsic": true
+                }
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/AdministratorAccess"
+        ],
+        "_status": "good"
+      },
+      "sourceLoc": {
+        "file": "qa-roles/src/roles.ts"
+      },
+      "physicalId": "QALocalInvocationApplicationAdmin"
+    },
+    {
+      "id": "defaultSubnetId1",
+      "kind": "AWS::CloudFormation::Parameter",
+      "lexicon": "aws",
+      "attrs": {
+        "parameterType": "AWS::EC2::Subnet::Id",
+        "description": "First public subnet of the default VPC",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "defaultSubnetId2",
+      "kind": "AWS::CloudFormation::Parameter",
+      "lexicon": "aws",
+      "attrs": {
+        "parameterType": "AWS::EC2::Subnet::Id",
+        "description": "Second public subnet of the default VPC",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "defaultVpcId",
+      "kind": "AWS::CloudFormation::Parameter",
+      "lexicon": "aws",
+      "attrs": {
+        "parameterType": "AWS::EC2::VPC::Id",
+        "description": "The account's default VPC id",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "defaultVpcServer",
+      "kind": "AWS::EC2::Instance",
+      "lexicon": "aws",
+      "attrs": {
+        "InstanceId": {
+          "$ref": "defaultVpcServer.InstanceId"
+        },
+        "PrivateIp": {
+          "$ref": "defaultVpcServer.PrivateIp"
+        },
+        "PublicDnsName": {
+          "$ref": "defaultVpcServer.PublicDnsName"
+        },
+        "PublicIp": {
+          "$ref": "defaultVpcServer.PublicIp"
+        },
+        "PrivateDnsName": {
+          "$ref": "defaultVpcServer.PrivateDnsName"
+        },
+        "VpcId": {
+          "$ref": "defaultVpcServer.VpcId"
+        },
+        "State": {
+          "$ref": "defaultVpcServer.State"
+        },
+        "SubnetId": {
+          "$ref": "defaultSubnetId1"
+        },
+        "InstanceType": "t3.micro",
+        "ImageId": "ami-0f3f13f145e66a0a3",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "MyEC2Instance"
+          }
+        ],
+        "_status": "good"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      },
+      "physicalId": "i-a8ccec2cbf2a4c10e"
+    },
+    {
+      "id": "expAmiName",
+      "kind": "chant:output",
+      "lexicon": "aws",
+      "attrs": {
+        "sourceRef": {
+          "$intrinsic": true
+        },
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-AMIName",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "expDefaultSubnet1",
+      "kind": "chant:output",
+      "lexicon": "aws",
+      "attrs": {
+        "sourceRef": {
+          "$ref": "defaultSubnetId1"
+        },
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-DefaultPublicSubnetId1",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "expDefaultSubnet2",
+      "kind": "chant:output",
+      "lexicon": "aws",
+      "attrs": {
+        "sourceRef": {
+          "$ref": "defaultSubnetId2"
+        },
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-DefaultPublicSubnetId2",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "expDefaultVpcId",
+      "kind": "chant:output",
+      "lexicon": "aws",
+      "attrs": {
+        "sourceRef": {
+          "$ref": "defaultVpcId"
+        },
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-DefaultVpcId",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "expDefaultVpcInstanceId",
+      "kind": "chant:output",
+      "lexicon": "aws",
+      "attrs": {
+        "sourceRef": {
+          "$ref": "defaultVpcServer.InstanceId"
+        },
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-DefaultVPCInstanceId",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "expDefaultVpcInstanceIp",
+      "kind": "chant:output",
+      "lexicon": "aws",
+      "attrs": {
+        "sourceRef": {
+          "$ref": "defaultVpcServer.PrivateIp"
+        },
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-PrivateIPOfInstanceWithDefaultVpc",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "expHttpPort",
+      "kind": "chant:output",
+      "lexicon": "aws",
+      "attrs": {
+        "sourceRef": "80",
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-OpenHTTPPort",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "expHttpsPort",
+      "kind": "chant:output",
+      "lexicon": "aws",
+      "attrs": {
+        "sourceRef": "443",
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-OpenHTTPsPort",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "expInstanceId",
+      "kind": "chant:output",
+      "lexicon": "aws",
+      "attrs": {
+        "sourceRef": {
+          "$ref": "webServer.InstanceId"
+        },
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-InstanceId",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "expInstanceProfileName",
+      "kind": "chant:output",
+      "lexicon": "aws",
+      "attrs": {
+        "sourceRef": {
+          "$ref": "instanceProfile"
+        },
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-InstanceProfileName",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "expLaunchTemplateInstanceId",
+      "kind": "chant:output",
+      "lexicon": "aws",
+      "attrs": {
+        "sourceRef": {
+          "$ref": "launchTemplateServer.InstanceId"
+        },
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-LaunchTemplateInstanceId",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "expLtIp",
+      "kind": "chant:output",
+      "lexicon": "aws",
+      "attrs": {
+        "sourceRef": {
+          "$ref": "launchTemplateServer.PrivateIp"
+        },
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-PrivateIPOfInstanceWithLaunchTemplate",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "expNumEc2",
+      "kind": "chant:output",
+      "lexicon": "aws",
+      "attrs": {
+        "sourceRef": "4",
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-NUMEC2Running",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "expNumSubnets",
+      "kind": "chant:output",
+      "lexicon": "aws",
+      "attrs": {
+        "sourceRef": "1",
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-NUMSubnets",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "expPrivateInstanceId",
+      "kind": "chant:output",
+      "lexicon": "aws",
+      "attrs": {
+        "sourceRef": {
+          "$ref": "privateServer.InstanceId"
+        },
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-PrivateInstanceId",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "expPrivateInstanceIp",
+      "kind": "chant:output",
+      "lexicon": "aws",
+      "attrs": {
+        "sourceRef": {
+          "$ref": "privateServer.PrivateIp"
+        },
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-PrivateInstancePrivateIp",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "expPublicSubnetId",
+      "kind": "chant:output",
+      "lexicon": "aws",
+      "attrs": {
+        "sourceRef": {
+          "$ref": "UsEast1SrcpublicSubnet.SubnetId"
+        },
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-PublicSubnetId",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "expRestrictedAttr",
+      "kind": "chant:output",
+      "lexicon": "aws",
+      "attrs": {
+        "sourceRef": "ec2:ModifyInstanceAttribute",
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-RestrictedActionModifyInstanceAttribute",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "expRestrictedMeta",
+      "kind": "chant:output",
+      "lexicon": "aws",
+      "attrs": {
+        "sourceRef": "ec2:ModifyInstanceMetadataOptions",
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-RestrictedActionModifyInstanceMetadataOptions",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "expRoleName",
+      "kind": "chant:output",
+      "lexicon": "aws",
+      "attrs": {
+        "sourceRef": {
+          "$ref": "instanceRole"
+        },
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-RoleName",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "expSecurityGroupId",
+      "kind": "chant:output",
+      "lexicon": "aws",
+      "attrs": {
+        "sourceRef": {
+          "$ref": "webSecurityGroup.GroupId"
+        },
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-SecurityGroupId",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "expSshPort",
+      "kind": "chant:output",
+      "lexicon": "aws",
+      "attrs": {
+        "sourceRef": "22",
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-OpenSSHPort",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "expStackId",
+      "kind": "chant:output",
+      "lexicon": "aws",
+      "attrs": {
+        "sourceRef": {
+          "$intrinsic": true
+        },
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-StackId",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "expStackName",
+      "kind": "chant:output",
+      "lexicon": "aws",
+      "attrs": {
+        "sourceRef": "ec2-multiregion-EC2-ks84v1fh12-us-east-1",
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-StackName",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "expUnusedSecurityGroupId",
+      "kind": "chant:output",
+      "lexicon": "aws",
+      "attrs": {
+        "sourceRef": {
+          "$ref": "unusedSecurityGroup.GroupId"
+        },
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-UnusedSecurityGroupId",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "expVpcId",
+      "kind": "chant:output",
+      "lexicon": "aws",
+      "attrs": {
+        "sourceRef": {
+          "$ref": "UsEast1Srcvpc.VpcId"
+        },
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-VpcId",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "expWebIp",
+      "kind": "chant:output",
+      "lexicon": "aws",
+      "attrs": {
+        "sourceRef": {
+          "$ref": "webServer.PrivateIp"
+        },
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-PrivateIPOfInstanceWithoutLaunchTemplate",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "instanceProfile",
+      "kind": "AWS::IAM::InstanceProfile",
+      "lexicon": "aws",
+      "attrs": {
+        "Arn": {
+          "$ref": "instanceProfile.Arn"
+        },
+        "InstanceProfileName": {
+          "$intrinsic": true
+        },
+        "Roles": [
+          {
+            "$ref": "instanceRole"
+          }
+        ],
+        "_status": "good"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      },
+      "physicalId": "instanceprofile-000000000000-us-east-1"
+    },
+    {
+      "id": "instanceRole",
+      "kind": "AWS::IAM::Role",
+      "lexicon": "aws",
+      "attrs": {
+        "Arn": {
+          "$ref": "instanceRole.Arn"
+        },
+        "RoleId": {
+          "$ref": "instanceRole.RoleId"
+        },
+        "RoleName": {
+          "$intrinsic": true
+        },
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ec2.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+        ],
+        "Policies": [
+          {
+            "PolicyName": {
+              "$intrinsic": true
+            },
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Deny",
+                  "Action": [
+                    "ec2:ModifyInstanceAttribute",
+                    "ec2:ModifyInstanceMetadataOptions"
+                  ],
+                  "Resource": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "_status": "good"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      },
+      "physicalId": "role-000000000000-us-east-1"
+    },
+    {
+      "id": "judgeRole",
+      "kind": "AWS::IAM::Role",
+      "lexicon": "aws",
+      "attrs": {
+        "Arn": {
+          "$ref": "judgeRole.Arn"
+        },
+        "RoleId": {
+          "$ref": "judgeRole.RoleId"
+        },
+        "RoleName": "LLMJudgeFullBedrockAccessRole",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "$intrinsic": true
+                }
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/AmazonBedrockFullAccess",
+          "arn:aws:iam::aws:policy/ReadOnlyAccess"
+        ],
+        "_status": "good"
+      },
+      "sourceLoc": {
+        "file": "qa-roles/src/roles.ts"
+      },
+      "physicalId": "LLMJudgeFullBedrockAccessRole"
+    },
+    {
+      "id": "launchTemplate",
+      "kind": "AWS::EC2::LaunchTemplate",
+      "lexicon": "aws",
+      "attrs": {
+        "DefaultVersionNumber": {
+          "$ref": "launchTemplate.DefaultVersionNumber"
+        },
+        "LaunchTemplateId": {
+          "$ref": "launchTemplate.LaunchTemplateId"
+        },
+        "LatestVersionNumber": {
+          "$ref": "launchTemplate.LatestVersionNumber"
+        },
+        "LaunchTemplateName": {
+          "$intrinsic": true
+        },
+        "LaunchTemplateData": {
+          "InstanceType": "t3.micro",
+          "ImageId": "ami-0f3f13f145e66a0a3",
+          "SecurityGroupIds": [
+            {
+              "$ref": "webSecurityGroup.GroupId"
+            }
+          ],
+          "BlockDeviceMappings": [
+            {
+              "DeviceName": "/dev/xvda",
+              "Ebs": {
+                "VolumeSize": 8,
+                "VolumeType": "gp3"
+              }
+            }
+          ],
+          "MetadataOptions": {
+            "HttpTokens": "required"
+          }
+        },
+        "_status": "good"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      },
+      "physicalId": "lt-298c4817209eeb235"
+    },
+    {
+      "id": "launchTemplateServer",
+      "kind": "AWS::EC2::Instance",
+      "lexicon": "aws",
+      "attrs": {
+        "InstanceId": {
+          "$ref": "launchTemplateServer.InstanceId"
+        },
+        "PrivateIp": {
+          "$ref": "launchTemplateServer.PrivateIp"
+        },
+        "PublicDnsName": {
+          "$ref": "launchTemplateServer.PublicDnsName"
+        },
+        "PublicIp": {
+          "$ref": "launchTemplateServer.PublicIp"
+        },
+        "PrivateDnsName": {
+          "$ref": "launchTemplateServer.PrivateDnsName"
+        },
+        "VpcId": {
+          "$ref": "launchTemplateServer.VpcId"
+        },
+        "State": {
+          "$ref": "launchTemplateServer.State"
+        },
+        "LaunchTemplate": {
+          "LaunchTemplateId": {
+            "$ref": "launchTemplate.LaunchTemplateId"
+          },
+          "Version": "1"
+        },
+        "SubnetId": {
+          "$ref": "UsEast1SrcpublicSubnet.SubnetId"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "LaunchTemplateInstance"
+          }
+        ],
+        "_status": "good"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      },
+      "physicalId": "i-18e17c5c51d2e82ea"
+    },
+    {
+      "id": "privateServer",
+      "kind": "AWS::EC2::Instance",
+      "lexicon": "aws",
+      "attrs": {
+        "InstanceId": {
+          "$ref": "privateServer.InstanceId"
+        },
+        "PrivateIp": {
+          "$ref": "privateServer.PrivateIp"
+        },
+        "PublicDnsName": {
+          "$ref": "privateServer.PublicDnsName"
+        },
+        "PublicIp": {
+          "$ref": "privateServer.PublicIp"
+        },
+        "PrivateDnsName": {
+          "$ref": "privateServer.PrivateDnsName"
+        },
+        "VpcId": {
+          "$ref": "privateServer.VpcId"
+        },
+        "State": {
+          "$ref": "privateServer.State"
+        },
+        "SubnetId": {
+          "$ref": "privateSubnet.SubnetId"
+        },
+        "InstanceType": "t3.micro",
+        "ImageId": "ami-0f3f13f145e66a0a3",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "PrivateInstance"
+          }
+        ],
+        "_status": "good"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      },
+      "physicalId": "i-69d3b5598cfb5ac50"
+    },
+    {
+      "id": "privateSubnet",
+      "kind": "AWS::EC2::Subnet",
+      "lexicon": "aws",
+      "attrs": {
+        "NetworkAclAssociationId": {
+          "$ref": "privateSubnet.NetworkAclAssociationId"
+        },
+        "SubnetId": {
+          "$ref": "privateSubnet.SubnetId"
+        },
+        "Ipv6CidrBlocks": {
+          "$ref": "privateSubnet.Ipv6CidrBlocks"
+        },
+        "BlockPublicAccessStates": {
+          "$ref": "privateSubnet.BlockPublicAccessStates"
+        },
+        "VpcId": {
+          "$ref": "UsEast1Srcvpc.VpcId"
+        },
+        "CidrBlock": "10.0.1.0/24",
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Private"
+          }
+        ],
+        "_status": "good"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      },
+      "physicalId": "subnet-ac0250be"
+    },
+    {
+      "id": "publicDefaultRoute",
+      "kind": "AWS::EC2::Route",
+      "lexicon": "aws",
+      "attrs": {
+        "CidrBlock": {
+          "$ref": "publicDefaultRoute.CidrBlock"
+        },
+        "RouteTableId": {
+          "$ref": "publicRouteTable.RouteTableId"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "$ref": "UsEast1Srcigw.InternetGatewayId"
+        },
+        "_status": "good"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      },
+      "physicalId": "publicDefaultRoute-d5004f27"
+    },
+    {
+      "id": "publicRouteTable",
+      "kind": "AWS::EC2::RouteTable",
+      "lexicon": "aws",
+      "attrs": {
+        "RouteTableId": {
+          "$ref": "publicRouteTable.RouteTableId"
+        },
+        "VpcId": {
+          "$ref": "UsEast1Srcvpc.VpcId"
+        },
+        "_status": "good"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      },
+      "physicalId": "rtb-94caa3dc"
+    },
+    {
+      "id": "publicSubnetRouteAssoc",
+      "kind": "AWS::EC2::SubnetRouteTableAssociation",
+      "lexicon": "aws",
+      "attrs": {
+        "Id": {
+          "$ref": "publicSubnetRouteAssoc.Id"
+        },
+        "RouteTableId": {
+          "$ref": "publicRouteTable.RouteTableId"
+        },
+        "SubnetId": {
+          "$ref": "UsEast1SrcpublicSubnet.SubnetId"
+        },
+        "_status": "good"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      },
+      "physicalId": "rtbassoc-e83ae4b2"
+    },
+    {
+      "id": "readonlyRole",
+      "kind": "AWS::IAM::Role",
+      "lexicon": "aws",
+      "attrs": {
+        "Arn": {
+          "$ref": "readonlyRole.Arn"
+        },
+        "RoleId": {
+          "$ref": "readonlyRole.RoleId"
+        },
+        "RoleName": "QALocalInvocationApplicationRole",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "$intrinsic": true
+                }
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/ReadOnlyAccess",
+          "arn:aws:iam::aws:policy/AmazonBedrockFullAccess",
+          {
+            "$ref": "s3VectorsReadOnly.PolicyArn"
+          }
+        ],
+        "_status": "good"
+      },
+      "sourceLoc": {
+        "file": "qa-roles/src/roles.ts"
+      },
+      "physicalId": "QALocalInvocationApplicationRole"
+    },
+    {
+      "id": "s3VectorsReadOnly",
+      "kind": "AWS::IAM::ManagedPolicy",
+      "lexicon": "aws",
+      "attrs": {
+        "PolicyArn": {
+          "$ref": "s3VectorsReadOnly.PolicyArn"
+        },
+        "AttachmentCount": {
+          "$ref": "s3VectorsReadOnly.AttachmentCount"
+        },
+        "CreateDate": {
+          "$ref": "s3VectorsReadOnly.CreateDate"
+        },
+        "DefaultVersionId": {
+          "$ref": "s3VectorsReadOnly.DefaultVersionId"
+        },
+        "IsAttachable": {
+          "$ref": "s3VectorsReadOnly.IsAttachable"
+        },
+        "PermissionsBoundaryUsageCount": {
+          "$ref": "s3VectorsReadOnly.PermissionsBoundaryUsageCount"
+        },
+        "PolicyId": {
+          "$ref": "s3VectorsReadOnly.PolicyId"
+        },
+        "UpdateDate": {
+          "$ref": "s3VectorsReadOnly.UpdateDate"
+        },
+        "ManagedPolicyName": {
+          "$intrinsic": true
+        },
+        "Description": "Read-only access to S3 Vectors operations",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "AllowS3VectorsReadOnlyAccess",
+              "Effect": "Allow",
+              "Action": [
+                "s3vectors:ListVectors",
+                "s3vectors:GetVectors",
+                "s3vectors:GetIndex",
+                "s3vectors:GetVectorBucket",
+                "s3vectors:GetVectorBucketPolicy",
+                "s3vectors:ListIndexes",
+                "s3vectors:ListTagsForResource",
+                "s3vectors:ListVectorBuckets",
+                "s3vectors:QueryVectors"
+              ],
+              "Resource": "*"
+            }
+          ]
+        },
+        "_status": "good"
+      },
+      "sourceLoc": {
+        "file": "qa-roles/src/roles.ts"
+      },
+      "physicalId": "arn:aws:iam::000000000000:policy/ec2-multiregion-QARoles-us-east-1-s3VectorsReadOnly-3bb31f188243"
+    },
+    {
+      "id": "unusedSecurityGroup",
+      "kind": "AWS::EC2::SecurityGroup",
+      "lexicon": "aws",
+      "attrs": {
+        "Id": {
+          "$ref": "unusedSecurityGroup.Id"
+        },
+        "GroupId": {
+          "$ref": "unusedSecurityGroup.GroupId"
+        },
+        "GroupDescription": "Unused security group",
+        "VpcId": {
+          "$ref": "UsEast1Srcvpc.VpcId"
+        },
+        "_status": "good"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      },
+      "physicalId": "sg-f89af476f908c811f"
+    },
+    {
+      "id": "UsEast1Srcigw",
+      "kind": "AWS::EC2::InternetGateway",
+      "lexicon": "aws",
+      "attrs": {
+        "InternetGatewayId": {
+          "$ref": "UsEast1Srcigw.InternetGatewayId"
+        },
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "UsEast1SrcigwAttachment",
+      "kind": "AWS::EC2::VPCGatewayAttachment",
+      "lexicon": "aws",
+      "attrs": {
+        "AttachmentType": {
+          "$ref": "UsEast1SrcigwAttachment.AttachmentType"
+        },
+        "VpcId": {
+          "$ref": "UsEast1Srcvpc.VpcId"
+        },
+        "InternetGatewayId": {
+          "$ref": "UsEast1Srcigw.InternetGatewayId"
+        },
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "UsEast1SrcpublicSubnet",
+      "kind": "AWS::EC2::Subnet",
+      "lexicon": "aws",
+      "attrs": {
+        "NetworkAclAssociationId": {
+          "$ref": "UsEast1SrcpublicSubnet.NetworkAclAssociationId"
+        },
+        "SubnetId": {
+          "$ref": "UsEast1SrcpublicSubnet.SubnetId"
+        },
+        "Ipv6CidrBlocks": {
+          "$ref": "UsEast1SrcpublicSubnet.Ipv6CidrBlocks"
+        },
+        "BlockPublicAccessStates": {
+          "$ref": "UsEast1SrcpublicSubnet.BlockPublicAccessStates"
+        },
+        "VpcId": {
+          "$ref": "UsEast1Srcvpc.VpcId"
+        },
+        "CidrBlock": "10.0.0.0/24",
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Public"
+          }
+        ],
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "UsEast1Srcvpc",
+      "kind": "AWS::EC2::VPC",
+      "lexicon": "aws",
+      "attrs": {
+        "CidrBlockAssociations": {
+          "$ref": "UsEast1Srcvpc.CidrBlockAssociations"
+        },
+        "DefaultNetworkAcl": {
+          "$ref": "UsEast1Srcvpc.DefaultNetworkAcl"
+        },
+        "DefaultSecurityGroup": {
+          "$ref": "UsEast1Srcvpc.DefaultSecurityGroup"
+        },
+        "Ipv6CidrBlocks": {
+          "$ref": "UsEast1Srcvpc.Ipv6CidrBlocks"
+        },
+        "VpcId": {
+          "$ref": "UsEast1Srcvpc.VpcId"
+        },
+        "VpcEncryptionControl_VpcId": {
+          "$ref": "UsEast1Srcvpc.VpcEncryptionControl.VpcId"
+        },
+        "VpcEncryptionControl_VpcEncryptionControlId": {
+          "$ref": "UsEast1Srcvpc.VpcEncryptionControl.VpcEncryptionControlId"
+        },
+        "VpcEncryptionControl_State": {
+          "$ref": "UsEast1Srcvpc.VpcEncryptionControl.State"
+        },
+        "VpcEncryptionControl_StateMessage": {
+          "$ref": "UsEast1Srcvpc.VpcEncryptionControl.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions": {
+          "$ref": "UsEast1Srcvpc.VpcEncryptionControl.ResourceExclusions"
+        },
+        "VpcEncryptionControl_ResourceExclusions_InternetGateway": {
+          "$ref": "UsEast1Srcvpc.VpcEncryptionControl.ResourceExclusions.InternetGateway"
+        },
+        "VpcEncryptionControl_ResourceExclusions_InternetGateway_State": {
+          "$ref": "UsEast1Srcvpc.VpcEncryptionControl.ResourceExclusions.InternetGateway.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_InternetGateway_StateMessage": {
+          "$ref": "UsEast1Srcvpc.VpcEncryptionControl.ResourceExclusions.InternetGateway.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_EgressOnlyInternetGateway": {
+          "$ref": "UsEast1Srcvpc.VpcEncryptionControl.ResourceExclusions.EgressOnlyInternetGateway"
+        },
+        "VpcEncryptionControl_ResourceExclusions_EgressOnlyInternetGateway_State": {
+          "$ref": "UsEast1Srcvpc.VpcEncryptionControl.ResourceExclusions.EgressOnlyInternetGateway.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_EgressOnlyInternetGateway_StateMessage": {
+          "$ref": "UsEast1Srcvpc.VpcEncryptionControl.ResourceExclusions.EgressOnlyInternetGateway.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_NatGateway": {
+          "$ref": "UsEast1Srcvpc.VpcEncryptionControl.ResourceExclusions.NatGateway"
+        },
+        "VpcEncryptionControl_ResourceExclusions_NatGateway_State": {
+          "$ref": "UsEast1Srcvpc.VpcEncryptionControl.ResourceExclusions.NatGateway.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_NatGateway_StateMessage": {
+          "$ref": "UsEast1Srcvpc.VpcEncryptionControl.ResourceExclusions.NatGateway.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VirtualPrivateGateway": {
+          "$ref": "UsEast1Srcvpc.VpcEncryptionControl.ResourceExclusions.VirtualPrivateGateway"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VirtualPrivateGateway_State": {
+          "$ref": "UsEast1Srcvpc.VpcEncryptionControl.ResourceExclusions.VirtualPrivateGateway.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VirtualPrivateGateway_StateMessage": {
+          "$ref": "UsEast1Srcvpc.VpcEncryptionControl.ResourceExclusions.VirtualPrivateGateway.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VpcPeering": {
+          "$ref": "UsEast1Srcvpc.VpcEncryptionControl.ResourceExclusions.VpcPeering"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VpcPeering_State": {
+          "$ref": "UsEast1Srcvpc.VpcEncryptionControl.ResourceExclusions.VpcPeering.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VpcPeering_StateMessage": {
+          "$ref": "UsEast1Srcvpc.VpcEncryptionControl.ResourceExclusions.VpcPeering.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_Lambda": {
+          "$ref": "UsEast1Srcvpc.VpcEncryptionControl.ResourceExclusions.Lambda"
+        },
+        "VpcEncryptionControl_ResourceExclusions_Lambda_State": {
+          "$ref": "UsEast1Srcvpc.VpcEncryptionControl.ResourceExclusions.Lambda.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_Lambda_StateMessage": {
+          "$ref": "UsEast1Srcvpc.VpcEncryptionControl.ResourceExclusions.Lambda.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VpcLattice": {
+          "$ref": "UsEast1Srcvpc.VpcEncryptionControl.ResourceExclusions.VpcLattice"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VpcLattice_State": {
+          "$ref": "UsEast1Srcvpc.VpcEncryptionControl.ResourceExclusions.VpcLattice.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VpcLattice_StateMessage": {
+          "$ref": "UsEast1Srcvpc.VpcEncryptionControl.ResourceExclusions.VpcLattice.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_ElasticFileSystem": {
+          "$ref": "UsEast1Srcvpc.VpcEncryptionControl.ResourceExclusions.ElasticFileSystem"
+        },
+        "VpcEncryptionControl_ResourceExclusions_ElasticFileSystem_State": {
+          "$ref": "UsEast1Srcvpc.VpcEncryptionControl.ResourceExclusions.ElasticFileSystem.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_ElasticFileSystem_StateMessage": {
+          "$ref": "UsEast1Srcvpc.VpcEncryptionControl.ResourceExclusions.ElasticFileSystem.StateMessage"
+        },
+        "CidrBlock": "10.0.0.0/16",
+        "EnableDnsSupport": true,
+        "EnableDnsHostnames": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "ResourcesVpc"
+          }
+        ],
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "UsWest1SrcdefaultRoute",
+      "kind": "AWS::EC2::Route",
+      "lexicon": "aws",
+      "attrs": {
+        "CidrBlock": {
+          "$ref": "UsWest1SrcdefaultRoute.CidrBlock"
+        },
+        "RouteTableId": {
+          "$ref": "UsWest1SrcrouteTable.RouteTableId"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "$ref": "UsWest1Srcigw.InternetGatewayId"
+        },
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-west-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "UsWest1Srcigw",
+      "kind": "AWS::EC2::InternetGateway",
+      "lexicon": "aws",
+      "attrs": {
+        "InternetGatewayId": {
+          "$ref": "UsWest1Srcigw.InternetGatewayId"
+        },
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-west-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "UsWest1SrcigwAttachment",
+      "kind": "AWS::EC2::VPCGatewayAttachment",
+      "lexicon": "aws",
+      "attrs": {
+        "AttachmentType": {
+          "$ref": "UsWest1SrcigwAttachment.AttachmentType"
+        },
+        "VpcId": {
+          "$ref": "UsWest1Srcvpc.VpcId"
+        },
+        "InternetGatewayId": {
+          "$ref": "UsWest1Srcigw.InternetGatewayId"
+        },
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-west-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "UsWest1SrcinstanceId",
+      "kind": "chant:output",
+      "lexicon": "aws",
+      "attrs": {
+        "sourceRef": {
+          "$ref": "UsWest1Srcserver.InstanceId"
+        },
+        "exportName": "ec2-multiregion-EC2-ls9fuhb522-us-west-1-InstanceId",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-west-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "UsWest1SrcnumEc2Running",
+      "kind": "chant:output",
+      "lexicon": "aws",
+      "attrs": {
+        "sourceRef": "1",
+        "exportName": "ec2-multiregion-EC2-ls9fuhb522-us-west-1-NUMEC2Running",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-west-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "UsWest1SrcprivateIp",
+      "kind": "chant:output",
+      "lexicon": "aws",
+      "attrs": {
+        "sourceRef": {
+          "$ref": "UsWest1Srcserver.PrivateIp"
+        },
+        "exportName": "ec2-multiregion-EC2-ls9fuhb522-us-west-1-PrivateIPOfInstance",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-west-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "UsWest1SrcpublicSubnet",
+      "kind": "AWS::EC2::Subnet",
+      "lexicon": "aws",
+      "attrs": {
+        "NetworkAclAssociationId": {
+          "$ref": "UsWest1SrcpublicSubnet.NetworkAclAssociationId"
+        },
+        "SubnetId": {
+          "$ref": "UsWest1SrcpublicSubnet.SubnetId"
+        },
+        "Ipv6CidrBlocks": {
+          "$ref": "UsWest1SrcpublicSubnet.Ipv6CidrBlocks"
+        },
+        "BlockPublicAccessStates": {
+          "$ref": "UsWest1SrcpublicSubnet.BlockPublicAccessStates"
+        },
+        "VpcId": {
+          "$ref": "UsWest1Srcvpc.VpcId"
+        },
+        "CidrBlock": "10.0.0.0/24",
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Public"
+          }
+        ],
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-west-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "UsWest1SrcpublicSubnetId",
+      "kind": "chant:output",
+      "lexicon": "aws",
+      "attrs": {
+        "sourceRef": {
+          "$ref": "UsWest1SrcpublicSubnet.SubnetId"
+        },
+        "exportName": "ec2-multiregion-EC2-ls9fuhb522-us-west-1-PublicSubnetId",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-west-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "UsWest1SrcrouteTable",
+      "kind": "AWS::EC2::RouteTable",
+      "lexicon": "aws",
+      "attrs": {
+        "RouteTableId": {
+          "$ref": "UsWest1SrcrouteTable.RouteTableId"
+        },
+        "VpcId": {
+          "$ref": "UsWest1Srcvpc.VpcId"
+        },
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-west-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "UsWest1Srcserver",
+      "kind": "AWS::EC2::Instance",
+      "lexicon": "aws",
+      "attrs": {
+        "InstanceId": {
+          "$ref": "UsWest1Srcserver.InstanceId"
+        },
+        "PrivateIp": {
+          "$ref": "UsWest1Srcserver.PrivateIp"
+        },
+        "PublicDnsName": {
+          "$ref": "UsWest1Srcserver.PublicDnsName"
+        },
+        "PublicIp": {
+          "$ref": "UsWest1Srcserver.PublicIp"
+        },
+        "PrivateDnsName": {
+          "$ref": "UsWest1Srcserver.PrivateDnsName"
+        },
+        "VpcId": {
+          "$ref": "UsWest1Srcserver.VpcId"
+        },
+        "State": {
+          "$ref": "UsWest1Srcserver.State"
+        },
+        "SubnetId": {
+          "$ref": "UsWest1SrcpublicSubnet.SubnetId"
+        },
+        "InstanceType": "t3.micro",
+        "ImageId": "ami-0f3f13f145e66a0a3",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "WebServerInstance"
+          }
+        ],
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-west-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "UsWest1SrcstackId",
+      "kind": "chant:output",
+      "lexicon": "aws",
+      "attrs": {
+        "sourceRef": {
+          "$intrinsic": true
+        },
+        "exportName": "ec2-multiregion-EC2-ls9fuhb522-us-west-1-StackId",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-west-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "UsWest1SrcsubnetRouteAssoc",
+      "kind": "AWS::EC2::SubnetRouteTableAssociation",
+      "lexicon": "aws",
+      "attrs": {
+        "Id": {
+          "$ref": "UsWest1SrcsubnetRouteAssoc.Id"
+        },
+        "RouteTableId": {
+          "$ref": "UsWest1SrcrouteTable.RouteTableId"
+        },
+        "SubnetId": {
+          "$ref": "UsWest1SrcpublicSubnet.SubnetId"
+        },
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-west-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "UsWest1Srcvpc",
+      "kind": "AWS::EC2::VPC",
+      "lexicon": "aws",
+      "attrs": {
+        "CidrBlockAssociations": {
+          "$ref": "UsWest1Srcvpc.CidrBlockAssociations"
+        },
+        "DefaultNetworkAcl": {
+          "$ref": "UsWest1Srcvpc.DefaultNetworkAcl"
+        },
+        "DefaultSecurityGroup": {
+          "$ref": "UsWest1Srcvpc.DefaultSecurityGroup"
+        },
+        "Ipv6CidrBlocks": {
+          "$ref": "UsWest1Srcvpc.Ipv6CidrBlocks"
+        },
+        "VpcId": {
+          "$ref": "UsWest1Srcvpc.VpcId"
+        },
+        "VpcEncryptionControl_VpcId": {
+          "$ref": "UsWest1Srcvpc.VpcEncryptionControl.VpcId"
+        },
+        "VpcEncryptionControl_VpcEncryptionControlId": {
+          "$ref": "UsWest1Srcvpc.VpcEncryptionControl.VpcEncryptionControlId"
+        },
+        "VpcEncryptionControl_State": {
+          "$ref": "UsWest1Srcvpc.VpcEncryptionControl.State"
+        },
+        "VpcEncryptionControl_StateMessage": {
+          "$ref": "UsWest1Srcvpc.VpcEncryptionControl.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions": {
+          "$ref": "UsWest1Srcvpc.VpcEncryptionControl.ResourceExclusions"
+        },
+        "VpcEncryptionControl_ResourceExclusions_InternetGateway": {
+          "$ref": "UsWest1Srcvpc.VpcEncryptionControl.ResourceExclusions.InternetGateway"
+        },
+        "VpcEncryptionControl_ResourceExclusions_InternetGateway_State": {
+          "$ref": "UsWest1Srcvpc.VpcEncryptionControl.ResourceExclusions.InternetGateway.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_InternetGateway_StateMessage": {
+          "$ref": "UsWest1Srcvpc.VpcEncryptionControl.ResourceExclusions.InternetGateway.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_EgressOnlyInternetGateway": {
+          "$ref": "UsWest1Srcvpc.VpcEncryptionControl.ResourceExclusions.EgressOnlyInternetGateway"
+        },
+        "VpcEncryptionControl_ResourceExclusions_EgressOnlyInternetGateway_State": {
+          "$ref": "UsWest1Srcvpc.VpcEncryptionControl.ResourceExclusions.EgressOnlyInternetGateway.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_EgressOnlyInternetGateway_StateMessage": {
+          "$ref": "UsWest1Srcvpc.VpcEncryptionControl.ResourceExclusions.EgressOnlyInternetGateway.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_NatGateway": {
+          "$ref": "UsWest1Srcvpc.VpcEncryptionControl.ResourceExclusions.NatGateway"
+        },
+        "VpcEncryptionControl_ResourceExclusions_NatGateway_State": {
+          "$ref": "UsWest1Srcvpc.VpcEncryptionControl.ResourceExclusions.NatGateway.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_NatGateway_StateMessage": {
+          "$ref": "UsWest1Srcvpc.VpcEncryptionControl.ResourceExclusions.NatGateway.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VirtualPrivateGateway": {
+          "$ref": "UsWest1Srcvpc.VpcEncryptionControl.ResourceExclusions.VirtualPrivateGateway"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VirtualPrivateGateway_State": {
+          "$ref": "UsWest1Srcvpc.VpcEncryptionControl.ResourceExclusions.VirtualPrivateGateway.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VirtualPrivateGateway_StateMessage": {
+          "$ref": "UsWest1Srcvpc.VpcEncryptionControl.ResourceExclusions.VirtualPrivateGateway.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VpcPeering": {
+          "$ref": "UsWest1Srcvpc.VpcEncryptionControl.ResourceExclusions.VpcPeering"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VpcPeering_State": {
+          "$ref": "UsWest1Srcvpc.VpcEncryptionControl.ResourceExclusions.VpcPeering.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VpcPeering_StateMessage": {
+          "$ref": "UsWest1Srcvpc.VpcEncryptionControl.ResourceExclusions.VpcPeering.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_Lambda": {
+          "$ref": "UsWest1Srcvpc.VpcEncryptionControl.ResourceExclusions.Lambda"
+        },
+        "VpcEncryptionControl_ResourceExclusions_Lambda_State": {
+          "$ref": "UsWest1Srcvpc.VpcEncryptionControl.ResourceExclusions.Lambda.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_Lambda_StateMessage": {
+          "$ref": "UsWest1Srcvpc.VpcEncryptionControl.ResourceExclusions.Lambda.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VpcLattice": {
+          "$ref": "UsWest1Srcvpc.VpcEncryptionControl.ResourceExclusions.VpcLattice"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VpcLattice_State": {
+          "$ref": "UsWest1Srcvpc.VpcEncryptionControl.ResourceExclusions.VpcLattice.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VpcLattice_StateMessage": {
+          "$ref": "UsWest1Srcvpc.VpcEncryptionControl.ResourceExclusions.VpcLattice.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_ElasticFileSystem": {
+          "$ref": "UsWest1Srcvpc.VpcEncryptionControl.ResourceExclusions.ElasticFileSystem"
+        },
+        "VpcEncryptionControl_ResourceExclusions_ElasticFileSystem_State": {
+          "$ref": "UsWest1Srcvpc.VpcEncryptionControl.ResourceExclusions.ElasticFileSystem.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_ElasticFileSystem_StateMessage": {
+          "$ref": "UsWest1Srcvpc.VpcEncryptionControl.ResourceExclusions.ElasticFileSystem.StateMessage"
+        },
+        "CidrBlock": "10.0.0.0/16",
+        "EnableDnsSupport": true,
+        "EnableDnsHostnames": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "ResourcesVpc"
+          }
+        ],
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-west-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "UsWest1SrcvpcId",
+      "kind": "chant:output",
+      "lexicon": "aws",
+      "attrs": {
+        "sourceRef": {
+          "$ref": "UsWest1Srcvpc.VpcId"
+        },
+        "exportName": "ec2-multiregion-EC2-ls9fuhb522-us-west-1-VpcId",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-west-1/src/estate.ts"
+      }
+    },
+    {
+      "id": "UsWest2SrcdefaultRoute",
+      "kind": "AWS::EC2::Route",
+      "lexicon": "aws",
+      "attrs": {
+        "CidrBlock": {
+          "$ref": "UsWest2SrcdefaultRoute.CidrBlock"
+        },
+        "RouteTableId": {
+          "$ref": "UsWest2SrcrouteTable.RouteTableId"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "$ref": "UsWest2Srcigw.InternetGatewayId"
+        },
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-west-2/src/estate.ts"
+      }
+    },
+    {
+      "id": "UsWest2Srcigw",
+      "kind": "AWS::EC2::InternetGateway",
+      "lexicon": "aws",
+      "attrs": {
+        "InternetGatewayId": {
+          "$ref": "UsWest2Srcigw.InternetGatewayId"
+        },
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-west-2/src/estate.ts"
+      }
+    },
+    {
+      "id": "UsWest2SrcigwAttachment",
+      "kind": "AWS::EC2::VPCGatewayAttachment",
+      "lexicon": "aws",
+      "attrs": {
+        "AttachmentType": {
+          "$ref": "UsWest2SrcigwAttachment.AttachmentType"
+        },
+        "VpcId": {
+          "$ref": "UsWest2Srcvpc.VpcId"
+        },
+        "InternetGatewayId": {
+          "$ref": "UsWest2Srcigw.InternetGatewayId"
+        },
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-west-2/src/estate.ts"
+      }
+    },
+    {
+      "id": "UsWest2SrcinstanceId",
+      "kind": "chant:output",
+      "lexicon": "aws",
+      "attrs": {
+        "sourceRef": {
+          "$ref": "UsWest2Srcserver.InstanceId"
+        },
+        "exportName": "ec2-multiregion-EC2-ls9fuhb522-us-west-2-InstanceId",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-west-2/src/estate.ts"
+      }
+    },
+    {
+      "id": "UsWest2SrcnumEc2Running",
+      "kind": "chant:output",
+      "lexicon": "aws",
+      "attrs": {
+        "sourceRef": "1",
+        "exportName": "ec2-multiregion-EC2-ls9fuhb522-us-west-2-NUMEC2Running",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-west-2/src/estate.ts"
+      }
+    },
+    {
+      "id": "UsWest2SrcprivateIp",
+      "kind": "chant:output",
+      "lexicon": "aws",
+      "attrs": {
+        "sourceRef": {
+          "$ref": "UsWest2Srcserver.PrivateIp"
+        },
+        "exportName": "ec2-multiregion-EC2-ls9fuhb522-us-west-2-PrivateIPOfInstance",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-west-2/src/estate.ts"
+      }
+    },
+    {
+      "id": "UsWest2SrcpublicSubnet",
+      "kind": "AWS::EC2::Subnet",
+      "lexicon": "aws",
+      "attrs": {
+        "NetworkAclAssociationId": {
+          "$ref": "UsWest2SrcpublicSubnet.NetworkAclAssociationId"
+        },
+        "SubnetId": {
+          "$ref": "UsWest2SrcpublicSubnet.SubnetId"
+        },
+        "Ipv6CidrBlocks": {
+          "$ref": "UsWest2SrcpublicSubnet.Ipv6CidrBlocks"
+        },
+        "BlockPublicAccessStates": {
+          "$ref": "UsWest2SrcpublicSubnet.BlockPublicAccessStates"
+        },
+        "VpcId": {
+          "$ref": "UsWest2Srcvpc.VpcId"
+        },
+        "CidrBlock": "10.0.0.0/24",
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Public"
+          }
+        ],
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-west-2/src/estate.ts"
+      }
+    },
+    {
+      "id": "UsWest2SrcpublicSubnetId",
+      "kind": "chant:output",
+      "lexicon": "aws",
+      "attrs": {
+        "sourceRef": {
+          "$ref": "UsWest2SrcpublicSubnet.SubnetId"
+        },
+        "exportName": "ec2-multiregion-EC2-ls9fuhb522-us-west-2-PublicSubnetId",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-west-2/src/estate.ts"
+      }
+    },
+    {
+      "id": "UsWest2SrcrouteTable",
+      "kind": "AWS::EC2::RouteTable",
+      "lexicon": "aws",
+      "attrs": {
+        "RouteTableId": {
+          "$ref": "UsWest2SrcrouteTable.RouteTableId"
+        },
+        "VpcId": {
+          "$ref": "UsWest2Srcvpc.VpcId"
+        },
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-west-2/src/estate.ts"
+      }
+    },
+    {
+      "id": "UsWest2Srcserver",
+      "kind": "AWS::EC2::Instance",
+      "lexicon": "aws",
+      "attrs": {
+        "InstanceId": {
+          "$ref": "UsWest2Srcserver.InstanceId"
+        },
+        "PrivateIp": {
+          "$ref": "UsWest2Srcserver.PrivateIp"
+        },
+        "PublicDnsName": {
+          "$ref": "UsWest2Srcserver.PublicDnsName"
+        },
+        "PublicIp": {
+          "$ref": "UsWest2Srcserver.PublicIp"
+        },
+        "PrivateDnsName": {
+          "$ref": "UsWest2Srcserver.PrivateDnsName"
+        },
+        "VpcId": {
+          "$ref": "UsWest2Srcserver.VpcId"
+        },
+        "State": {
+          "$ref": "UsWest2Srcserver.State"
+        },
+        "SubnetId": {
+          "$ref": "UsWest2SrcpublicSubnet.SubnetId"
+        },
+        "InstanceType": "t3.micro",
+        "ImageId": "ami-0f3f13f145e66a0a3",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "WebServerInstance"
+          }
+        ],
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-west-2/src/estate.ts"
+      }
+    },
+    {
+      "id": "UsWest2SrcstackId",
+      "kind": "chant:output",
+      "lexicon": "aws",
+      "attrs": {
+        "sourceRef": {
+          "$intrinsic": true
+        },
+        "exportName": "ec2-multiregion-EC2-ls9fuhb522-us-west-2-StackId",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-west-2/src/estate.ts"
+      }
+    },
+    {
+      "id": "UsWest2SrcsubnetRouteAssoc",
+      "kind": "AWS::EC2::SubnetRouteTableAssociation",
+      "lexicon": "aws",
+      "attrs": {
+        "Id": {
+          "$ref": "UsWest2SrcsubnetRouteAssoc.Id"
+        },
+        "RouteTableId": {
+          "$ref": "UsWest2SrcrouteTable.RouteTableId"
+        },
+        "SubnetId": {
+          "$ref": "UsWest2SrcpublicSubnet.SubnetId"
+        },
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-west-2/src/estate.ts"
+      }
+    },
+    {
+      "id": "UsWest2Srcvpc",
+      "kind": "AWS::EC2::VPC",
+      "lexicon": "aws",
+      "attrs": {
+        "CidrBlockAssociations": {
+          "$ref": "UsWest2Srcvpc.CidrBlockAssociations"
+        },
+        "DefaultNetworkAcl": {
+          "$ref": "UsWest2Srcvpc.DefaultNetworkAcl"
+        },
+        "DefaultSecurityGroup": {
+          "$ref": "UsWest2Srcvpc.DefaultSecurityGroup"
+        },
+        "Ipv6CidrBlocks": {
+          "$ref": "UsWest2Srcvpc.Ipv6CidrBlocks"
+        },
+        "VpcId": {
+          "$ref": "UsWest2Srcvpc.VpcId"
+        },
+        "VpcEncryptionControl_VpcId": {
+          "$ref": "UsWest2Srcvpc.VpcEncryptionControl.VpcId"
+        },
+        "VpcEncryptionControl_VpcEncryptionControlId": {
+          "$ref": "UsWest2Srcvpc.VpcEncryptionControl.VpcEncryptionControlId"
+        },
+        "VpcEncryptionControl_State": {
+          "$ref": "UsWest2Srcvpc.VpcEncryptionControl.State"
+        },
+        "VpcEncryptionControl_StateMessage": {
+          "$ref": "UsWest2Srcvpc.VpcEncryptionControl.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions": {
+          "$ref": "UsWest2Srcvpc.VpcEncryptionControl.ResourceExclusions"
+        },
+        "VpcEncryptionControl_ResourceExclusions_InternetGateway": {
+          "$ref": "UsWest2Srcvpc.VpcEncryptionControl.ResourceExclusions.InternetGateway"
+        },
+        "VpcEncryptionControl_ResourceExclusions_InternetGateway_State": {
+          "$ref": "UsWest2Srcvpc.VpcEncryptionControl.ResourceExclusions.InternetGateway.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_InternetGateway_StateMessage": {
+          "$ref": "UsWest2Srcvpc.VpcEncryptionControl.ResourceExclusions.InternetGateway.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_EgressOnlyInternetGateway": {
+          "$ref": "UsWest2Srcvpc.VpcEncryptionControl.ResourceExclusions.EgressOnlyInternetGateway"
+        },
+        "VpcEncryptionControl_ResourceExclusions_EgressOnlyInternetGateway_State": {
+          "$ref": "UsWest2Srcvpc.VpcEncryptionControl.ResourceExclusions.EgressOnlyInternetGateway.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_EgressOnlyInternetGateway_StateMessage": {
+          "$ref": "UsWest2Srcvpc.VpcEncryptionControl.ResourceExclusions.EgressOnlyInternetGateway.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_NatGateway": {
+          "$ref": "UsWest2Srcvpc.VpcEncryptionControl.ResourceExclusions.NatGateway"
+        },
+        "VpcEncryptionControl_ResourceExclusions_NatGateway_State": {
+          "$ref": "UsWest2Srcvpc.VpcEncryptionControl.ResourceExclusions.NatGateway.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_NatGateway_StateMessage": {
+          "$ref": "UsWest2Srcvpc.VpcEncryptionControl.ResourceExclusions.NatGateway.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VirtualPrivateGateway": {
+          "$ref": "UsWest2Srcvpc.VpcEncryptionControl.ResourceExclusions.VirtualPrivateGateway"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VirtualPrivateGateway_State": {
+          "$ref": "UsWest2Srcvpc.VpcEncryptionControl.ResourceExclusions.VirtualPrivateGateway.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VirtualPrivateGateway_StateMessage": {
+          "$ref": "UsWest2Srcvpc.VpcEncryptionControl.ResourceExclusions.VirtualPrivateGateway.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VpcPeering": {
+          "$ref": "UsWest2Srcvpc.VpcEncryptionControl.ResourceExclusions.VpcPeering"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VpcPeering_State": {
+          "$ref": "UsWest2Srcvpc.VpcEncryptionControl.ResourceExclusions.VpcPeering.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VpcPeering_StateMessage": {
+          "$ref": "UsWest2Srcvpc.VpcEncryptionControl.ResourceExclusions.VpcPeering.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_Lambda": {
+          "$ref": "UsWest2Srcvpc.VpcEncryptionControl.ResourceExclusions.Lambda"
+        },
+        "VpcEncryptionControl_ResourceExclusions_Lambda_State": {
+          "$ref": "UsWest2Srcvpc.VpcEncryptionControl.ResourceExclusions.Lambda.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_Lambda_StateMessage": {
+          "$ref": "UsWest2Srcvpc.VpcEncryptionControl.ResourceExclusions.Lambda.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VpcLattice": {
+          "$ref": "UsWest2Srcvpc.VpcEncryptionControl.ResourceExclusions.VpcLattice"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VpcLattice_State": {
+          "$ref": "UsWest2Srcvpc.VpcEncryptionControl.ResourceExclusions.VpcLattice.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VpcLattice_StateMessage": {
+          "$ref": "UsWest2Srcvpc.VpcEncryptionControl.ResourceExclusions.VpcLattice.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_ElasticFileSystem": {
+          "$ref": "UsWest2Srcvpc.VpcEncryptionControl.ResourceExclusions.ElasticFileSystem"
+        },
+        "VpcEncryptionControl_ResourceExclusions_ElasticFileSystem_State": {
+          "$ref": "UsWest2Srcvpc.VpcEncryptionControl.ResourceExclusions.ElasticFileSystem.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_ElasticFileSystem_StateMessage": {
+          "$ref": "UsWest2Srcvpc.VpcEncryptionControl.ResourceExclusions.ElasticFileSystem.StateMessage"
+        },
+        "CidrBlock": "10.0.0.0/16",
+        "EnableDnsSupport": true,
+        "EnableDnsHostnames": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "ResourcesVpc"
+          }
+        ],
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-west-2/src/estate.ts"
+      }
+    },
+    {
+      "id": "UsWest2SrcvpcId",
+      "kind": "chant:output",
+      "lexicon": "aws",
+      "attrs": {
+        "sourceRef": {
+          "$ref": "UsWest2Srcvpc.VpcId"
+        },
+        "exportName": "ec2-multiregion-EC2-ls9fuhb522-us-west-2-VpcId",
+        "_status": "accent"
+      },
+      "sourceLoc": {
+        "file": "us-west-2/src/estate.ts"
+      }
+    },
+    {
+      "id": "webSecurityGroup",
+      "kind": "AWS::EC2::SecurityGroup",
+      "lexicon": "aws",
+      "attrs": {
+        "Id": {
+          "$ref": "webSecurityGroup.Id"
+        },
+        "GroupId": {
+          "$ref": "webSecurityGroup.GroupId"
+        },
+        "GroupDescription": "Allow specific inbound traffic",
+        "VpcId": {
+          "$ref": "UsEast1Srcvpc.VpcId"
+        },
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 22,
+            "ToPort": 22,
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow SSH access"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 80,
+            "ToPort": 80,
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow HTTP access"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 443,
+            "ToPort": 443,
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow HTTPS access"
+          }
+        ],
+        "_status": "good"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      },
+      "physicalId": "sg-9694552700ec98ce0"
+    },
+    {
+      "id": "webServer",
+      "kind": "AWS::EC2::Instance",
+      "lexicon": "aws",
+      "attrs": {
+        "InstanceId": {
+          "$ref": "webServer.InstanceId"
+        },
+        "PrivateIp": {
+          "$ref": "webServer.PrivateIp"
+        },
+        "PublicDnsName": {
+          "$ref": "webServer.PublicDnsName"
+        },
+        "PublicIp": {
+          "$ref": "webServer.PublicIp"
+        },
+        "PrivateDnsName": {
+          "$ref": "webServer.PrivateDnsName"
+        },
+        "VpcId": {
+          "$ref": "webServer.VpcId"
+        },
+        "State": {
+          "$ref": "webServer.State"
+        },
+        "SubnetId": {
+          "$ref": "UsEast1SrcpublicSubnet.SubnetId"
+        },
+        "SecurityGroupIds": [
+          {
+            "$ref": "webSecurityGroup.GroupId"
+          }
+        ],
+        "InstanceType": "t3.micro",
+        "ImageId": "ami-0f3f13f145e66a0a3",
+        "IamInstanceProfile": {
+          "$ref": "instanceProfile"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "WebServerInstance"
+          }
+        ],
+        "_status": "good"
+      },
+      "sourceLoc": {
+        "file": "us-east-1/src/estate.ts"
+      },
+      "physicalId": "i-fa2a7f7fcac4421bb"
+    }
+  ],
+  "edges": [
+    {
+      "from": "defaultVpcServer",
+      "to": "defaultSubnetId1",
+      "kind": "ref",
+      "viaAttr": "SubnetId"
+    },
+    {
+      "from": "expDefaultSubnet1",
+      "to": "defaultSubnetId1",
+      "kind": "ref",
+      "viaAttr": "sourceRef"
+    },
+    {
+      "from": "expDefaultSubnet2",
+      "to": "defaultSubnetId2",
+      "kind": "ref",
+      "viaAttr": "sourceRef"
+    },
+    {
+      "from": "expDefaultVpcId",
+      "to": "defaultVpcId",
+      "kind": "ref",
+      "viaAttr": "sourceRef"
+    },
+    {
+      "from": "expDefaultVpcInstanceId",
+      "to": "defaultVpcServer",
+      "kind": "ref",
+      "viaAttr": "sourceRef"
+    },
+    {
+      "from": "expDefaultVpcInstanceIp",
+      "to": "defaultVpcServer",
+      "kind": "ref",
+      "viaAttr": "sourceRef"
+    },
+    {
+      "from": "expInstanceId",
+      "to": "webServer",
+      "kind": "ref",
+      "viaAttr": "sourceRef"
+    },
+    {
+      "from": "expInstanceProfileName",
+      "to": "instanceProfile",
+      "kind": "ref",
+      "viaAttr": "sourceRef"
+    },
+    {
+      "from": "expLaunchTemplateInstanceId",
+      "to": "launchTemplateServer",
+      "kind": "ref",
+      "viaAttr": "sourceRef"
+    },
+    {
+      "from": "expLtIp",
+      "to": "launchTemplateServer",
+      "kind": "ref",
+      "viaAttr": "sourceRef"
+    },
+    {
+      "from": "expPrivateInstanceId",
+      "to": "privateServer",
+      "kind": "ref",
+      "viaAttr": "sourceRef"
+    },
+    {
+      "from": "expPrivateInstanceIp",
+      "to": "privateServer",
+      "kind": "ref",
+      "viaAttr": "sourceRef"
+    },
+    {
+      "from": "expPublicSubnetId",
+      "to": "UsEast1SrcpublicSubnet",
+      "kind": "ref",
+      "viaAttr": "sourceRef"
+    },
+    {
+      "from": "expRoleName",
+      "to": "instanceRole",
+      "kind": "ref",
+      "viaAttr": "sourceRef"
+    },
+    {
+      "from": "expSecurityGroupId",
+      "to": "webSecurityGroup",
+      "kind": "ref",
+      "viaAttr": "sourceRef"
+    },
+    {
+      "from": "expUnusedSecurityGroupId",
+      "to": "unusedSecurityGroup",
+      "kind": "ref",
+      "viaAttr": "sourceRef"
+    },
+    {
+      "from": "expVpcId",
+      "to": "UsEast1Srcvpc",
+      "kind": "ref",
+      "viaAttr": "sourceRef"
+    },
+    {
+      "from": "expWebIp",
+      "to": "webServer",
+      "kind": "ref",
+      "viaAttr": "sourceRef"
+    },
+    {
+      "from": "instanceProfile",
+      "to": "instanceRole",
+      "kind": "ref",
+      "viaAttr": "Roles"
+    },
+    {
+      "from": "launchTemplateServer",
+      "to": "launchTemplate",
+      "kind": "ref",
+      "viaAttr": "LaunchTemplate"
+    },
+    {
+      "from": "launchTemplateServer",
+      "to": "UsEast1SrcpublicSubnet",
+      "kind": "ref",
+      "viaAttr": "SubnetId"
+    },
+    {
+      "from": "launchTemplate",
+      "to": "webSecurityGroup",
+      "kind": "ref",
+      "viaAttr": "LaunchTemplateData"
+    },
+    {
+      "from": "privateServer",
+      "to": "privateSubnet",
+      "kind": "ref",
+      "viaAttr": "SubnetId"
+    },
+    {
+      "from": "privateSubnet",
+      "to": "UsEast1Srcvpc",
+      "kind": "ref",
+      "viaAttr": "VpcId"
+    },
+    {
+      "from": "publicDefaultRoute",
+      "to": "publicRouteTable",
+      "kind": "ref",
+      "viaAttr": "RouteTableId"
+    },
+    {
+      "from": "publicDefaultRoute",
+      "to": "UsEast1Srcigw",
+      "kind": "ref",
+      "viaAttr": "GatewayId"
+    },
+    {
+      "from": "publicRouteTable",
+      "to": "UsEast1Srcvpc",
+      "kind": "ref",
+      "viaAttr": "VpcId"
+    },
+    {
+      "from": "publicSubnetRouteAssoc",
+      "to": "publicRouteTable",
+      "kind": "ref",
+      "viaAttr": "RouteTableId"
+    },
+    {
+      "from": "publicSubnetRouteAssoc",
+      "to": "UsEast1SrcpublicSubnet",
+      "kind": "ref",
+      "viaAttr": "SubnetId"
+    },
+    {
+      "from": "readonlyRole",
+      "to": "s3VectorsReadOnly",
+      "kind": "ref",
+      "viaAttr": "ManagedPolicyArns"
+    },
+    {
+      "from": "unusedSecurityGroup",
+      "to": "UsEast1Srcvpc",
+      "kind": "ref",
+      "viaAttr": "VpcId"
+    },
+    {
+      "from": "UsEast1SrcigwAttachment",
+      "to": "UsEast1Srcigw",
+      "kind": "ref",
+      "viaAttr": "InternetGatewayId"
+    },
+    {
+      "from": "UsEast1SrcigwAttachment",
+      "to": "UsEast1Srcvpc",
+      "kind": "ref",
+      "viaAttr": "VpcId"
+    },
+    {
+      "from": "UsEast1SrcpublicSubnet",
+      "to": "UsEast1Srcvpc",
+      "kind": "ref",
+      "viaAttr": "VpcId"
+    },
+    {
+      "from": "UsWest1SrcdefaultRoute",
+      "to": "UsWest1Srcigw",
+      "kind": "ref",
+      "viaAttr": "GatewayId"
+    },
+    {
+      "from": "UsWest1SrcdefaultRoute",
+      "to": "UsWest1SrcrouteTable",
+      "kind": "ref",
+      "viaAttr": "RouteTableId"
+    },
+    {
+      "from": "UsWest1SrcigwAttachment",
+      "to": "UsWest1Srcigw",
+      "kind": "ref",
+      "viaAttr": "InternetGatewayId"
+    },
+    {
+      "from": "UsWest1SrcigwAttachment",
+      "to": "UsWest1Srcvpc",
+      "kind": "ref",
+      "viaAttr": "VpcId"
+    },
+    {
+      "from": "UsWest1SrcinstanceId",
+      "to": "UsWest1Srcserver",
+      "kind": "ref",
+      "viaAttr": "sourceRef"
+    },
+    {
+      "from": "UsWest1SrcprivateIp",
+      "to": "UsWest1Srcserver",
+      "kind": "ref",
+      "viaAttr": "sourceRef"
+    },
+    {
+      "from": "UsWest1SrcpublicSubnetId",
+      "to": "UsWest1SrcpublicSubnet",
+      "kind": "ref",
+      "viaAttr": "sourceRef"
+    },
+    {
+      "from": "UsWest1SrcpublicSubnet",
+      "to": "UsWest1Srcvpc",
+      "kind": "ref",
+      "viaAttr": "VpcId"
+    },
+    {
+      "from": "UsWest1SrcrouteTable",
+      "to": "UsWest1Srcvpc",
+      "kind": "ref",
+      "viaAttr": "VpcId"
+    },
+    {
+      "from": "UsWest1Srcserver",
+      "to": "UsWest1SrcpublicSubnet",
+      "kind": "ref",
+      "viaAttr": "SubnetId"
+    },
+    {
+      "from": "UsWest1SrcsubnetRouteAssoc",
+      "to": "UsWest1SrcpublicSubnet",
+      "kind": "ref",
+      "viaAttr": "SubnetId"
+    },
+    {
+      "from": "UsWest1SrcsubnetRouteAssoc",
+      "to": "UsWest1SrcrouteTable",
+      "kind": "ref",
+      "viaAttr": "RouteTableId"
+    },
+    {
+      "from": "UsWest1SrcvpcId",
+      "to": "UsWest1Srcvpc",
+      "kind": "ref",
+      "viaAttr": "sourceRef"
+    },
+    {
+      "from": "UsWest2SrcdefaultRoute",
+      "to": "UsWest2Srcigw",
+      "kind": "ref",
+      "viaAttr": "GatewayId"
+    },
+    {
+      "from": "UsWest2SrcdefaultRoute",
+      "to": "UsWest2SrcrouteTable",
+      "kind": "ref",
+      "viaAttr": "RouteTableId"
+    },
+    {
+      "from": "UsWest2SrcigwAttachment",
+      "to": "UsWest2Srcigw",
+      "kind": "ref",
+      "viaAttr": "InternetGatewayId"
+    },
+    {
+      "from": "UsWest2SrcigwAttachment",
+      "to": "UsWest2Srcvpc",
+      "kind": "ref",
+      "viaAttr": "VpcId"
+    },
+    {
+      "from": "UsWest2SrcinstanceId",
+      "to": "UsWest2Srcserver",
+      "kind": "ref",
+      "viaAttr": "sourceRef"
+    },
+    {
+      "from": "UsWest2SrcprivateIp",
+      "to": "UsWest2Srcserver",
+      "kind": "ref",
+      "viaAttr": "sourceRef"
+    },
+    {
+      "from": "UsWest2SrcpublicSubnetId",
+      "to": "UsWest2SrcpublicSubnet",
+      "kind": "ref",
+      "viaAttr": "sourceRef"
+    },
+    {
+      "from": "UsWest2SrcpublicSubnet",
+      "to": "UsWest2Srcvpc",
+      "kind": "ref",
+      "viaAttr": "VpcId"
+    },
+    {
+      "from": "UsWest2SrcrouteTable",
+      "to": "UsWest2Srcvpc",
+      "kind": "ref",
+      "viaAttr": "VpcId"
+    },
+    {
+      "from": "UsWest2Srcserver",
+      "to": "UsWest2SrcpublicSubnet",
+      "kind": "ref",
+      "viaAttr": "SubnetId"
+    },
+    {
+      "from": "UsWest2SrcsubnetRouteAssoc",
+      "to": "UsWest2SrcpublicSubnet",
+      "kind": "ref",
+      "viaAttr": "SubnetId"
+    },
+    {
+      "from": "UsWest2SrcsubnetRouteAssoc",
+      "to": "UsWest2SrcrouteTable",
+      "kind": "ref",
+      "viaAttr": "RouteTableId"
+    },
+    {
+      "from": "UsWest2SrcvpcId",
+      "to": "UsWest2Srcvpc",
+      "kind": "ref",
+      "viaAttr": "sourceRef"
+    },
+    {
+      "from": "webSecurityGroup",
+      "to": "UsEast1Srcvpc",
+      "kind": "ref",
+      "viaAttr": "VpcId"
+    },
+    {
+      "from": "webServer",
+      "to": "instanceProfile",
+      "kind": "ref",
+      "viaAttr": "IamInstanceProfile"
+    },
+    {
+      "from": "webServer",
+      "to": "UsEast1SrcpublicSubnet",
+      "kind": "ref",
+      "viaAttr": "SubnetId"
+    },
+    {
+      "from": "webServer",
+      "to": "webSecurityGroup",
+      "kind": "ref",
+      "viaAttr": "SecurityGroupIds"
+    }
+  ],
+  "groups": {
+    "byLexicon": {
+      "aws": [
+        "UsEast1Srcigw",
+        "UsEast1SrcigwAttachment",
+        "UsEast1SrcpublicSubnet",
+        "UsEast1Srcvpc",
+        "UsWest1SrcdefaultRoute",
+        "UsWest1Srcigw",
+        "UsWest1SrcigwAttachment",
+        "UsWest1SrcinstanceId",
+        "UsWest1SrcnumEc2Running",
+        "UsWest1SrcprivateIp",
+        "UsWest1SrcpublicSubnet",
+        "UsWest1SrcpublicSubnetId",
+        "UsWest1SrcrouteTable",
+        "UsWest1Srcserver",
+        "UsWest1SrcstackId",
+        "UsWest1SrcsubnetRouteAssoc",
+        "UsWest1Srcvpc",
+        "UsWest1SrcvpcId",
+        "UsWest2SrcdefaultRoute",
+        "UsWest2Srcigw",
+        "UsWest2SrcigwAttachment",
+        "UsWest2SrcinstanceId",
+        "UsWest2SrcnumEc2Running",
+        "UsWest2SrcprivateIp",
+        "UsWest2SrcpublicSubnet",
+        "UsWest2SrcpublicSubnetId",
+        "UsWest2SrcrouteTable",
+        "UsWest2Srcserver",
+        "UsWest2SrcstackId",
+        "UsWest2SrcsubnetRouteAssoc",
+        "UsWest2Srcvpc",
+        "UsWest2SrcvpcId",
+        "adminRole",
+        "defaultSubnetId1",
+        "defaultSubnetId2",
+        "defaultVpcId",
+        "defaultVpcServer",
+        "expAmiName",
+        "expDefaultSubnet1",
+        "expDefaultSubnet2",
+        "expDefaultVpcId",
+        "expDefaultVpcInstanceId",
+        "expDefaultVpcInstanceIp",
+        "expHttpPort",
+        "expHttpsPort",
+        "expInstanceId",
+        "expInstanceProfileName",
+        "expLaunchTemplateInstanceId",
+        "expLtIp",
+        "expNumEc2",
+        "expNumSubnets",
+        "expPrivateInstanceId",
+        "expPrivateInstanceIp",
+        "expPublicSubnetId",
+        "expRestrictedAttr",
+        "expRestrictedMeta",
+        "expRoleName",
+        "expSecurityGroupId",
+        "expSshPort",
+        "expStackId",
+        "expStackName",
+        "expUnusedSecurityGroupId",
+        "expVpcId",
+        "expWebIp",
+        "instanceProfile",
+        "instanceRole",
+        "judgeRole",
+        "launchTemplate",
+        "launchTemplateServer",
+        "privateServer",
+        "privateSubnet",
+        "publicDefaultRoute",
+        "publicRouteTable",
+        "publicSubnetRouteAssoc",
+        "readonlyRole",
+        "s3VectorsReadOnly",
+        "unusedSecurityGroup",
+        "webSecurityGroup",
+        "webServer"
+      ]
+    },
+    "byStack": {
+      "aws": [
+        "UsEast1Srcigw",
+        "UsEast1SrcigwAttachment",
+        "UsEast1SrcpublicSubnet",
+        "UsEast1Srcvpc",
+        "UsWest1SrcdefaultRoute",
+        "UsWest1Srcigw",
+        "UsWest1SrcigwAttachment",
+        "UsWest1SrcinstanceId",
+        "UsWest1SrcnumEc2Running",
+        "UsWest1SrcprivateIp",
+        "UsWest1SrcpublicSubnet",
+        "UsWest1SrcpublicSubnetId",
+        "UsWest1SrcrouteTable",
+        "UsWest1Srcserver",
+        "UsWest1SrcstackId",
+        "UsWest1SrcsubnetRouteAssoc",
+        "UsWest1Srcvpc",
+        "UsWest1SrcvpcId",
+        "UsWest2SrcdefaultRoute",
+        "UsWest2Srcigw",
+        "UsWest2SrcigwAttachment",
+        "UsWest2SrcinstanceId",
+        "UsWest2SrcnumEc2Running",
+        "UsWest2SrcprivateIp",
+        "UsWest2SrcpublicSubnet",
+        "UsWest2SrcpublicSubnetId",
+        "UsWest2SrcrouteTable",
+        "UsWest2Srcserver",
+        "UsWest2SrcstackId",
+        "UsWest2SrcsubnetRouteAssoc",
+        "UsWest2Srcvpc",
+        "UsWest2SrcvpcId",
+        "adminRole",
+        "defaultSubnetId1",
+        "defaultSubnetId2",
+        "defaultVpcId",
+        "defaultVpcServer",
+        "expAmiName",
+        "expDefaultSubnet1",
+        "expDefaultSubnet2",
+        "expDefaultVpcId",
+        "expDefaultVpcInstanceId",
+        "expDefaultVpcInstanceIp",
+        "expHttpPort",
+        "expHttpsPort",
+        "expInstanceId",
+        "expInstanceProfileName",
+        "expLaunchTemplateInstanceId",
+        "expLtIp",
+        "expNumEc2",
+        "expNumSubnets",
+        "expPrivateInstanceId",
+        "expPrivateInstanceIp",
+        "expPublicSubnetId",
+        "expRestrictedAttr",
+        "expRestrictedMeta",
+        "expRoleName",
+        "expSecurityGroupId",
+        "expSshPort",
+        "expStackId",
+        "expStackName",
+        "expUnusedSecurityGroupId",
+        "expVpcId",
+        "expWebIp",
+        "instanceProfile",
+        "instanceRole",
+        "judgeRole",
+        "launchTemplate",
+        "launchTemplateServer",
+        "privateServer",
+        "privateSubnet",
+        "publicDefaultRoute",
+        "publicRouteTable",
+        "publicSubnetRouteAssoc",
+        "readonlyRole",
+        "s3VectorsReadOnly",
+        "unusedSecurityGroup",
+        "webSecurityGroup",
+        "webServer"
+      ]
+    }
+  },
+  "imports": [
+    {
+      "name": "defaultSubnetId1",
+      "node": "defaultSubnetId1"
+    },
+    {
+      "name": "defaultSubnetId2",
+      "node": "defaultSubnetId2"
+    },
+    {
+      "name": "defaultVpcId",
+      "node": "defaultVpcId"
+    }
+  ]
+}

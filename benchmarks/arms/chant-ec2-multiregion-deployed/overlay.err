@@ -1,0 +1,4 @@
+[aws] ownership filter unavailable on describeResources (no tags from describe-stack-resources) — returning all; use `chant import --from <env> --owned` for ownership-filtered export
+[aws] ownership filter unavailable on describeResources (no tags from describe-stack-resources) — returning all; use `chant import --from <env> --owned` for ownership-filtered export
+[aws] ownership filter unavailable on describeResources (no tags from describe-stack-resources) — returning all; use `chant import --from <env> --owned` for ownership-filtered export
+[aws] ownership filter unavailable on describeResources (no tags from describe-stack-resources) — returning all; use `chant import --from <env> --owned` for ownership-filtered export
