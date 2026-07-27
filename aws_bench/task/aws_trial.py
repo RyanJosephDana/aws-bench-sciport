@@ -18,6 +18,7 @@ from harbor.models.trial.config import TrialConfig
 from harbor.models.trial.paths import TrialPaths
 from harbor.trial.single_step import SingleStepTrial
 
+from aws_bench import emulator
 from aws_bench.account_management.manager import AccountManager
 from aws_bench.dataset.models import RoleType, ScriptType
 from aws_bench.dataset.task_config import AwsBenchTask, ConcurrencyMode, PhaseScript
@@ -211,6 +212,10 @@ class AwsBenchSingleStepTrial(SingleStepTrial):
         tag = next(iter(self.config.account_mapping))
         cred_env["AWS_PROFILE"] = tag
         cred_env["AWS_DEFAULT_PROFILE"] = tag
+        if emulator.is_active():
+            # Point the container's AWS SDK/CLI traffic at Floci; the staged
+            # profiles above still supply the (placeholder) credentials.
+            cred_env.update(emulator.container_endpoint_env())
 
         try:
             yield cred_env
