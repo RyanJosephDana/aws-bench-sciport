@@ -18,7 +18,7 @@ def test_active_via_env():
 
 def test_static_credentials_shape():
     creds = emulator.static_credentials()
-    assert set(creds) == {"AccessKeyId", "SecretAccessKey", "SessionToken"}
+    assert set(creds) == {"AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_SESSION_TOKEN"}
 
 
 def test_account_mapping_single_account():
@@ -173,3 +173,31 @@ def test_claude_judge_end_to_end_with_stub_claude(tmp_path):
     )
     assert proc.returncode == 0, proc.stderr
     assert (verifier_dir / "reward.txt").read_text() == "1.0"
+
+
+def test_prime_process_env_forces_floci_endpoint(tmp_path):
+    env = {
+        "AWS_BENCH_EMULATOR": "floci",
+        "AWS_BENCH_CLAUDE_TOKEN_FILE": "/nonexistent",
+        "AWS_PROFILE": "real-profile",
+        "AWS_ACCESS_KEY_ID": "AKIAREALKEY",
+    }
+    with mock.patch.dict(os.environ, env, clear=True):
+        emulator.prime_process_env()
+        assert os.environ["AWS_ENDPOINT_URL"] == emulator.DEFAULT_HOST_ENDPOINT
+        assert os.environ["AWS_ACCESS_KEY_ID"] == emulator.ACCESS_KEY_ID
+        assert "AWS_PROFILE" not in os.environ
+
+
+def test_chain_assume_role_short_circuits():
+    from aws_bench.utils.credentials_provider import CredentialProvider
+
+    with mock.patch.dict(os.environ, {"AWS_BENCH_EMULATOR": "floci"}):
+        CredentialProvider.reset()
+        try:
+            creds = CredentialProvider.get().chain_assume_role(
+                account_id="000000000000", session_name="s"
+            )
+        finally:
+            CredentialProvider.reset()
+    assert creds == emulator.static_credentials()

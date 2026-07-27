@@ -71,15 +71,16 @@ def container_endpoint() -> str:
 
 
 def static_credentials() -> dict[str, str]:
-    """STS-shaped placeholder credentials for :func:`build_aws_credentials_file`.
+    """Placeholder credentials in the ``chain_assume_role`` return shape.
 
-    Matches the ``sts.assume_role`` response keys that
-    ``assumed_credentials_dict_to_credentials_env`` consumes.
+    ``assume_role_for_script`` / ``chain_assume_role`` return env-style keys
+    (``AWS_ACCESS_KEY_ID`` etc.) that ``build_aws_credentials_file`` and
+    ``env_credentials_dict_to_session`` consume directly.
     """
     return {
-        "AccessKeyId": ACCESS_KEY_ID,
-        "SecretAccessKey": SECRET_ACCESS_KEY,
-        "SessionToken": SESSION_TOKEN,
+        "AWS_ACCESS_KEY_ID": ACCESS_KEY_ID,
+        "AWS_SECRET_ACCESS_KEY": SECRET_ACCESS_KEY,
+        "AWS_SESSION_TOKEN": SESSION_TOKEN,
     }
 
 
@@ -133,7 +134,11 @@ def prime_process_env() -> None:
     """Export emulator-mode env into this process before agents/SDKs read it.
 
     Idempotent. Sets ``CLAUDE_CODE_OAUTH_TOKEN`` from the token file so
-    Harbor's claude-code agent can forward it into the agent container.
+    Harbor's claude-code agent can forward it into the agent container, and
+    forces the host AWS env (endpoint + placeholder credentials) so every
+    boto3 session in this process resolves to Floci — deliberately clobbering
+    any ambient real-AWS profile, so emulator mode can never touch a real
+    account.
     """
     if not is_active():
         return
@@ -141,6 +146,9 @@ def prime_process_env() -> None:
         token = claude_oauth_token()
         if token:
             os.environ["CLAUDE_CODE_OAUTH_TOKEN"] = token
+    os.environ.update(host_env())
+    os.environ.pop("AWS_PROFILE", None)
+    os.environ.pop("AWS_DEFAULT_PROFILE", None)
 
 
 #: Replacement verifier entrypoint for introspection tasks in emulator mode.
