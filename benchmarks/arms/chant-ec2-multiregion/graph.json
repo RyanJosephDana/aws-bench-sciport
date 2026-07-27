@@ -1,0 +1,1506 @@
+{
+  "nodes": [
+    {
+      "id": "defaultVpcServer",
+      "kind": "AWS::EC2::Instance",
+      "lexicon": "aws",
+      "attrs": {
+        "InstanceId": {
+          "$ref": "defaultVpcServer.InstanceId"
+        },
+        "PrivateIp": {
+          "$ref": "defaultVpcServer.PrivateIp"
+        },
+        "PublicDnsName": {
+          "$ref": "defaultVpcServer.PublicDnsName"
+        },
+        "PublicIp": {
+          "$ref": "defaultVpcServer.PublicIp"
+        },
+        "PrivateDnsName": {
+          "$ref": "defaultVpcServer.PrivateDnsName"
+        },
+        "VpcId": {
+          "$ref": "defaultVpcServer.VpcId"
+        },
+        "State": {
+          "$ref": "defaultVpcServer.State"
+        },
+        "InstanceType": "t3.micro",
+        "ImageId": "ami-0f3f13f145e66a0a3",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "MyEC2Instance"
+          },
+          {
+            "Key": "chant:placement",
+            "Value": "default-vpc-public-subnet"
+          }
+        ]
+      },
+      "sourceLoc": {
+        "file": "src/us-east-1.ts"
+      }
+    },
+    {
+      "id": "igw",
+      "kind": "AWS::EC2::InternetGateway",
+      "lexicon": "aws",
+      "attrs": {
+        "InternetGatewayId": {
+          "$ref": "igw.InternetGatewayId"
+        }
+      },
+      "sourceLoc": {
+        "file": "src/us-east-1.ts"
+      }
+    },
+    {
+      "id": "igwAttachment",
+      "kind": "AWS::EC2::VPCGatewayAttachment",
+      "lexicon": "aws",
+      "attrs": {
+        "AttachmentType": {
+          "$ref": "igwAttachment.AttachmentType"
+        },
+        "VpcId": {
+          "$ref": "vpc.VpcId"
+        },
+        "InternetGatewayId": {
+          "$ref": "igw.InternetGatewayId"
+        }
+      },
+      "sourceLoc": {
+        "file": "src/us-east-1.ts"
+      }
+    },
+    {
+      "id": "instanceProfile",
+      "kind": "AWS::IAM::InstanceProfile",
+      "lexicon": "aws",
+      "attrs": {
+        "Arn": {
+          "$ref": "instanceProfile.Arn"
+        },
+        "InstanceProfileName": {
+          "$intrinsic": true
+        },
+        "Roles": [
+          {
+            "$ref": "instanceRole"
+          }
+        ]
+      },
+      "sourceLoc": {
+        "file": "src/us-east-1.ts"
+      }
+    },
+    {
+      "id": "instanceRole",
+      "kind": "AWS::IAM::Role",
+      "lexicon": "aws",
+      "attrs": {
+        "Arn": {
+          "$ref": "instanceRole.Arn"
+        },
+        "RoleId": {
+          "$ref": "instanceRole.RoleId"
+        },
+        "RoleName": {
+          "$intrinsic": true
+        },
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ec2.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+        ],
+        "Policies": [
+          {
+            "PolicyName": {
+              "$intrinsic": true
+            },
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Deny",
+                  "Action": [
+                    "ec2:ModifyInstanceAttribute",
+                    "ec2:ModifyInstanceMetadataOptions"
+                  ],
+                  "Resource": "*"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "sourceLoc": {
+        "file": "src/us-east-1.ts"
+      }
+    },
+    {
+      "id": "launchTemplate",
+      "kind": "AWS::EC2::LaunchTemplate",
+      "lexicon": "aws",
+      "attrs": {
+        "DefaultVersionNumber": {
+          "$ref": "launchTemplate.DefaultVersionNumber"
+        },
+        "LaunchTemplateId": {
+          "$ref": "launchTemplate.LaunchTemplateId"
+        },
+        "LatestVersionNumber": {
+          "$ref": "launchTemplate.LatestVersionNumber"
+        },
+        "LaunchTemplateName": {
+          "$intrinsic": true
+        },
+        "LaunchTemplateData": {
+          "InstanceType": "t3.micro",
+          "ImageId": "ami-0f3f13f145e66a0a3",
+          "SecurityGroupIds": [
+            {
+              "$ref": "webSecurityGroup.GroupId"
+            }
+          ],
+          "BlockDeviceMappings": [
+            {
+              "DeviceName": "/dev/xvda",
+              "Ebs": {
+                "VolumeSize": 8,
+                "VolumeType": "gp3"
+              }
+            }
+          ],
+          "MetadataOptions": {
+            "HttpTokens": "required"
+          }
+        }
+      },
+      "sourceLoc": {
+        "file": "src/us-east-1.ts"
+      }
+    },
+    {
+      "id": "launchTemplateServer",
+      "kind": "AWS::EC2::Instance",
+      "lexicon": "aws",
+      "attrs": {
+        "InstanceId": {
+          "$ref": "launchTemplateServer.InstanceId"
+        },
+        "PrivateIp": {
+          "$ref": "launchTemplateServer.PrivateIp"
+        },
+        "PublicDnsName": {
+          "$ref": "launchTemplateServer.PublicDnsName"
+        },
+        "PublicIp": {
+          "$ref": "launchTemplateServer.PublicIp"
+        },
+        "PrivateDnsName": {
+          "$ref": "launchTemplateServer.PrivateDnsName"
+        },
+        "VpcId": {
+          "$ref": "launchTemplateServer.VpcId"
+        },
+        "State": {
+          "$ref": "launchTemplateServer.State"
+        },
+        "LaunchTemplate": {
+          "LaunchTemplateId": {
+            "$ref": "launchTemplate.LaunchTemplateId"
+          },
+          "Version": "1"
+        },
+        "SubnetId": {
+          "$ref": "publicSubnet.SubnetId"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "LaunchTemplateInstance"
+          }
+        ]
+      },
+      "sourceLoc": {
+        "file": "src/us-east-1.ts"
+      }
+    },
+    {
+      "id": "privateServer",
+      "kind": "AWS::EC2::Instance",
+      "lexicon": "aws",
+      "attrs": {
+        "InstanceId": {
+          "$ref": "privateServer.InstanceId"
+        },
+        "PrivateIp": {
+          "$ref": "privateServer.PrivateIp"
+        },
+        "PublicDnsName": {
+          "$ref": "privateServer.PublicDnsName"
+        },
+        "PublicIp": {
+          "$ref": "privateServer.PublicIp"
+        },
+        "PrivateDnsName": {
+          "$ref": "privateServer.PrivateDnsName"
+        },
+        "VpcId": {
+          "$ref": "privateServer.VpcId"
+        },
+        "State": {
+          "$ref": "privateServer.State"
+        },
+        "SubnetId": {
+          "$ref": "privateSubnet.SubnetId"
+        },
+        "InstanceType": "t3.micro",
+        "ImageId": "ami-0f3f13f145e66a0a3",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "PrivateInstance"
+          }
+        ]
+      },
+      "sourceLoc": {
+        "file": "src/us-east-1.ts"
+      }
+    },
+    {
+      "id": "privateSubnet",
+      "kind": "AWS::EC2::Subnet",
+      "lexicon": "aws",
+      "attrs": {
+        "NetworkAclAssociationId": {
+          "$ref": "privateSubnet.NetworkAclAssociationId"
+        },
+        "SubnetId": {
+          "$ref": "privateSubnet.SubnetId"
+        },
+        "Ipv6CidrBlocks": {
+          "$ref": "privateSubnet.Ipv6CidrBlocks"
+        },
+        "BlockPublicAccessStates": {
+          "$ref": "privateSubnet.BlockPublicAccessStates"
+        },
+        "VpcId": {
+          "$ref": "vpc.VpcId"
+        },
+        "CidrBlock": "10.0.1.0/24",
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Private"
+          }
+        ]
+      },
+      "sourceLoc": {
+        "file": "src/us-east-1.ts"
+      }
+    },
+    {
+      "id": "publicDefaultRoute",
+      "kind": "AWS::EC2::Route",
+      "lexicon": "aws",
+      "attrs": {
+        "CidrBlock": {
+          "$ref": "publicDefaultRoute.CidrBlock"
+        },
+        "RouteTableId": {
+          "$ref": "publicRouteTable.RouteTableId"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "$ref": "igw.InternetGatewayId"
+        }
+      },
+      "sourceLoc": {
+        "file": "src/us-east-1.ts"
+      }
+    },
+    {
+      "id": "publicRouteTable",
+      "kind": "AWS::EC2::RouteTable",
+      "lexicon": "aws",
+      "attrs": {
+        "RouteTableId": {
+          "$ref": "publicRouteTable.RouteTableId"
+        },
+        "VpcId": {
+          "$ref": "vpc.VpcId"
+        }
+      },
+      "sourceLoc": {
+        "file": "src/us-east-1.ts"
+      }
+    },
+    {
+      "id": "publicSubnet",
+      "kind": "AWS::EC2::Subnet",
+      "lexicon": "aws",
+      "attrs": {
+        "NetworkAclAssociationId": {
+          "$ref": "publicSubnet.NetworkAclAssociationId"
+        },
+        "SubnetId": {
+          "$ref": "publicSubnet.SubnetId"
+        },
+        "Ipv6CidrBlocks": {
+          "$ref": "publicSubnet.Ipv6CidrBlocks"
+        },
+        "BlockPublicAccessStates": {
+          "$ref": "publicSubnet.BlockPublicAccessStates"
+        },
+        "VpcId": {
+          "$ref": "vpc.VpcId"
+        },
+        "CidrBlock": "10.0.0.0/24",
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Public"
+          }
+        ]
+      },
+      "sourceLoc": {
+        "file": "src/us-east-1.ts"
+      }
+    },
+    {
+      "id": "publicSubnetRouteAssoc",
+      "kind": "AWS::EC2::SubnetRouteTableAssociation",
+      "lexicon": "aws",
+      "attrs": {
+        "Id": {
+          "$ref": "publicSubnetRouteAssoc.Id"
+        },
+        "RouteTableId": {
+          "$ref": "publicRouteTable.RouteTableId"
+        },
+        "SubnetId": {
+          "$ref": "publicSubnet.SubnetId"
+        }
+      },
+      "sourceLoc": {
+        "file": "src/us-east-1.ts"
+      }
+    },
+    {
+      "id": "unusedSecurityGroup",
+      "kind": "AWS::EC2::SecurityGroup",
+      "lexicon": "aws",
+      "attrs": {
+        "Id": {
+          "$ref": "unusedSecurityGroup.Id"
+        },
+        "GroupId": {
+          "$ref": "unusedSecurityGroup.GroupId"
+        },
+        "GroupDescription": "Unused security group",
+        "VpcId": {
+          "$ref": "vpc.VpcId"
+        }
+      },
+      "sourceLoc": {
+        "file": "src/us-east-1.ts"
+      }
+    },
+    {
+      "id": "vpc",
+      "kind": "AWS::EC2::VPC",
+      "lexicon": "aws",
+      "attrs": {
+        "CidrBlockAssociations": {
+          "$ref": "vpc.CidrBlockAssociations"
+        },
+        "DefaultNetworkAcl": {
+          "$ref": "vpc.DefaultNetworkAcl"
+        },
+        "DefaultSecurityGroup": {
+          "$ref": "vpc.DefaultSecurityGroup"
+        },
+        "Ipv6CidrBlocks": {
+          "$ref": "vpc.Ipv6CidrBlocks"
+        },
+        "VpcId": {
+          "$ref": "vpc.VpcId"
+        },
+        "VpcEncryptionControl_VpcId": {
+          "$ref": "vpc.VpcEncryptionControl.VpcId"
+        },
+        "VpcEncryptionControl_VpcEncryptionControlId": {
+          "$ref": "vpc.VpcEncryptionControl.VpcEncryptionControlId"
+        },
+        "VpcEncryptionControl_State": {
+          "$ref": "vpc.VpcEncryptionControl.State"
+        },
+        "VpcEncryptionControl_StateMessage": {
+          "$ref": "vpc.VpcEncryptionControl.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions": {
+          "$ref": "vpc.VpcEncryptionControl.ResourceExclusions"
+        },
+        "VpcEncryptionControl_ResourceExclusions_InternetGateway": {
+          "$ref": "vpc.VpcEncryptionControl.ResourceExclusions.InternetGateway"
+        },
+        "VpcEncryptionControl_ResourceExclusions_InternetGateway_State": {
+          "$ref": "vpc.VpcEncryptionControl.ResourceExclusions.InternetGateway.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_InternetGateway_StateMessage": {
+          "$ref": "vpc.VpcEncryptionControl.ResourceExclusions.InternetGateway.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_EgressOnlyInternetGateway": {
+          "$ref": "vpc.VpcEncryptionControl.ResourceExclusions.EgressOnlyInternetGateway"
+        },
+        "VpcEncryptionControl_ResourceExclusions_EgressOnlyInternetGateway_State": {
+          "$ref": "vpc.VpcEncryptionControl.ResourceExclusions.EgressOnlyInternetGateway.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_EgressOnlyInternetGateway_StateMessage": {
+          "$ref": "vpc.VpcEncryptionControl.ResourceExclusions.EgressOnlyInternetGateway.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_NatGateway": {
+          "$ref": "vpc.VpcEncryptionControl.ResourceExclusions.NatGateway"
+        },
+        "VpcEncryptionControl_ResourceExclusions_NatGateway_State": {
+          "$ref": "vpc.VpcEncryptionControl.ResourceExclusions.NatGateway.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_NatGateway_StateMessage": {
+          "$ref": "vpc.VpcEncryptionControl.ResourceExclusions.NatGateway.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VirtualPrivateGateway": {
+          "$ref": "vpc.VpcEncryptionControl.ResourceExclusions.VirtualPrivateGateway"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VirtualPrivateGateway_State": {
+          "$ref": "vpc.VpcEncryptionControl.ResourceExclusions.VirtualPrivateGateway.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VirtualPrivateGateway_StateMessage": {
+          "$ref": "vpc.VpcEncryptionControl.ResourceExclusions.VirtualPrivateGateway.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VpcPeering": {
+          "$ref": "vpc.VpcEncryptionControl.ResourceExclusions.VpcPeering"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VpcPeering_State": {
+          "$ref": "vpc.VpcEncryptionControl.ResourceExclusions.VpcPeering.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VpcPeering_StateMessage": {
+          "$ref": "vpc.VpcEncryptionControl.ResourceExclusions.VpcPeering.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_Lambda": {
+          "$ref": "vpc.VpcEncryptionControl.ResourceExclusions.Lambda"
+        },
+        "VpcEncryptionControl_ResourceExclusions_Lambda_State": {
+          "$ref": "vpc.VpcEncryptionControl.ResourceExclusions.Lambda.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_Lambda_StateMessage": {
+          "$ref": "vpc.VpcEncryptionControl.ResourceExclusions.Lambda.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VpcLattice": {
+          "$ref": "vpc.VpcEncryptionControl.ResourceExclusions.VpcLattice"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VpcLattice_State": {
+          "$ref": "vpc.VpcEncryptionControl.ResourceExclusions.VpcLattice.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VpcLattice_StateMessage": {
+          "$ref": "vpc.VpcEncryptionControl.ResourceExclusions.VpcLattice.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_ElasticFileSystem": {
+          "$ref": "vpc.VpcEncryptionControl.ResourceExclusions.ElasticFileSystem"
+        },
+        "VpcEncryptionControl_ResourceExclusions_ElasticFileSystem_State": {
+          "$ref": "vpc.VpcEncryptionControl.ResourceExclusions.ElasticFileSystem.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_ElasticFileSystem_StateMessage": {
+          "$ref": "vpc.VpcEncryptionControl.ResourceExclusions.ElasticFileSystem.StateMessage"
+        },
+        "CidrBlock": "10.0.0.0/16",
+        "EnableDnsSupport": true,
+        "EnableDnsHostnames": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "ResourcesVpc"
+          }
+        ]
+      },
+      "sourceLoc": {
+        "file": "src/us-east-1.ts"
+      }
+    },
+    {
+      "id": "webSecurityGroup",
+      "kind": "AWS::EC2::SecurityGroup",
+      "lexicon": "aws",
+      "attrs": {
+        "Id": {
+          "$ref": "webSecurityGroup.Id"
+        },
+        "GroupId": {
+          "$ref": "webSecurityGroup.GroupId"
+        },
+        "GroupDescription": "Allow specific inbound traffic",
+        "VpcId": {
+          "$ref": "vpc.VpcId"
+        },
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 22,
+            "ToPort": 22,
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow SSH access"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 80,
+            "ToPort": 80,
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow HTTP access"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 443,
+            "ToPort": 443,
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow HTTPS access"
+          }
+        ]
+      },
+      "sourceLoc": {
+        "file": "src/us-east-1.ts"
+      }
+    },
+    {
+      "id": "webServer",
+      "kind": "AWS::EC2::Instance",
+      "lexicon": "aws",
+      "attrs": {
+        "InstanceId": {
+          "$ref": "webServer.InstanceId"
+        },
+        "PrivateIp": {
+          "$ref": "webServer.PrivateIp"
+        },
+        "PublicDnsName": {
+          "$ref": "webServer.PublicDnsName"
+        },
+        "PublicIp": {
+          "$ref": "webServer.PublicIp"
+        },
+        "PrivateDnsName": {
+          "$ref": "webServer.PrivateDnsName"
+        },
+        "VpcId": {
+          "$ref": "webServer.VpcId"
+        },
+        "State": {
+          "$ref": "webServer.State"
+        },
+        "SubnetId": {
+          "$ref": "publicSubnet.SubnetId"
+        },
+        "SecurityGroupIds": [
+          {
+            "$ref": "webSecurityGroup.GroupId"
+          }
+        ],
+        "InstanceType": "t3.micro",
+        "ImageId": "ami-0f3f13f145e66a0a3",
+        "IamInstanceProfile": {
+          "$ref": "instanceProfile"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "WebServerInstance"
+          }
+        ]
+      },
+      "sourceLoc": {
+        "file": "src/us-east-1.ts"
+      }
+    },
+    {
+      "id": "west1DefaultRoute",
+      "kind": "AWS::EC2::Route",
+      "lexicon": "aws",
+      "attrs": {
+        "CidrBlock": {
+          "$ref": "west1DefaultRoute.CidrBlock"
+        },
+        "RouteTableId": {
+          "$ref": "west1RouteTable.RouteTableId"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "$ref": "west1Igw.InternetGatewayId"
+        }
+      },
+      "sourceLoc": {
+        "file": "src/us-west-1.ts"
+      }
+    },
+    {
+      "id": "west1Igw",
+      "kind": "AWS::EC2::InternetGateway",
+      "lexicon": "aws",
+      "attrs": {
+        "InternetGatewayId": {
+          "$ref": "west1Igw.InternetGatewayId"
+        }
+      },
+      "sourceLoc": {
+        "file": "src/us-west-1.ts"
+      }
+    },
+    {
+      "id": "west1IgwAttachment",
+      "kind": "AWS::EC2::VPCGatewayAttachment",
+      "lexicon": "aws",
+      "attrs": {
+        "AttachmentType": {
+          "$ref": "west1IgwAttachment.AttachmentType"
+        },
+        "VpcId": {
+          "$ref": "west1Vpc.VpcId"
+        },
+        "InternetGatewayId": {
+          "$ref": "west1Igw.InternetGatewayId"
+        }
+      },
+      "sourceLoc": {
+        "file": "src/us-west-1.ts"
+      }
+    },
+    {
+      "id": "west1PublicSubnet",
+      "kind": "AWS::EC2::Subnet",
+      "lexicon": "aws",
+      "attrs": {
+        "NetworkAclAssociationId": {
+          "$ref": "west1PublicSubnet.NetworkAclAssociationId"
+        },
+        "SubnetId": {
+          "$ref": "west1PublicSubnet.SubnetId"
+        },
+        "Ipv6CidrBlocks": {
+          "$ref": "west1PublicSubnet.Ipv6CidrBlocks"
+        },
+        "BlockPublicAccessStates": {
+          "$ref": "west1PublicSubnet.BlockPublicAccessStates"
+        },
+        "VpcId": {
+          "$ref": "west1Vpc.VpcId"
+        },
+        "CidrBlock": "10.0.0.0/24",
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Public"
+          }
+        ]
+      },
+      "sourceLoc": {
+        "file": "src/us-west-1.ts"
+      }
+    },
+    {
+      "id": "west1RouteTable",
+      "kind": "AWS::EC2::RouteTable",
+      "lexicon": "aws",
+      "attrs": {
+        "RouteTableId": {
+          "$ref": "west1RouteTable.RouteTableId"
+        },
+        "VpcId": {
+          "$ref": "west1Vpc.VpcId"
+        }
+      },
+      "sourceLoc": {
+        "file": "src/us-west-1.ts"
+      }
+    },
+    {
+      "id": "west1Server",
+      "kind": "AWS::EC2::Instance",
+      "lexicon": "aws",
+      "attrs": {
+        "InstanceId": {
+          "$ref": "west1Server.InstanceId"
+        },
+        "PrivateIp": {
+          "$ref": "west1Server.PrivateIp"
+        },
+        "PublicDnsName": {
+          "$ref": "west1Server.PublicDnsName"
+        },
+        "PublicIp": {
+          "$ref": "west1Server.PublicIp"
+        },
+        "PrivateDnsName": {
+          "$ref": "west1Server.PrivateDnsName"
+        },
+        "VpcId": {
+          "$ref": "west1Server.VpcId"
+        },
+        "State": {
+          "$ref": "west1Server.State"
+        },
+        "SubnetId": {
+          "$ref": "west1PublicSubnet.SubnetId"
+        },
+        "InstanceType": "t3.micro",
+        "ImageId": "ami-0f3f13f145e66a0a3",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "WebServerInstance"
+          }
+        ]
+      },
+      "sourceLoc": {
+        "file": "src/us-west-1.ts"
+      }
+    },
+    {
+      "id": "west1SubnetRouteAssoc",
+      "kind": "AWS::EC2::SubnetRouteTableAssociation",
+      "lexicon": "aws",
+      "attrs": {
+        "Id": {
+          "$ref": "west1SubnetRouteAssoc.Id"
+        },
+        "RouteTableId": {
+          "$ref": "west1RouteTable.RouteTableId"
+        },
+        "SubnetId": {
+          "$ref": "west1PublicSubnet.SubnetId"
+        }
+      },
+      "sourceLoc": {
+        "file": "src/us-west-1.ts"
+      }
+    },
+    {
+      "id": "west1Vpc",
+      "kind": "AWS::EC2::VPC",
+      "lexicon": "aws",
+      "attrs": {
+        "CidrBlockAssociations": {
+          "$ref": "west1Vpc.CidrBlockAssociations"
+        },
+        "DefaultNetworkAcl": {
+          "$ref": "west1Vpc.DefaultNetworkAcl"
+        },
+        "DefaultSecurityGroup": {
+          "$ref": "west1Vpc.DefaultSecurityGroup"
+        },
+        "Ipv6CidrBlocks": {
+          "$ref": "west1Vpc.Ipv6CidrBlocks"
+        },
+        "VpcId": {
+          "$ref": "west1Vpc.VpcId"
+        },
+        "VpcEncryptionControl_VpcId": {
+          "$ref": "west1Vpc.VpcEncryptionControl.VpcId"
+        },
+        "VpcEncryptionControl_VpcEncryptionControlId": {
+          "$ref": "west1Vpc.VpcEncryptionControl.VpcEncryptionControlId"
+        },
+        "VpcEncryptionControl_State": {
+          "$ref": "west1Vpc.VpcEncryptionControl.State"
+        },
+        "VpcEncryptionControl_StateMessage": {
+          "$ref": "west1Vpc.VpcEncryptionControl.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions": {
+          "$ref": "west1Vpc.VpcEncryptionControl.ResourceExclusions"
+        },
+        "VpcEncryptionControl_ResourceExclusions_InternetGateway": {
+          "$ref": "west1Vpc.VpcEncryptionControl.ResourceExclusions.InternetGateway"
+        },
+        "VpcEncryptionControl_ResourceExclusions_InternetGateway_State": {
+          "$ref": "west1Vpc.VpcEncryptionControl.ResourceExclusions.InternetGateway.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_InternetGateway_StateMessage": {
+          "$ref": "west1Vpc.VpcEncryptionControl.ResourceExclusions.InternetGateway.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_EgressOnlyInternetGateway": {
+          "$ref": "west1Vpc.VpcEncryptionControl.ResourceExclusions.EgressOnlyInternetGateway"
+        },
+        "VpcEncryptionControl_ResourceExclusions_EgressOnlyInternetGateway_State": {
+          "$ref": "west1Vpc.VpcEncryptionControl.ResourceExclusions.EgressOnlyInternetGateway.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_EgressOnlyInternetGateway_StateMessage": {
+          "$ref": "west1Vpc.VpcEncryptionControl.ResourceExclusions.EgressOnlyInternetGateway.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_NatGateway": {
+          "$ref": "west1Vpc.VpcEncryptionControl.ResourceExclusions.NatGateway"
+        },
+        "VpcEncryptionControl_ResourceExclusions_NatGateway_State": {
+          "$ref": "west1Vpc.VpcEncryptionControl.ResourceExclusions.NatGateway.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_NatGateway_StateMessage": {
+          "$ref": "west1Vpc.VpcEncryptionControl.ResourceExclusions.NatGateway.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VirtualPrivateGateway": {
+          "$ref": "west1Vpc.VpcEncryptionControl.ResourceExclusions.VirtualPrivateGateway"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VirtualPrivateGateway_State": {
+          "$ref": "west1Vpc.VpcEncryptionControl.ResourceExclusions.VirtualPrivateGateway.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VirtualPrivateGateway_StateMessage": {
+          "$ref": "west1Vpc.VpcEncryptionControl.ResourceExclusions.VirtualPrivateGateway.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VpcPeering": {
+          "$ref": "west1Vpc.VpcEncryptionControl.ResourceExclusions.VpcPeering"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VpcPeering_State": {
+          "$ref": "west1Vpc.VpcEncryptionControl.ResourceExclusions.VpcPeering.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VpcPeering_StateMessage": {
+          "$ref": "west1Vpc.VpcEncryptionControl.ResourceExclusions.VpcPeering.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_Lambda": {
+          "$ref": "west1Vpc.VpcEncryptionControl.ResourceExclusions.Lambda"
+        },
+        "VpcEncryptionControl_ResourceExclusions_Lambda_State": {
+          "$ref": "west1Vpc.VpcEncryptionControl.ResourceExclusions.Lambda.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_Lambda_StateMessage": {
+          "$ref": "west1Vpc.VpcEncryptionControl.ResourceExclusions.Lambda.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VpcLattice": {
+          "$ref": "west1Vpc.VpcEncryptionControl.ResourceExclusions.VpcLattice"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VpcLattice_State": {
+          "$ref": "west1Vpc.VpcEncryptionControl.ResourceExclusions.VpcLattice.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VpcLattice_StateMessage": {
+          "$ref": "west1Vpc.VpcEncryptionControl.ResourceExclusions.VpcLattice.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_ElasticFileSystem": {
+          "$ref": "west1Vpc.VpcEncryptionControl.ResourceExclusions.ElasticFileSystem"
+        },
+        "VpcEncryptionControl_ResourceExclusions_ElasticFileSystem_State": {
+          "$ref": "west1Vpc.VpcEncryptionControl.ResourceExclusions.ElasticFileSystem.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_ElasticFileSystem_StateMessage": {
+          "$ref": "west1Vpc.VpcEncryptionControl.ResourceExclusions.ElasticFileSystem.StateMessage"
+        },
+        "CidrBlock": "10.0.0.0/16",
+        "EnableDnsSupport": true,
+        "EnableDnsHostnames": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "ResourcesVpc"
+          }
+        ]
+      },
+      "sourceLoc": {
+        "file": "src/us-west-1.ts"
+      }
+    },
+    {
+      "id": "west2DefaultRoute",
+      "kind": "AWS::EC2::Route",
+      "lexicon": "aws",
+      "attrs": {
+        "CidrBlock": {
+          "$ref": "west2DefaultRoute.CidrBlock"
+        },
+        "RouteTableId": {
+          "$ref": "west2RouteTable.RouteTableId"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "$ref": "west2Igw.InternetGatewayId"
+        }
+      },
+      "sourceLoc": {
+        "file": "src/us-west-2.ts"
+      }
+    },
+    {
+      "id": "west2Igw",
+      "kind": "AWS::EC2::InternetGateway",
+      "lexicon": "aws",
+      "attrs": {
+        "InternetGatewayId": {
+          "$ref": "west2Igw.InternetGatewayId"
+        }
+      },
+      "sourceLoc": {
+        "file": "src/us-west-2.ts"
+      }
+    },
+    {
+      "id": "west2IgwAttachment",
+      "kind": "AWS::EC2::VPCGatewayAttachment",
+      "lexicon": "aws",
+      "attrs": {
+        "AttachmentType": {
+          "$ref": "west2IgwAttachment.AttachmentType"
+        },
+        "VpcId": {
+          "$ref": "west2Vpc.VpcId"
+        },
+        "InternetGatewayId": {
+          "$ref": "west2Igw.InternetGatewayId"
+        }
+      },
+      "sourceLoc": {
+        "file": "src/us-west-2.ts"
+      }
+    },
+    {
+      "id": "west2PublicSubnet",
+      "kind": "AWS::EC2::Subnet",
+      "lexicon": "aws",
+      "attrs": {
+        "NetworkAclAssociationId": {
+          "$ref": "west2PublicSubnet.NetworkAclAssociationId"
+        },
+        "SubnetId": {
+          "$ref": "west2PublicSubnet.SubnetId"
+        },
+        "Ipv6CidrBlocks": {
+          "$ref": "west2PublicSubnet.Ipv6CidrBlocks"
+        },
+        "BlockPublicAccessStates": {
+          "$ref": "west2PublicSubnet.BlockPublicAccessStates"
+        },
+        "VpcId": {
+          "$ref": "west2Vpc.VpcId"
+        },
+        "CidrBlock": "10.0.0.0/24",
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Public"
+          }
+        ]
+      },
+      "sourceLoc": {
+        "file": "src/us-west-2.ts"
+      }
+    },
+    {
+      "id": "west2RouteTable",
+      "kind": "AWS::EC2::RouteTable",
+      "lexicon": "aws",
+      "attrs": {
+        "RouteTableId": {
+          "$ref": "west2RouteTable.RouteTableId"
+        },
+        "VpcId": {
+          "$ref": "west2Vpc.VpcId"
+        }
+      },
+      "sourceLoc": {
+        "file": "src/us-west-2.ts"
+      }
+    },
+    {
+      "id": "west2Server",
+      "kind": "AWS::EC2::Instance",
+      "lexicon": "aws",
+      "attrs": {
+        "InstanceId": {
+          "$ref": "west2Server.InstanceId"
+        },
+        "PrivateIp": {
+          "$ref": "west2Server.PrivateIp"
+        },
+        "PublicDnsName": {
+          "$ref": "west2Server.PublicDnsName"
+        },
+        "PublicIp": {
+          "$ref": "west2Server.PublicIp"
+        },
+        "PrivateDnsName": {
+          "$ref": "west2Server.PrivateDnsName"
+        },
+        "VpcId": {
+          "$ref": "west2Server.VpcId"
+        },
+        "State": {
+          "$ref": "west2Server.State"
+        },
+        "SubnetId": {
+          "$ref": "west2PublicSubnet.SubnetId"
+        },
+        "InstanceType": "t3.micro",
+        "ImageId": "ami-0f3f13f145e66a0a3",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "WebServerInstance"
+          }
+        ]
+      },
+      "sourceLoc": {
+        "file": "src/us-west-2.ts"
+      }
+    },
+    {
+      "id": "west2SubnetRouteAssoc",
+      "kind": "AWS::EC2::SubnetRouteTableAssociation",
+      "lexicon": "aws",
+      "attrs": {
+        "Id": {
+          "$ref": "west2SubnetRouteAssoc.Id"
+        },
+        "RouteTableId": {
+          "$ref": "west2RouteTable.RouteTableId"
+        },
+        "SubnetId": {
+          "$ref": "west2PublicSubnet.SubnetId"
+        }
+      },
+      "sourceLoc": {
+        "file": "src/us-west-2.ts"
+      }
+    },
+    {
+      "id": "west2Vpc",
+      "kind": "AWS::EC2::VPC",
+      "lexicon": "aws",
+      "attrs": {
+        "CidrBlockAssociations": {
+          "$ref": "west2Vpc.CidrBlockAssociations"
+        },
+        "DefaultNetworkAcl": {
+          "$ref": "west2Vpc.DefaultNetworkAcl"
+        },
+        "DefaultSecurityGroup": {
+          "$ref": "west2Vpc.DefaultSecurityGroup"
+        },
+        "Ipv6CidrBlocks": {
+          "$ref": "west2Vpc.Ipv6CidrBlocks"
+        },
+        "VpcId": {
+          "$ref": "west2Vpc.VpcId"
+        },
+        "VpcEncryptionControl_VpcId": {
+          "$ref": "west2Vpc.VpcEncryptionControl.VpcId"
+        },
+        "VpcEncryptionControl_VpcEncryptionControlId": {
+          "$ref": "west2Vpc.VpcEncryptionControl.VpcEncryptionControlId"
+        },
+        "VpcEncryptionControl_State": {
+          "$ref": "west2Vpc.VpcEncryptionControl.State"
+        },
+        "VpcEncryptionControl_StateMessage": {
+          "$ref": "west2Vpc.VpcEncryptionControl.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions": {
+          "$ref": "west2Vpc.VpcEncryptionControl.ResourceExclusions"
+        },
+        "VpcEncryptionControl_ResourceExclusions_InternetGateway": {
+          "$ref": "west2Vpc.VpcEncryptionControl.ResourceExclusions.InternetGateway"
+        },
+        "VpcEncryptionControl_ResourceExclusions_InternetGateway_State": {
+          "$ref": "west2Vpc.VpcEncryptionControl.ResourceExclusions.InternetGateway.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_InternetGateway_StateMessage": {
+          "$ref": "west2Vpc.VpcEncryptionControl.ResourceExclusions.InternetGateway.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_EgressOnlyInternetGateway": {
+          "$ref": "west2Vpc.VpcEncryptionControl.ResourceExclusions.EgressOnlyInternetGateway"
+        },
+        "VpcEncryptionControl_ResourceExclusions_EgressOnlyInternetGateway_State": {
+          "$ref": "west2Vpc.VpcEncryptionControl.ResourceExclusions.EgressOnlyInternetGateway.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_EgressOnlyInternetGateway_StateMessage": {
+          "$ref": "west2Vpc.VpcEncryptionControl.ResourceExclusions.EgressOnlyInternetGateway.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_NatGateway": {
+          "$ref": "west2Vpc.VpcEncryptionControl.ResourceExclusions.NatGateway"
+        },
+        "VpcEncryptionControl_ResourceExclusions_NatGateway_State": {
+          "$ref": "west2Vpc.VpcEncryptionControl.ResourceExclusions.NatGateway.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_NatGateway_StateMessage": {
+          "$ref": "west2Vpc.VpcEncryptionControl.ResourceExclusions.NatGateway.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VirtualPrivateGateway": {
+          "$ref": "west2Vpc.VpcEncryptionControl.ResourceExclusions.VirtualPrivateGateway"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VirtualPrivateGateway_State": {
+          "$ref": "west2Vpc.VpcEncryptionControl.ResourceExclusions.VirtualPrivateGateway.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VirtualPrivateGateway_StateMessage": {
+          "$ref": "west2Vpc.VpcEncryptionControl.ResourceExclusions.VirtualPrivateGateway.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VpcPeering": {
+          "$ref": "west2Vpc.VpcEncryptionControl.ResourceExclusions.VpcPeering"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VpcPeering_State": {
+          "$ref": "west2Vpc.VpcEncryptionControl.ResourceExclusions.VpcPeering.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VpcPeering_StateMessage": {
+          "$ref": "west2Vpc.VpcEncryptionControl.ResourceExclusions.VpcPeering.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_Lambda": {
+          "$ref": "west2Vpc.VpcEncryptionControl.ResourceExclusions.Lambda"
+        },
+        "VpcEncryptionControl_ResourceExclusions_Lambda_State": {
+          "$ref": "west2Vpc.VpcEncryptionControl.ResourceExclusions.Lambda.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_Lambda_StateMessage": {
+          "$ref": "west2Vpc.VpcEncryptionControl.ResourceExclusions.Lambda.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VpcLattice": {
+          "$ref": "west2Vpc.VpcEncryptionControl.ResourceExclusions.VpcLattice"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VpcLattice_State": {
+          "$ref": "west2Vpc.VpcEncryptionControl.ResourceExclusions.VpcLattice.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_VpcLattice_StateMessage": {
+          "$ref": "west2Vpc.VpcEncryptionControl.ResourceExclusions.VpcLattice.StateMessage"
+        },
+        "VpcEncryptionControl_ResourceExclusions_ElasticFileSystem": {
+          "$ref": "west2Vpc.VpcEncryptionControl.ResourceExclusions.ElasticFileSystem"
+        },
+        "VpcEncryptionControl_ResourceExclusions_ElasticFileSystem_State": {
+          "$ref": "west2Vpc.VpcEncryptionControl.ResourceExclusions.ElasticFileSystem.State"
+        },
+        "VpcEncryptionControl_ResourceExclusions_ElasticFileSystem_StateMessage": {
+          "$ref": "west2Vpc.VpcEncryptionControl.ResourceExclusions.ElasticFileSystem.StateMessage"
+        },
+        "CidrBlock": "10.0.0.0/16",
+        "EnableDnsSupport": true,
+        "EnableDnsHostnames": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "ResourcesVpc"
+          }
+        ]
+      },
+      "sourceLoc": {
+        "file": "src/us-west-2.ts"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": "igwAttachment",
+      "to": "igw",
+      "kind": "ref",
+      "viaAttr": "InternetGatewayId"
+    },
+    {
+      "from": "igwAttachment",
+      "to": "vpc",
+      "kind": "ref",
+      "viaAttr": "VpcId"
+    },
+    {
+      "from": "instanceProfile",
+      "to": "instanceRole",
+      "kind": "ref",
+      "viaAttr": "Roles"
+    },
+    {
+      "from": "launchTemplateServer",
+      "to": "launchTemplate",
+      "kind": "ref",
+      "viaAttr": "LaunchTemplate"
+    },
+    {
+      "from": "launchTemplateServer",
+      "to": "publicSubnet",
+      "kind": "ref",
+      "viaAttr": "SubnetId"
+    },
+    {
+      "from": "launchTemplate",
+      "to": "webSecurityGroup",
+      "kind": "ref",
+      "viaAttr": "LaunchTemplateData"
+    },
+    {
+      "from": "privateServer",
+      "to": "privateSubnet",
+      "kind": "ref",
+      "viaAttr": "SubnetId"
+    },
+    {
+      "from": "privateSubnet",
+      "to": "vpc",
+      "kind": "ref",
+      "viaAttr": "VpcId"
+    },
+    {
+      "from": "publicDefaultRoute",
+      "to": "igw",
+      "kind": "ref",
+      "viaAttr": "GatewayId"
+    },
+    {
+      "from": "publicDefaultRoute",
+      "to": "publicRouteTable",
+      "kind": "ref",
+      "viaAttr": "RouteTableId"
+    },
+    {
+      "from": "publicRouteTable",
+      "to": "vpc",
+      "kind": "ref",
+      "viaAttr": "VpcId"
+    },
+    {
+      "from": "publicSubnetRouteAssoc",
+      "to": "publicRouteTable",
+      "kind": "ref",
+      "viaAttr": "RouteTableId"
+    },
+    {
+      "from": "publicSubnetRouteAssoc",
+      "to": "publicSubnet",
+      "kind": "ref",
+      "viaAttr": "SubnetId"
+    },
+    {
+      "from": "publicSubnet",
+      "to": "vpc",
+      "kind": "ref",
+      "viaAttr": "VpcId"
+    },
+    {
+      "from": "unusedSecurityGroup",
+      "to": "vpc",
+      "kind": "ref",
+      "viaAttr": "VpcId"
+    },
+    {
+      "from": "webSecurityGroup",
+      "to": "vpc",
+      "kind": "ref",
+      "viaAttr": "VpcId"
+    },
+    {
+      "from": "webServer",
+      "to": "instanceProfile",
+      "kind": "ref",
+      "viaAttr": "IamInstanceProfile"
+    },
+    {
+      "from": "webServer",
+      "to": "publicSubnet",
+      "kind": "ref",
+      "viaAttr": "SubnetId"
+    },
+    {
+      "from": "webServer",
+      "to": "webSecurityGroup",
+      "kind": "ref",
+      "viaAttr": "SecurityGroupIds"
+    },
+    {
+      "from": "west1DefaultRoute",
+      "to": "west1Igw",
+      "kind": "ref",
+      "viaAttr": "GatewayId"
+    },
+    {
+      "from": "west1DefaultRoute",
+      "to": "west1RouteTable",
+      "kind": "ref",
+      "viaAttr": "RouteTableId"
+    },
+    {
+      "from": "west1IgwAttachment",
+      "to": "west1Igw",
+      "kind": "ref",
+      "viaAttr": "InternetGatewayId"
+    },
+    {
+      "from": "west1IgwAttachment",
+      "to": "west1Vpc",
+      "kind": "ref",
+      "viaAttr": "VpcId"
+    },
+    {
+      "from": "west1PublicSubnet",
+      "to": "west1Vpc",
+      "kind": "ref",
+      "viaAttr": "VpcId"
+    },
+    {
+      "from": "west1RouteTable",
+      "to": "west1Vpc",
+      "kind": "ref",
+      "viaAttr": "VpcId"
+    },
+    {
+      "from": "west1Server",
+      "to": "west1PublicSubnet",
+      "kind": "ref",
+      "viaAttr": "SubnetId"
+    },
+    {
+      "from": "west1SubnetRouteAssoc",
+      "to": "west1PublicSubnet",
+      "kind": "ref",
+      "viaAttr": "SubnetId"
+    },
+    {
+      "from": "west1SubnetRouteAssoc",
+      "to": "west1RouteTable",
+      "kind": "ref",
+      "viaAttr": "RouteTableId"
+    },
+    {
+      "from": "west2DefaultRoute",
+      "to": "west2Igw",
+      "kind": "ref",
+      "viaAttr": "GatewayId"
+    },
+    {
+      "from": "west2DefaultRoute",
+      "to": "west2RouteTable",
+      "kind": "ref",
+      "viaAttr": "RouteTableId"
+    },
+    {
+      "from": "west2IgwAttachment",
+      "to": "west2Igw",
+      "kind": "ref",
+      "viaAttr": "InternetGatewayId"
+    },
+    {
+      "from": "west2IgwAttachment",
+      "to": "west2Vpc",
+      "kind": "ref",
+      "viaAttr": "VpcId"
+    },
+    {
+      "from": "west2PublicSubnet",
+      "to": "west2Vpc",
+      "kind": "ref",
+      "viaAttr": "VpcId"
+    },
+    {
+      "from": "west2RouteTable",
+      "to": "west2Vpc",
+      "kind": "ref",
+      "viaAttr": "VpcId"
+    },
+    {
+      "from": "west2Server",
+      "to": "west2PublicSubnet",
+      "kind": "ref",
+      "viaAttr": "SubnetId"
+    },
+    {
+      "from": "west2SubnetRouteAssoc",
+      "to": "west2PublicSubnet",
+      "kind": "ref",
+      "viaAttr": "SubnetId"
+    },
+    {
+      "from": "west2SubnetRouteAssoc",
+      "to": "west2RouteTable",
+      "kind": "ref",
+      "viaAttr": "RouteTableId"
+    }
+  ],
+  "groups": {
+    "byLexicon": {
+      "aws": [
+        "defaultVpcServer",
+        "igw",
+        "igwAttachment",
+        "instanceProfile",
+        "instanceRole",
+        "launchTemplate",
+        "launchTemplateServer",
+        "privateServer",
+        "privateSubnet",
+        "publicDefaultRoute",
+        "publicRouteTable",
+        "publicSubnet",
+        "publicSubnetRouteAssoc",
+        "unusedSecurityGroup",
+        "vpc",
+        "webSecurityGroup",
+        "webServer",
+        "west1DefaultRoute",
+        "west1Igw",
+        "west1IgwAttachment",
+        "west1PublicSubnet",
+        "west1RouteTable",
+        "west1Server",
+        "west1SubnetRouteAssoc",
+        "west1Vpc",
+        "west2DefaultRoute",
+        "west2Igw",
+        "west2IgwAttachment",
+        "west2PublicSubnet",
+        "west2RouteTable",
+        "west2Server",
+        "west2SubnetRouteAssoc",
+        "west2Vpc"
+      ]
+    },
+    "byStack": {
+      "aws": [
+        "defaultVpcServer",
+        "igw",
+        "igwAttachment",
+        "instanceProfile",
+        "instanceRole",
+        "launchTemplate",
+        "launchTemplateServer",
+        "privateServer",
+        "privateSubnet",
+        "publicDefaultRoute",
+        "publicRouteTable",
+        "publicSubnet",
+        "publicSubnetRouteAssoc",
+        "unusedSecurityGroup",
+        "vpc",
+        "webSecurityGroup",
+        "webServer",
+        "west1DefaultRoute",
+        "west1Igw",
+        "west1IgwAttachment",
+        "west1PublicSubnet",
+        "west1RouteTable",
+        "west1Server",
+        "west1SubnetRouteAssoc",
+        "west1Vpc",
+        "west2DefaultRoute",
+        "west2Igw",
+        "west2IgwAttachment",
+        "west2PublicSubnet",
+        "west2RouteTable",
+        "west2Server",
+        "west2SubnetRouteAssoc",
+        "west2Vpc"
+      ]
+    }
+  }
+}
