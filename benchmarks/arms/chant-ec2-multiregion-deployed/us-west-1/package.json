@@ -1,0 +1,10 @@
+{
+  "name": "chant-ec2-multiregion-us-west-1",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": { "build": "chant build" },
+  "dependencies": {
+    "@intentius/chant": "file:../vendor/intentius-chant-0.27.0.tgz",
+    "@intentius/chant-lexicon-aws": "file:../vendor/intentius-chant-lexicon-aws-0.27.0.tgz"
+  }
+}
