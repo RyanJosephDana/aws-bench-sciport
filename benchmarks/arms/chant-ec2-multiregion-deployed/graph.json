@@ -28,13 +28,11 @@
         },
         "ManagedPolicyArns": [
           "arn:aws:iam::aws:policy/AdministratorAccess"
-        ],
-        "_status": "good"
+        ]
       },
       "sourceLoc": {
         "file": "qa-roles/src/roles.ts"
-      },
-      "physicalId": "QALocalInvocationApplicationAdmin"
+      }
     },
     {
       "id": "defaultSubnetId1",
@@ -42,8 +40,7 @@
       "lexicon": "aws",
       "attrs": {
         "parameterType": "AWS::EC2::Subnet::Id",
-        "description": "First public subnet of the default VPC",
-        "_status": "accent"
+        "description": "First public subnet of the default VPC"
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
@@ -55,8 +52,7 @@
       "lexicon": "aws",
       "attrs": {
         "parameterType": "AWS::EC2::Subnet::Id",
-        "description": "Second public subnet of the default VPC",
-        "_status": "accent"
+        "description": "Second public subnet of the default VPC"
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
@@ -68,8 +64,7 @@
       "lexicon": "aws",
       "attrs": {
         "parameterType": "AWS::EC2::VPC::Id",
-        "description": "The account's default VPC id",
-        "_status": "accent"
+        "description": "The account's default VPC id"
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
@@ -111,13 +106,11 @@
             "Key": "Name",
             "Value": "MyEC2Instance"
           }
-        ],
-        "_status": "good"
+        ]
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
-      },
-      "physicalId": "i-a8ccec2cbf2a4c10e"
+      }
     },
     {
       "id": "expAmiName",
@@ -127,8 +120,7 @@
         "sourceRef": {
           "$intrinsic": true
         },
-        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-AMIName",
-        "_status": "accent"
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-AMIName"
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
@@ -142,8 +134,7 @@
         "sourceRef": {
           "$ref": "defaultSubnetId1"
         },
-        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-DefaultPublicSubnetId1",
-        "_status": "accent"
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-DefaultPublicSubnetId1"
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
@@ -157,8 +148,7 @@
         "sourceRef": {
           "$ref": "defaultSubnetId2"
         },
-        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-DefaultPublicSubnetId2",
-        "_status": "accent"
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-DefaultPublicSubnetId2"
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
@@ -172,8 +162,7 @@
         "sourceRef": {
           "$ref": "defaultVpcId"
         },
-        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-DefaultVpcId",
-        "_status": "accent"
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-DefaultVpcId"
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
@@ -187,8 +176,7 @@
         "sourceRef": {
           "$ref": "defaultVpcServer.InstanceId"
         },
-        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-DefaultVPCInstanceId",
-        "_status": "accent"
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-DefaultVPCInstanceId"
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
@@ -202,8 +190,7 @@
         "sourceRef": {
           "$ref": "defaultVpcServer.PrivateIp"
         },
-        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-PrivateIPOfInstanceWithDefaultVpc",
-        "_status": "accent"
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-PrivateIPOfInstanceWithDefaultVpc"
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
@@ -215,8 +202,7 @@
       "lexicon": "aws",
       "attrs": {
         "sourceRef": "80",
-        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-OpenHTTPPort",
-        "_status": "accent"
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-OpenHTTPPort"
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
@@ -228,8 +214,7 @@
       "lexicon": "aws",
       "attrs": {
         "sourceRef": "443",
-        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-OpenHTTPsPort",
-        "_status": "accent"
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-OpenHTTPsPort"
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
@@ -243,8 +228,7 @@
         "sourceRef": {
           "$ref": "webServer.InstanceId"
         },
-        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-InstanceId",
-        "_status": "accent"
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-InstanceId"
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
@@ -258,8 +242,7 @@
         "sourceRef": {
           "$ref": "instanceProfile"
         },
-        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-InstanceProfileName",
-        "_status": "accent"
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-InstanceProfileName"
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
@@ -273,8 +256,7 @@
         "sourceRef": {
           "$ref": "launchTemplateServer.InstanceId"
         },
-        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-LaunchTemplateInstanceId",
-        "_status": "accent"
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-LaunchTemplateInstanceId"
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
@@ -288,8 +270,7 @@
         "sourceRef": {
           "$ref": "launchTemplateServer.PrivateIp"
         },
-        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-PrivateIPOfInstanceWithLaunchTemplate",
-        "_status": "accent"
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-PrivateIPOfInstanceWithLaunchTemplate"
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
@@ -301,8 +282,7 @@
       "lexicon": "aws",
       "attrs": {
         "sourceRef": "4",
-        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-NUMEC2Running",
-        "_status": "accent"
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-NUMEC2Running"
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
@@ -314,8 +294,7 @@
       "lexicon": "aws",
       "attrs": {
         "sourceRef": "1",
-        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-NUMSubnets",
-        "_status": "accent"
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-NUMSubnets"
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
@@ -329,8 +308,7 @@
         "sourceRef": {
           "$ref": "privateServer.InstanceId"
         },
-        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-PrivateInstanceId",
-        "_status": "accent"
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-PrivateInstanceId"
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
@@ -344,8 +322,7 @@
         "sourceRef": {
           "$ref": "privateServer.PrivateIp"
         },
-        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-PrivateInstancePrivateIp",
-        "_status": "accent"
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-PrivateInstancePrivateIp"
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
@@ -359,8 +336,7 @@
         "sourceRef": {
           "$ref": "UsEast1SrcpublicSubnet.SubnetId"
         },
-        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-PublicSubnetId",
-        "_status": "accent"
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-PublicSubnetId"
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
@@ -372,8 +348,7 @@
       "lexicon": "aws",
       "attrs": {
         "sourceRef": "ec2:ModifyInstanceAttribute",
-        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-RestrictedActionModifyInstanceAttribute",
-        "_status": "accent"
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-RestrictedActionModifyInstanceAttribute"
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
@@ -385,8 +360,7 @@
       "lexicon": "aws",
       "attrs": {
         "sourceRef": "ec2:ModifyInstanceMetadataOptions",
-        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-RestrictedActionModifyInstanceMetadataOptions",
-        "_status": "accent"
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-RestrictedActionModifyInstanceMetadataOptions"
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
@@ -400,8 +374,7 @@
         "sourceRef": {
           "$ref": "instanceRole"
         },
-        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-RoleName",
-        "_status": "accent"
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-RoleName"
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
@@ -415,8 +388,7 @@
         "sourceRef": {
           "$ref": "webSecurityGroup.GroupId"
         },
-        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-SecurityGroupId",
-        "_status": "accent"
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-SecurityGroupId"
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
@@ -428,8 +400,7 @@
       "lexicon": "aws",
       "attrs": {
         "sourceRef": "22",
-        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-OpenSSHPort",
-        "_status": "accent"
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-OpenSSHPort"
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
@@ -443,8 +414,7 @@
         "sourceRef": {
           "$intrinsic": true
         },
-        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-StackId",
-        "_status": "accent"
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-StackId"
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
@@ -456,8 +426,7 @@
       "lexicon": "aws",
       "attrs": {
         "sourceRef": "ec2-multiregion-EC2-ks84v1fh12-us-east-1",
-        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-StackName",
-        "_status": "accent"
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-StackName"
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
@@ -471,8 +440,7 @@
         "sourceRef": {
           "$ref": "unusedSecurityGroup.GroupId"
         },
-        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-UnusedSecurityGroupId",
-        "_status": "accent"
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-UnusedSecurityGroupId"
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
@@ -486,8 +454,7 @@
         "sourceRef": {
           "$ref": "UsEast1Srcvpc.VpcId"
         },
-        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-VpcId",
-        "_status": "accent"
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-VpcId"
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
@@ -501,8 +468,7 @@
         "sourceRef": {
           "$ref": "webServer.PrivateIp"
         },
-        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-PrivateIPOfInstanceWithoutLaunchTemplate",
-        "_status": "accent"
+        "exportName": "ec2-multiregion-EC2-ks84v1fh12-us-east-1-PrivateIPOfInstanceWithoutLaunchTemplate"
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
@@ -523,13 +489,11 @@
           {
             "$ref": "instanceRole"
           }
-        ],
-        "_status": "good"
+        ]
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
-      },
-      "physicalId": "instanceprofile-000000000000-us-east-1"
+      }
     },
     {
       "id": "instanceRole",
@@ -579,13 +543,11 @@
               ]
             }
           }
-        ],
-        "_status": "good"
+        ]
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
-      },
-      "physicalId": "role-000000000000-us-east-1"
+      }
     },
     {
       "id": "judgeRole",
@@ -616,13 +578,11 @@
         "ManagedPolicyArns": [
           "arn:aws:iam::aws:policy/AmazonBedrockFullAccess",
           "arn:aws:iam::aws:policy/ReadOnlyAccess"
-        ],
-        "_status": "good"
+        ]
       },
       "sourceLoc": {
         "file": "qa-roles/src/roles.ts"
-      },
-      "physicalId": "LLMJudgeFullBedrockAccessRole"
+      }
     },
     {
       "id": "launchTemplate",
@@ -661,13 +621,11 @@
           "MetadataOptions": {
             "HttpTokens": "required"
           }
-        },
-        "_status": "good"
+        }
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
-      },
-      "physicalId": "lt-298c4817209eeb235"
+      }
     },
     {
       "id": "launchTemplateServer",
@@ -709,13 +667,11 @@
             "Key": "Name",
             "Value": "LaunchTemplateInstance"
           }
-        ],
-        "_status": "good"
+        ]
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
-      },
-      "physicalId": "i-18e17c5c51d2e82ea"
+      }
     },
     {
       "id": "privateServer",
@@ -753,13 +709,11 @@
             "Key": "Name",
             "Value": "PrivateInstance"
           }
-        ],
-        "_status": "good"
+        ]
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
-      },
-      "physicalId": "i-69d3b5598cfb5ac50"
+      }
     },
     {
       "id": "privateSubnet",
@@ -788,13 +742,11 @@
             "Key": "Name",
             "Value": "Private"
           }
-        ],
-        "_status": "good"
+        ]
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
-      },
-      "physicalId": "subnet-ac0250be"
+      }
     },
     {
       "id": "publicDefaultRoute",
@@ -810,13 +762,11 @@
         "DestinationCidrBlock": "0.0.0.0/0",
         "GatewayId": {
           "$ref": "UsEast1Srcigw.InternetGatewayId"
-        },
-        "_status": "good"
+        }
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
-      },
-      "physicalId": "publicDefaultRoute-d5004f27"
+      }
     },
     {
       "id": "publicRouteTable",
@@ -828,13 +778,11 @@
         },
         "VpcId": {
           "$ref": "UsEast1Srcvpc.VpcId"
-        },
-        "_status": "good"
+        }
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
-      },
-      "physicalId": "rtb-94caa3dc"
+      }
     },
     {
       "id": "publicSubnetRouteAssoc",
@@ -849,13 +797,11 @@
         },
         "SubnetId": {
           "$ref": "UsEast1SrcpublicSubnet.SubnetId"
-        },
-        "_status": "good"
+        }
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
-      },
-      "physicalId": "rtbassoc-e83ae4b2"
+      }
     },
     {
       "id": "readonlyRole",
@@ -889,13 +835,11 @@
           {
             "$ref": "s3VectorsReadOnly.PolicyArn"
           }
-        ],
-        "_status": "good"
+        ]
       },
       "sourceLoc": {
         "file": "qa-roles/src/roles.ts"
-      },
-      "physicalId": "QALocalInvocationApplicationRole"
+      }
     },
     {
       "id": "s3VectorsReadOnly",
@@ -950,13 +894,11 @@
               "Resource": "*"
             }
           ]
-        },
-        "_status": "good"
+        }
       },
       "sourceLoc": {
         "file": "qa-roles/src/roles.ts"
-      },
-      "physicalId": "arn:aws:iam::000000000000:policy/ec2-multiregion-QARoles-us-east-1-s3VectorsReadOnly-3bb31f188243"
+      }
     },
     {
       "id": "unusedSecurityGroup",
@@ -972,13 +914,11 @@
         "GroupDescription": "Unused security group",
         "VpcId": {
           "$ref": "UsEast1Srcvpc.VpcId"
-        },
-        "_status": "good"
+        }
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
-      },
-      "physicalId": "sg-f89af476f908c811f"
+      }
     },
     {
       "id": "UsEast1Srcigw",
@@ -987,8 +927,7 @@
       "attrs": {
         "InternetGatewayId": {
           "$ref": "UsEast1Srcigw.InternetGatewayId"
-        },
-        "_status": "accent"
+        }
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
@@ -1007,8 +946,7 @@
         },
         "InternetGatewayId": {
           "$ref": "UsEast1Srcigw.InternetGatewayId"
-        },
-        "_status": "accent"
+        }
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
@@ -1041,8 +979,7 @@
             "Key": "Name",
             "Value": "Public"
           }
-        ],
-        "_status": "accent"
+        ]
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
@@ -1163,8 +1100,7 @@
             "Key": "Name",
             "Value": "ResourcesVpc"
           }
-        ],
-        "_status": "accent"
+        ]
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
@@ -1184,8 +1120,7 @@
         "DestinationCidrBlock": "0.0.0.0/0",
         "GatewayId": {
           "$ref": "UsWest1Srcigw.InternetGatewayId"
-        },
-        "_status": "accent"
+        }
       },
       "sourceLoc": {
         "file": "us-west-1/src/estate.ts"
@@ -1198,8 +1133,7 @@
       "attrs": {
         "InternetGatewayId": {
           "$ref": "UsWest1Srcigw.InternetGatewayId"
-        },
-        "_status": "accent"
+        }
       },
       "sourceLoc": {
         "file": "us-west-1/src/estate.ts"
@@ -1218,8 +1152,7 @@
         },
         "InternetGatewayId": {
           "$ref": "UsWest1Srcigw.InternetGatewayId"
-        },
-        "_status": "accent"
+        }
       },
       "sourceLoc": {
         "file": "us-west-1/src/estate.ts"
@@ -1233,8 +1166,7 @@
         "sourceRef": {
           "$ref": "UsWest1Srcserver.InstanceId"
         },
-        "exportName": "ec2-multiregion-EC2-ls9fuhb522-us-west-1-InstanceId",
-        "_status": "accent"
+        "exportName": "ec2-multiregion-EC2-ls9fuhb522-us-west-1-InstanceId"
       },
       "sourceLoc": {
         "file": "us-west-1/src/estate.ts"
@@ -1246,8 +1178,7 @@
       "lexicon": "aws",
       "attrs": {
         "sourceRef": "1",
-        "exportName": "ec2-multiregion-EC2-ls9fuhb522-us-west-1-NUMEC2Running",
-        "_status": "accent"
+        "exportName": "ec2-multiregion-EC2-ls9fuhb522-us-west-1-NUMEC2Running"
       },
       "sourceLoc": {
         "file": "us-west-1/src/estate.ts"
@@ -1261,8 +1192,7 @@
         "sourceRef": {
           "$ref": "UsWest1Srcserver.PrivateIp"
         },
-        "exportName": "ec2-multiregion-EC2-ls9fuhb522-us-west-1-PrivateIPOfInstance",
-        "_status": "accent"
+        "exportName": "ec2-multiregion-EC2-ls9fuhb522-us-west-1-PrivateIPOfInstance"
       },
       "sourceLoc": {
         "file": "us-west-1/src/estate.ts"
@@ -1295,8 +1225,7 @@
             "Key": "Name",
             "Value": "Public"
           }
-        ],
-        "_status": "accent"
+        ]
       },
       "sourceLoc": {
         "file": "us-west-1/src/estate.ts"
@@ -1310,8 +1239,7 @@
         "sourceRef": {
           "$ref": "UsWest1SrcpublicSubnet.SubnetId"
         },
-        "exportName": "ec2-multiregion-EC2-ls9fuhb522-us-west-1-PublicSubnetId",
-        "_status": "accent"
+        "exportName": "ec2-multiregion-EC2-ls9fuhb522-us-west-1-PublicSubnetId"
       },
       "sourceLoc": {
         "file": "us-west-1/src/estate.ts"
@@ -1327,8 +1255,7 @@
         },
         "VpcId": {
           "$ref": "UsWest1Srcvpc.VpcId"
-        },
-        "_status": "accent"
+        }
       },
       "sourceLoc": {
         "file": "us-west-1/src/estate.ts"
@@ -1370,8 +1297,7 @@
             "Key": "Name",
             "Value": "WebServerInstance"
           }
-        ],
-        "_status": "accent"
+        ]
       },
       "sourceLoc": {
         "file": "us-west-1/src/estate.ts"
@@ -1385,8 +1311,7 @@
         "sourceRef": {
           "$intrinsic": true
         },
-        "exportName": "ec2-multiregion-EC2-ls9fuhb522-us-west-1-StackId",
-        "_status": "accent"
+        "exportName": "ec2-multiregion-EC2-ls9fuhb522-us-west-1-StackId"
       },
       "sourceLoc": {
         "file": "us-west-1/src/estate.ts"
@@ -1405,8 +1330,7 @@
         },
         "SubnetId": {
           "$ref": "UsWest1SrcpublicSubnet.SubnetId"
-        },
-        "_status": "accent"
+        }
       },
       "sourceLoc": {
         "file": "us-west-1/src/estate.ts"
@@ -1527,8 +1451,7 @@
             "Key": "Name",
             "Value": "ResourcesVpc"
           }
-        ],
-        "_status": "accent"
+        ]
       },
       "sourceLoc": {
         "file": "us-west-1/src/estate.ts"
@@ -1542,8 +1465,7 @@
         "sourceRef": {
           "$ref": "UsWest1Srcvpc.VpcId"
         },
-        "exportName": "ec2-multiregion-EC2-ls9fuhb522-us-west-1-VpcId",
-        "_status": "accent"
+        "exportName": "ec2-multiregion-EC2-ls9fuhb522-us-west-1-VpcId"
       },
       "sourceLoc": {
         "file": "us-west-1/src/estate.ts"
@@ -1563,8 +1485,7 @@
         "DestinationCidrBlock": "0.0.0.0/0",
         "GatewayId": {
           "$ref": "UsWest2Srcigw.InternetGatewayId"
-        },
-        "_status": "accent"
+        }
       },
       "sourceLoc": {
         "file": "us-west-2/src/estate.ts"
@@ -1577,8 +1498,7 @@
       "attrs": {
         "InternetGatewayId": {
           "$ref": "UsWest2Srcigw.InternetGatewayId"
-        },
-        "_status": "accent"
+        }
       },
       "sourceLoc": {
         "file": "us-west-2/src/estate.ts"
@@ -1597,8 +1517,7 @@
         },
         "InternetGatewayId": {
           "$ref": "UsWest2Srcigw.InternetGatewayId"
-        },
-        "_status": "accent"
+        }
       },
       "sourceLoc": {
         "file": "us-west-2/src/estate.ts"
@@ -1612,8 +1531,7 @@
         "sourceRef": {
           "$ref": "UsWest2Srcserver.InstanceId"
         },
-        "exportName": "ec2-multiregion-EC2-ls9fuhb522-us-west-2-InstanceId",
-        "_status": "accent"
+        "exportName": "ec2-multiregion-EC2-ls9fuhb522-us-west-2-InstanceId"
       },
       "sourceLoc": {
         "file": "us-west-2/src/estate.ts"
@@ -1625,8 +1543,7 @@
       "lexicon": "aws",
       "attrs": {
         "sourceRef": "1",
-        "exportName": "ec2-multiregion-EC2-ls9fuhb522-us-west-2-NUMEC2Running",
-        "_status": "accent"
+        "exportName": "ec2-multiregion-EC2-ls9fuhb522-us-west-2-NUMEC2Running"
       },
       "sourceLoc": {
         "file": "us-west-2/src/estate.ts"
@@ -1640,8 +1557,7 @@
         "sourceRef": {
           "$ref": "UsWest2Srcserver.PrivateIp"
         },
-        "exportName": "ec2-multiregion-EC2-ls9fuhb522-us-west-2-PrivateIPOfInstance",
-        "_status": "accent"
+        "exportName": "ec2-multiregion-EC2-ls9fuhb522-us-west-2-PrivateIPOfInstance"
       },
       "sourceLoc": {
         "file": "us-west-2/src/estate.ts"
@@ -1674,8 +1590,7 @@
             "Key": "Name",
             "Value": "Public"
           }
-        ],
-        "_status": "accent"
+        ]
       },
       "sourceLoc": {
         "file": "us-west-2/src/estate.ts"
@@ -1689,8 +1604,7 @@
         "sourceRef": {
           "$ref": "UsWest2SrcpublicSubnet.SubnetId"
         },
-        "exportName": "ec2-multiregion-EC2-ls9fuhb522-us-west-2-PublicSubnetId",
-        "_status": "accent"
+        "exportName": "ec2-multiregion-EC2-ls9fuhb522-us-west-2-PublicSubnetId"
       },
       "sourceLoc": {
         "file": "us-west-2/src/estate.ts"
@@ -1706,8 +1620,7 @@
         },
         "VpcId": {
           "$ref": "UsWest2Srcvpc.VpcId"
-        },
-        "_status": "accent"
+        }
       },
       "sourceLoc": {
         "file": "us-west-2/src/estate.ts"
@@ -1749,8 +1662,7 @@
             "Key": "Name",
             "Value": "WebServerInstance"
           }
-        ],
-        "_status": "accent"
+        ]
       },
       "sourceLoc": {
         "file": "us-west-2/src/estate.ts"
@@ -1764,8 +1676,7 @@
         "sourceRef": {
           "$intrinsic": true
         },
-        "exportName": "ec2-multiregion-EC2-ls9fuhb522-us-west-2-StackId",
-        "_status": "accent"
+        "exportName": "ec2-multiregion-EC2-ls9fuhb522-us-west-2-StackId"
       },
       "sourceLoc": {
         "file": "us-west-2/src/estate.ts"
@@ -1784,8 +1695,7 @@
         },
         "SubnetId": {
           "$ref": "UsWest2SrcpublicSubnet.SubnetId"
-        },
-        "_status": "accent"
+        }
       },
       "sourceLoc": {
         "file": "us-west-2/src/estate.ts"
@@ -1906,8 +1816,7 @@
             "Key": "Name",
             "Value": "ResourcesVpc"
           }
-        ],
-        "_status": "accent"
+        ]
       },
       "sourceLoc": {
         "file": "us-west-2/src/estate.ts"
@@ -1921,8 +1830,7 @@
         "sourceRef": {
           "$ref": "UsWest2Srcvpc.VpcId"
         },
-        "exportName": "ec2-multiregion-EC2-ls9fuhb522-us-west-2-VpcId",
-        "_status": "accent"
+        "exportName": "ec2-multiregion-EC2-ls9fuhb522-us-west-2-VpcId"
       },
       "sourceLoc": {
         "file": "us-west-2/src/estate.ts"
@@ -1965,13 +1873,11 @@
             "CidrIp": "0.0.0.0/0",
             "Description": "Allow HTTPS access"
           }
-        ],
-        "_status": "good"
+        ]
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
-      },
-      "physicalId": "sg-9694552700ec98ce0"
+      }
     },
     {
       "id": "webServer",
@@ -2017,13 +1923,11 @@
             "Key": "Name",
             "Value": "WebServerInstance"
           }
-        ],
-        "_status": "good"
+        ]
       },
       "sourceLoc": {
         "file": "us-east-1/src/estate.ts"
-      },
-      "physicalId": "i-fa2a7f7fcac4421bb"
+      }
     }
   ],
   "edges": [
