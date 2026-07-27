@@ -45,6 +45,9 @@ DEFAULT_CONTAINER_ENDPOINT = "http://host.docker.internal:4566"
 #: The published integration image (fork main + the CFN/EC2 parity series).
 DEFAULT_IMAGE = "ghcr.io/lex00/floci:awsbench"
 
+#: File holding the Claude Code OAuth token (``claude setup-token`` output).
+DEFAULT_CLAUDE_TOKEN_FILE = "~/.anthropic"
+
 _JUDGE_BEDROCK_RE = re.compile(r'^(\s*judge\s*=\s*")bedrock/(?:us\.)?([^"]+)(")', re.MULTILINE)
 
 
@@ -100,6 +103,42 @@ def container_endpoint_env() -> dict[str, str]:
 def account_mapping(tags: list[str]) -> dict[str, str]:
     """Map every scenario account tag to the emulator's single account."""
     return dict.fromkeys(tags, ACCOUNT_ID)
+
+
+def claude_oauth_token() -> str | None:
+    """The Claude Code OAuth token for the agent under test, if available.
+
+    Prefers an existing ``CLAUDE_CODE_OAUTH_TOKEN``; otherwise reads the token
+    file (``AWS_BENCH_CLAUDE_TOKEN_FILE``, default ``~/.anthropic``). Harbor's
+    claude-code agent forwards the variable into the agent container, where it
+    authenticates Claude Code against the user's subscription — no API key.
+    """
+    ambient = os.environ.get("CLAUDE_CODE_OAUTH_TOKEN")
+    if ambient:
+        return ambient
+    path = os.path.expanduser(
+        os.environ.get("AWS_BENCH_CLAUDE_TOKEN_FILE", DEFAULT_CLAUDE_TOKEN_FILE)
+    )
+    try:
+        with open(path, encoding="utf-8") as handle:
+            token = handle.read().strip()
+    except OSError:
+        return None
+    return token or None
+
+
+def prime_process_env() -> None:
+    """Export emulator-mode env into this process before agents/SDKs read it.
+
+    Idempotent. Sets ``CLAUDE_CODE_OAUTH_TOKEN`` from the token file so
+    Harbor's claude-code agent can forward it into the agent container.
+    """
+    if not is_active():
+        return
+    if not os.environ.get("CLAUDE_CODE_OAUTH_TOKEN"):
+        token = claude_oauth_token()
+        if token:
+            os.environ["CLAUDE_CODE_OAUTH_TOKEN"] = token
 
 
 def rewrite_judge_model(judge_toml_body: str) -> str:

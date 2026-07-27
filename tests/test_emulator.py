@@ -42,3 +42,43 @@ def test_rewrite_judge_model_bedrock_to_anthropic():
 def test_rewrite_judge_model_passthrough():
     body = '[judge]\njudge = "anthropic/claude-sonnet-4-5"\n'
     assert emulator.rewrite_judge_model(body) == body
+
+
+def test_claude_oauth_token_prefers_ambient(tmp_path):
+    with mock.patch.dict(os.environ, {"CLAUDE_CODE_OAUTH_TOKEN": "ambient-token"}):
+        assert emulator.claude_oauth_token() == "ambient-token"
+
+
+def test_claude_oauth_token_reads_file(tmp_path):
+    token_file = tmp_path / "token"
+    token_file.write_text("sk-ant-oat0-example\n")
+    env = {"AWS_BENCH_CLAUDE_TOKEN_FILE": str(token_file)}
+    with mock.patch.dict(os.environ, env, clear=True):
+        assert emulator.claude_oauth_token() == "sk-ant-oat0-example"
+
+
+def test_claude_oauth_token_missing_file():
+    env = {"AWS_BENCH_CLAUDE_TOKEN_FILE": "/nonexistent/token"}
+    with mock.patch.dict(os.environ, env, clear=True):
+        assert emulator.claude_oauth_token() is None
+
+
+def test_prime_process_env_sets_token(tmp_path):
+    token_file = tmp_path / "token"
+    token_file.write_text("sk-ant-oat0-primed")
+    env = {
+        "AWS_BENCH_EMULATOR": "floci",
+        "AWS_BENCH_CLAUDE_TOKEN_FILE": str(token_file),
+    }
+    with mock.patch.dict(os.environ, env, clear=True):
+        emulator.prime_process_env()
+        assert os.environ["CLAUDE_CODE_OAUTH_TOKEN"] == "sk-ant-oat0-primed"
+
+
+def test_prime_process_env_noop_when_inactive(tmp_path):
+    token_file = tmp_path / "token"
+    token_file.write_text("sk-ant-oat0-ignored")
+    env = {"AWS_BENCH_CLAUDE_TOKEN_FILE": str(token_file)}
+    with mock.patch.dict(os.environ, env, clear=True):
+        emulator.prime_process_env()
+        assert "CLAUDE_CODE_OAUTH_TOKEN" not in os.environ
