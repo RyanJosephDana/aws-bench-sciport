@@ -31,6 +31,14 @@ names them. This changes the expected outcomes honestly:
 - Injection 4 becomes a cdk-nag-vs-WAW comparison: both catch it; cost and
   fix-hint quality differ.
 
+The tuned arm's own overhead is a first-class measurement, not a confound: if
+the pipeline is expensive (orchestration turns, tool wall-clock, and reading
+verbose linter output), the accuracy it buys comes at a token price chant does
+not pay. Report per arm: tokens spent invoking + reading analysis tooling, and
+tokens-per-actionable-finding (diagnostic signal-to-noise). Expected shape:
+stock CDK is cheap upfront and pays at deploy; tuned CDK pays upfront in
+orchestration and noise-filtering; chant pays neither.
+
 ## Dependencies
 
 - chant-deployed estate (tasks are mutation-style; both arms attempt the same
