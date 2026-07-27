@@ -25,6 +25,8 @@ from __future__ import annotations
 
 import os
 import re
+import shutil
+from pathlib import Path
 
 #: The emulator's single AWS account. Floci reports 000000000000 everywhere.
 ACCOUNT_ID = "000000000000"
@@ -139,6 +141,131 @@ def prime_process_env() -> None:
         token = claude_oauth_token()
         if token:
             os.environ["CLAUDE_CODE_OAUTH_TOKEN"] = token
+
+
+#: Replacement verifier entrypoint for introspection tasks in emulator mode.
+JUDGE_TEST_SH = """#!/bin/bash
+# Floci emulator mode: judge with Claude Code (subscription OAuth token)
+# instead of rewardkit -> Bedrock. Same rubric, same reward contract
+# (/logs/verifier/reward.txt).
+set -ex
+
+uv run --no-project /tests/resolve_placeholders.py
+uv run --no-project /tests/claude_judge.py /tests
+"""
+
+#: Self-contained (stdlib-only) Claude Code judge staged next to test.sh.
+CLAUDE_JUDGE_PY = '''#!/usr/bin/env python3
+"""Judge an introspection task with Claude Code instead of rewardkit/Bedrock.
+
+Reads the task's judge.toml (criteria, files, prompt template), asks Claude
+for a per-criterion boolean verdict via ``claude -p``, and writes the Harbor
+reward contract: /logs/verifier/reward.txt with 1.0 (all criteria pass) or
+0.0. The raw judge response is kept at /logs/verifier/claude-judge.json.
+
+Exit codes: 0 = judged (either reward); nonzero = judging itself failed.
+"""
+
+import json
+import os
+import re
+import subprocess
+import sys
+import tomllib
+from pathlib import Path
+
+VERIFIER_DIR = Path(os.environ.get("AWS_BENCH_VERIFIER_DIR", "/logs/verifier"))
+
+
+def build_prompt(tests: Path, judge: dict, criteria: list[dict]) -> str:
+    template = (tests / judge["prompt_template"]).read_text()
+    crit_lines = "\\n".join(
+        f"- {c['name']} ({c.get('type', 'binary')}): {c['description']}" for c in criteria
+    )
+    prompt = template.replace("{criteria}", "## Criteria\\n\\n" + crit_lines)
+    parts = [prompt, "\\n\\n# Files\\n"]
+    for name in judge.get("files", []):
+        path = Path(name)
+        parts.append(f"\\n## {path.name}\\n```\\n{path.read_text()}\\n```\\n")
+    names = ", ".join(f'"{c["name"]}": true|false' for c in criteria)
+    parts.append(
+        "\\nRespond with ONLY a JSON object mapping each criterion name to a "
+        f"boolean, e.g. {{{names}}}. No prose outside the JSON."
+    )
+    return "".join(parts)
+
+
+def extract_json(text: str) -> dict:
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        matches = re.findall(r"\\{[^{}]*\\}", text, re.DOTALL)
+        for candidate in reversed(matches):
+            try:
+                return json.loads(candidate)
+            except json.JSONDecodeError:
+                continue
+    raise ValueError(f"no JSON verdict found in judge output: {text[:500]!r}")
+
+
+def main() -> int:
+    tests = Path(sys.argv[1] if len(sys.argv) > 1 else "/tests")
+    config = tomllib.loads((tests / "judge.toml").read_text())
+    judge = config["judge"]
+    criteria = config.get("criterion", [])
+    prompt = build_prompt(tests, judge, criteria)
+
+    model = os.environ.get("AWS_BENCH_JUDGE_MODEL", "claude-sonnet-4-5")
+    proc = subprocess.run(
+        ["claude", "-p", "--model", model, "--output-format", "json"],
+        input=prompt,
+        capture_output=True,
+        text=True,
+        timeout=540,
+    )
+    VERIFIER_DIR.mkdir(parents=True, exist_ok=True)
+    (VERIFIER_DIR / "claude-judge.json").write_text(
+        json.dumps({"stdout": proc.stdout, "stderr": proc.stderr, "rc": proc.returncode})
+    )
+    if proc.returncode != 0:
+        print(f"claude -p failed (rc={proc.returncode}): {proc.stderr[:500]}", file=sys.stderr)
+        return 1
+
+    envelope = json.loads(proc.stdout)
+    verdict = extract_json(envelope.get("result", ""))
+    passed = bool(criteria) and all(verdict.get(c["name"]) is True for c in criteria)
+    (VERIFIER_DIR / "reward.txt").write_text("1.0" if passed else "0.0")
+    print(f"claude judge verdict: {verdict} -> reward {'1.0' if passed else '0.0'}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+'''
+
+
+def stage_task_for_emulator(task_dir: Path, staging_root: Path) -> Path:
+    """Return an emulator-adapted copy of ``task_dir`` (or ``task_dir`` itself).
+
+    Mutation tasks (no ``tests/ground_truth.json``) pass through untouched —
+    their boto3 verifiers work against Floci as-is. Introspection tasks are
+    copied under ``staging_root`` with the rewardkit ``test.sh`` swapped for the
+    Claude Code judge, so the original dataset checkout is never modified.
+    """
+    if not (task_dir / "tests" / "ground_truth.json").is_file():
+        return task_dir
+    staged = staging_root / "emulator-staged" / task_dir.parent.name / task_dir.name
+    staged.parent.mkdir(parents=True, exist_ok=True)
+    if staged.exists():
+        shutil.rmtree(staged)
+    shutil.copytree(task_dir, staged)
+    tests = staged / "tests"
+    (tests / "test.sh").write_text(JUDGE_TEST_SH)
+    (tests / "claude_judge.py").write_text(CLAUDE_JUDGE_PY)
+    judge_toml = tests / "judge.toml"
+    if judge_toml.is_file():
+        judge_toml.write_text(rewrite_judge_model(judge_toml.read_text()))
+    return staged
 
 
 def rewrite_judge_model(judge_toml_body: str) -> str:

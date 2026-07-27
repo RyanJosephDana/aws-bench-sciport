@@ -95,3 +95,81 @@ def test_emulated_test_environment_maps_all_tags():
     assert account.account_id == emulator.ACCOUNT_ID
     assert account.status == "ACTIVE"
     assert env.account_for("ec2-multiregion") == emulator.ACCOUNT_ID
+
+
+def _make_task(tmp_path, name, introspection):
+    task = tmp_path / "scenario" / name
+    (task / "tests").mkdir(parents=True)
+    (task / "tests" / "test.sh").write_text("#!/bin/bash\nuvx rewardkit /tests\n")
+    if introspection:
+        (task / "tests" / "ground_truth.json").write_text("{}")
+        (task / "tests" / "judge.toml").write_text(
+            '[judge]\njudge = "bedrock/us.anthropic.claude-sonnet-4-5-20250929-v1:0"\n'
+        )
+    return task
+
+
+def test_stage_task_swaps_judge_for_introspection(tmp_path):
+    task = _make_task(tmp_path, "diagnose-thing", introspection=True)
+    staged = emulator.stage_task_for_emulator(task, tmp_path / "cache")
+    assert staged != task
+    assert "claude_judge.py" in (staged / "tests" / "test.sh").read_text()
+    assert (staged / "tests" / "claude_judge.py").is_file()
+    assert "anthropic/claude-sonnet-4-5-20250929" in (staged / "tests" / "judge.toml").read_text()
+    # Original dataset untouched.
+    assert "rewardkit" in (task / "tests" / "test.sh").read_text()
+
+
+def test_stage_task_passthrough_for_mutation(tmp_path):
+    task = _make_task(tmp_path, "create-thing", introspection=False)
+    assert emulator.stage_task_for_emulator(task, tmp_path / "cache") == task
+
+
+def test_claude_judge_script_is_valid_python():
+    import ast
+
+    ast.parse(emulator.CLAUDE_JUDGE_PY)
+
+
+def test_claude_judge_end_to_end_with_stub_claude(tmp_path):
+    import subprocess
+    import sys
+
+    tests_dir = tmp_path / "tests"
+    tests_dir.mkdir()
+    (tests_dir / "judge.toml").write_text(
+        '[judge]\n'
+        'judge = "anthropic/claude-sonnet-4-5"\n'
+        f'files = ["{tests_dir}/ground_truth.json"]\n'
+        'prompt_template = "judge_prompt.md"\n'
+        "[[criterion]]\n"
+        'name = "answers_equivalent"\n'
+        'description = "match?"\n'
+        'type = "binary"\n'
+    )
+    (tests_dir / "judge_prompt.md").write_text("Grade this.\n{criteria}\n")
+    (tests_dir / "ground_truth.json").write_text('{"expected_answer": "42"}')
+    (tests_dir / "claude_judge.py").write_text(emulator.CLAUDE_JUDGE_PY)
+
+    stub_bin = tmp_path / "bin"
+    stub_bin.mkdir()
+    stub = stub_bin / "claude"
+    stub.write_text(
+        "#!/bin/bash\n"
+        "cat > /dev/null\n"
+        'echo \'{"result": "{\\"answers_equivalent\\": true}"}\'\n'
+    )
+    stub.chmod(0o755)
+
+    verifier_dir = tmp_path / "verifier"
+    env = dict(os.environ)
+    env["PATH"] = f"{stub_bin}:{env['PATH']}"
+    env["AWS_BENCH_VERIFIER_DIR"] = str(verifier_dir)
+    proc = subprocess.run(
+        [sys.executable, str(tests_dir / "claude_judge.py"), str(tests_dir)],
+        capture_output=True,
+        text=True,
+        env=env,
+    )
+    assert proc.returncode == 0, proc.stderr
+    assert (verifier_dir / "reward.txt").read_text() == "1.0"
