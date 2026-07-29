@@ -31,7 +31,7 @@ cd benchmarks/arms/terraform-ec2-multiregion
 
 ## 3. Deploy to Floci
 ```sh
-export AWS_ENDPOINT_URL=http://localhost:4566 AWS_ACCESS_KEY_ID=test AWS_SECRET_ACCESS_KEY=test
+export AWS_ENDPOINT_URL=http://localhost:4566 AWS_ACCESS_KEY_ID=test AWS_SECRET_ACCESS_KEY=test AWS_DEFAULT_REGION=us-east-1
 terraform init
 terraform apply -auto-approve
 ```
@@ -90,16 +90,18 @@ The `sgs |= lt_sgs...` line is the launch-template hop — the security group re
 only through a launch template, not attached to the instance directly. Drop it and the
 count falls to 1, which is exactly what a CLI sweep (and the CDK arm) returns.
 
-## Pass criteria
-- 6 running instances, 0 terminated.
-- The derivation prints internet-facing = 5 and ssh-reachable = 2.
+## Expected outcome
+The reproduction succeeds when both hold:
+- The instance check prints `4`, `1`, `1` — 6 running, 0 terminated.
+- The derivation prints exactly `internet-facing (find-public): 5` and
+  `ssh-reachable: 2`.
 
-## What the benchmark measures
-The agent is given this workspace + `terraform show -json` and asked the same
-questions. It reproduces the SSH answer (2, including the launch-template instance)
-but not the public-subnet answer reliably — the route-table walk is fiddly by hand.
-Full result and comparison: `/tmp/chant-vs-terraform.md` (TF 13/15, chant 15/15,
-CDK 11/15).
+Any other counts (terminated instances present, or 5/2 not matching) is a failure.
+
+## Scope
+This proves the estate is faithful — internet-facing = 5, ssh-reachable = 2. It
+does not reproduce the full win-rate or cost; those need the aws-bench harness
+(Haiku 4.5, k=3, judged), not the derivation above.
 
 ---
 Tested with Terraform 1.15.8 + hashicorp/aws 6.56.0 against Floci `scenario1-working`.

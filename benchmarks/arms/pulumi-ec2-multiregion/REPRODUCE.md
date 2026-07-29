@@ -34,7 +34,7 @@ npm install
 ## 3. Deploy to Floci
 Use a local file backend (no Pulumi Cloud account) and any passphrase:
 ```sh
-export AWS_ENDPOINT_URL=http://localhost:4566 AWS_ACCESS_KEY_ID=test AWS_SECRET_ACCESS_KEY=test
+export AWS_ENDPOINT_URL=http://localhost:4566 AWS_ACCESS_KEY_ID=test AWS_SECRET_ACCESS_KEY=test AWS_DEFAULT_REGION=us-east-1
 export PULUMI_CONFIG_PASSPHRASE=floci PULUMI_BACKEND_URL="file://$PWD"
 pulumi stack init dev
 pulumi up --yes
@@ -92,14 +92,18 @@ The `sgs |= lt_sgs...` line is the launch-template hop — the security group re
 only through a launch template. Drop it and the count falls to 1, which is what a CLI
 sweep (and the CDK arm) returns.
 
-## Pass criteria
-- 6 running instances, 0 terminated.
-- The derivation prints internet-facing = 5 and ssh-reachable = 2.
+## Expected outcome
+The reproduction succeeds when both hold:
+- The instance check prints `4`, `1`, `1` — 6 running, 0 terminated.
+- The derivation prints exactly `internet-facing (find-public): 5` and
+  `ssh-reachable: 2`.
 
-## What the benchmark measures
-The agent is given this workspace + `pulumi stack export` and asked the same
-questions. Full result and four-way comparison: `/tmp/chant-vs-iac.md`
-(chant 15/15, Terraform 13/15, Pulumi 12/15, CDK 11/15).
+Any other counts (terminated instances present, or 5/2 not matching) is a failure.
+
+## Scope
+This proves the estate is faithful — internet-facing = 5, ssh-reachable = 2. It
+does not reproduce the full win-rate or cost; those need the aws-bench harness
+(Haiku 4.5, k=3, judged), not the derivation above.
 
 ---
 Tested with Pulumi 3.255.0 + @pulumi/aws 6.x against Floci `scenario1-working`.

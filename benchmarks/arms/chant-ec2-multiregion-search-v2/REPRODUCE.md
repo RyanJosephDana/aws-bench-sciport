@@ -1,6 +1,6 @@
 # Reproduce: chant resolves internet SSH-reachability where a CLI sweep under-counts
 
-Recreates the load-bearing result from the aws-bench `ec2-multiregion` scenario.
+Recreates the discriminating result from the aws-bench `ec2-multiregion` scenario.
 "Which EC2 instances are reachable via SSH from the internet?" is a multi-hop
 join, and chant folds it into one query a small model can run — returning the
 correct **2** instances (including the one reachable only through its launch
@@ -35,11 +35,12 @@ npm install                     # pulls released @intentius/chant + lexicon-aws 
 
 ## 3. Deploy the estate to Floci
 ```sh
-export AWS_ENDPOINT_URL=http://localhost:4566 AWS_ACCESS_KEY_ID=test AWS_SECRET_ACCESS_KEY=test
+export AWS_ENDPOINT_URL=http://localhost:4566 AWS_ACCESS_KEY_ID=test AWS_SECRET_ACCESS_KEY=test AWS_DEFAULT_REGION=us-east-1
 ./deploy.sh
 ```
 `deploy.sh` runs `chant build` on each stack and creates 6 EC2 instances across
-3 regions (plus the account default VPC).
+3 regions (plus the account default VPC). Expected outcome: four `deployed <stack>`
+lines, ending with a running-instance tally of `6 running`.
 
 ## 4. The discriminating query
 "Which instances are SSH-reachable from the internet?" — the subnet must route to
@@ -65,9 +66,17 @@ sweep misses that hop and returns 1. chant folds both hops (route-table→IGW an
 the launch-template SG) into `internetFacing` / `effectiveIngress`, so the count
 is right — and the same query holds as the estate grows.
 
-## Pass criteria
-- ssh-reach query returns exactly `webServer` + `launchTemplateServer` (2)
-- public-subnet query returns 5, including `defaultVpcServer`
+## Expected outcome
+The reproduction succeeds when both hold:
+- ssh-reach query returns exactly `webServer` + `launchTemplateServer` — 2 rows.
+- public-subnet query returns 5 rows, including `defaultVpcServer`.
+
+Anything else (0, 1, 3+, or a missing `defaultVpcServer`) is a failure.
+
+## Scope
+This proves the discriminating result — SSH-reachable = 2, public = 5. It does not
+reproduce the full win-rate or cost figures; those need the aws-bench harness
+(Haiku 4.5, k=3, judged), not the two queries above.
 
 ---
 Tested with `@intentius/chant@0.33.0` + `@intentius/chant-lexicon-aws@0.33.0`.

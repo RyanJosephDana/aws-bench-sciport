@@ -6,6 +6,9 @@ cd "$(dirname "$0")"
 
 export AWS_ENDPOINT_URL=${AWS_ENDPOINT_URL:-http://localhost:4566}
 export AWS_ACCESS_KEY_ID=test AWS_SECRET_ACCESS_KEY=test
+# A default region so the region-agnostic calls below (sts get-caller-identity,
+# list-exports) resolve without an explicit --region on every invocation.
+export AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-us-east-1} AWS_REGION=${AWS_REGION:-us-east-1}
 
 deploy() { # stack-name region template extra-params...
   local stack="$1" region="$2" template="$3"; shift 3
