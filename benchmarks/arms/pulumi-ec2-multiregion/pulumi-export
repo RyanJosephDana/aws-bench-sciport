@@ -1,0 +1,6 @@
+#!/bin/sh
+# Dump the applied Pulumi state as JSON (the local file backend, read-only).
+cd "$(dirname "$0")"
+export PULUMI_CONFIG_PASSPHRASE=floci
+export PULUMI_BACKEND_URL="file://$(pwd)"
+exec ./vendor/bin/pulumi stack export --stack dev
