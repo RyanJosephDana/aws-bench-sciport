@@ -76,7 +76,8 @@ Anything else (0, 1, 3+, or a missing `defaultVpcServer`) is a failure.
 ## Scope
 This proves the discriminating result — SSH-reachable = 2, public = 5. It does not
 reproduce the full win-rate or cost figures; those need the aws-bench harness
-(Haiku 4.5, k=3, judged), not the two queries above.
+(Haiku 4.5, k=3, judged), not the two queries above. To run the harness and tally
+the scores across all four arms, see `../REPRODUCE-BENCHMARK.md`.
 
 ---
 Tested with `@intentius/chant@0.33.0` + `@intentius/chant-lexicon-aws@0.33.0`.

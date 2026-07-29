@@ -101,7 +101,8 @@ Any other counts (terminated instances present, or 5/2 not matching) is a failur
 ## Scope
 This proves the estate is faithful — internet-facing = 5, ssh-reachable = 2. It
 does not reproduce the full win-rate or cost; those need the aws-bench harness
-(Haiku 4.5, k=3, judged), not the derivation above.
+(Haiku 4.5, k=3, judged), not the derivation above. To run the harness and tally
+the scores across all four arms, see `../REPRODUCE-BENCHMARK.md`.
 
 ---
 Tested with Terraform 1.15.8 + hashicorp/aws 6.56.0 against Floci `scenario1-working`.
