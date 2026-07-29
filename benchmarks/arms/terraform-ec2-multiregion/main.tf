@@ -63,7 +63,8 @@ locals {
 # and Terraform's AttachRolePolicy (unlike CDK's CFN path) validates existence →
 # 404. These QA roles are harness scaffolding the EC2 tasks never query, and the
 # judge runs on OAuth (not Bedrock) in emulator mode, so the attachment is dropped
-# until the Floci gap is fixed (filed upstream). Restore the arn once seeded.
+# until the Floci gap is fixed (floci-io/floci#2033, PR #2034 seeds it). Restore
+# the arn once that lands in the emulator image.
 resource "aws_iam_role" "qa_readonly" {
   provider           = aws.use1
   name               = "QALocalInvocationApplicationRole"
