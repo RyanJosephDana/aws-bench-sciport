@@ -1,0 +1,49 @@
+{
+  "status": "created",
+  "fqn": "Vpc",
+  "logicalId": "Vpc",
+  "instanceId": "75e6af1d528f3e1369c1807bc75bab27",
+  "resourceType": "AWS.EC2.VPC",
+  "props": {
+    "cidrBlock": "10.0.0.0/16",
+    "tags": {
+      "Name": "ResourcesVpc"
+    }
+  },
+  "attr": {
+    "vpcId": "vpc-f559cc0f",
+    "vpcArn": "arn:aws:ec2:us-east-1:000000000000:vpc/vpc-f559cc0f",
+    "cidrBlock": "10.0.0.0/16",
+    "dhcpOptionsId": "dopt-default",
+    "state": "available",
+    "isDefault": false,
+    "ownerId": "000000000000",
+    "cidrBlockAssociationSet": [
+      {
+        "associationId": "vpc-cidr-assoc-7ef2c5c6",
+        "cidrBlock": "10.0.0.0/16",
+        "cidrBlockState": {
+          "state": "associated"
+        }
+      }
+    ],
+    "tags": {
+      "Name": "ResourcesVpc",
+      "alchemy::stack": "alchemy-effect-ec2-multiregion-us-east-1",
+      "alchemy::stage": "bench",
+      "alchemy::id": "Vpc"
+    }
+  },
+  "bindings": [],
+  "providerVersion": 0,
+  "downstream": [
+    "PublicSubnet",
+    "PrivateSubnet",
+    "InternetGateway",
+    "PublicRouteTable",
+    "WebSecurityGroup",
+    "UnusedSecurityGroup",
+    "ExpVpcId"
+  ],
+  "removalPolicy": "destroy"
+}

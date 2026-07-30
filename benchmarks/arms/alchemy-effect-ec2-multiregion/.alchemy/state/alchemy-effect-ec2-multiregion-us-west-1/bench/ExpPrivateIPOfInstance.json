@@ -1,0 +1,22 @@
+{
+  "status": "created",
+  "fqn": "ExpPrivateIPOfInstance",
+  "logicalId": "ExpPrivateIPOfInstance",
+  "instanceId": "887d228b16f2ba5bda80f9b45eb2f212",
+  "resourceType": "AWS.SSM.Parameter",
+  "props": {
+    "name": "/exports/ec2-multiregion-EC2-ls9fuhb522-us-west-1-PrivateIPOfInstance",
+    "type": "String",
+    "value": "172.17.0.3"
+  },
+  "attr": {
+    "parameterName": "/exports/ec2-multiregion-EC2-ls9fuhb522-us-west-1-PrivateIPOfInstance",
+    "parameterArn": "arn:aws:ssm:us-west-1:000000000000:parameter/exports/ec2-multiregion-EC2-ls9fuhb522-us-west-1-PrivateIPOfInstance",
+    "type": "String",
+    "version": 1
+  },
+  "bindings": [],
+  "providerVersion": 0,
+  "downstream": [],
+  "removalPolicy": "destroy"
+}

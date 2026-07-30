@@ -1,0 +1,57 @@
+{
+  "status": "created",
+  "fqn": "QaAdminRole",
+  "logicalId": "QaAdminRole",
+  "instanceId": "66a3cab6fc77aae0cd7c282f196044c1",
+  "resourceType": "AWS.IAM.Role",
+  "props": {
+    "roleName": "QALocalInvocationApplicationAdmin",
+    "assumeRolePolicyDocument": {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Principal": {
+            "AWS": "arn:aws:iam::000000000000:root"
+          },
+          "Action": "sts:AssumeRole"
+        }
+      ]
+    },
+    "managedPolicyArns": [
+      "arn:aws:iam::aws:policy/AdministratorAccess"
+    ]
+  },
+  "attr": {
+    "roleArn": "arn:aws:iam::000000000000:role/QALocalInvocationApplicationAdmin",
+    "roleName": "QALocalInvocationApplicationAdmin",
+    "roleId": "AROAWKR0SAHBGQO1JSR0",
+    "path": "/",
+    "assumeRolePolicyDocument": {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Principal": {
+            "AWS": "arn:aws:iam::000000000000:root"
+          },
+          "Action": "sts:AssumeRole"
+        }
+      ]
+    },
+    "managedPolicyArns": [
+      "arn:aws:iam::aws:policy/AdministratorAccess"
+    ],
+    "inlinePolicies": {},
+    "maxSessionDuration": 3600,
+    "tags": {
+      "alchemy::stack": "alchemy-effect-ec2-multiregion-us-east-1",
+      "alchemy::stage": "bench",
+      "alchemy::id": "QaAdminRole"
+    }
+  },
+  "bindings": [],
+  "providerVersion": 0,
+  "downstream": [],
+  "removalPolicy": "destroy"
+}

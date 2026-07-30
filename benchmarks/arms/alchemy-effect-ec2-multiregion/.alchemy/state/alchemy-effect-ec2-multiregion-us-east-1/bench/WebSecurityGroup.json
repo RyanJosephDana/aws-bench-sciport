@@ -1,0 +1,94 @@
+{
+  "status": "created",
+  "fqn": "WebSecurityGroup",
+  "logicalId": "WebSecurityGroup",
+  "instanceId": "bcec4e5e901b2ea7ceb8c25261b84080",
+  "resourceType": "AWS.EC2.SecurityGroup",
+  "props": {
+    "vpcId": "vpc-f559cc0f",
+    "groupName": "web-ec2-multiregion-EC2-ks84v1fh12-us-east-1",
+    "description": "Allow specific inbound traffic",
+    "ingress": [
+      {
+        "ipProtocol": "tcp",
+        "fromPort": 22,
+        "toPort": 22,
+        "cidrIpv4": "0.0.0.0/0",
+        "description": "Allow SSH access"
+      },
+      {
+        "ipProtocol": "tcp",
+        "fromPort": 80,
+        "toPort": 80,
+        "cidrIpv4": "0.0.0.0/0",
+        "description": "Allow HTTP access"
+      },
+      {
+        "ipProtocol": "tcp",
+        "fromPort": 443,
+        "toPort": 443,
+        "cidrIpv4": "0.0.0.0/0",
+        "description": "Allow HTTPS access"
+      }
+    ]
+  },
+  "attr": {
+    "groupId": "sg-b78b0efe0a0ed0c53",
+    "groupArn": "arn:aws:ec2:us-east-1:000000000000:security-group/sg-b78b0efe0a0ed0c53",
+    "groupName": "web-ec2-multiregion-EC2-ks84v1fh12-us-east-1",
+    "description": "Allow specific inbound traffic",
+    "vpcId": "vpc-f559cc0f",
+    "ownerId": "000000000000",
+    "ingressRules": [
+      {
+        "securityGroupRuleId": "sgr-669aa6cd7c29008e9",
+        "ipProtocol": "tcp",
+        "fromPort": 80,
+        "toPort": 80,
+        "cidrIpv4": "0.0.0.0/0",
+        "description": "Allow HTTP access",
+        "isEgress": false
+      },
+      {
+        "securityGroupRuleId": "sgr-6c4bfa844114e96d9",
+        "ipProtocol": "tcp",
+        "fromPort": 443,
+        "toPort": 443,
+        "cidrIpv4": "0.0.0.0/0",
+        "description": "Allow HTTPS access",
+        "isEgress": false
+      },
+      {
+        "securityGroupRuleId": "sgr-89a3dc1b5af8098ff",
+        "ipProtocol": "tcp",
+        "fromPort": 22,
+        "toPort": 22,
+        "cidrIpv4": "0.0.0.0/0",
+        "description": "Allow SSH access",
+        "isEgress": false
+      }
+    ],
+    "egressRules": [
+      {
+        "securityGroupRuleId": "sgr-e212567473b6e764a",
+        "ipProtocol": "-1",
+        "cidrIpv4": "0.0.0.0/0",
+        "isEgress": true
+      },
+      {
+        "securityGroupRuleId": "sgr-90bd5b72e29ebb55e",
+        "ipProtocol": "-1",
+        "cidrIpv4": "0.0.0.0/0",
+        "isEgress": true
+      }
+    ]
+  },
+  "bindings": [],
+  "providerVersion": 0,
+  "downstream": [
+    "WebServer",
+    "WebLaunchTemplate",
+    "ExpSecurityGroupId"
+  ],
+  "removalPolicy": "destroy"
+}

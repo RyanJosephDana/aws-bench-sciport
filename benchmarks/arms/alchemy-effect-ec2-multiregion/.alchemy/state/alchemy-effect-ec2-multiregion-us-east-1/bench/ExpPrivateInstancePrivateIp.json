@@ -1,0 +1,22 @@
+{
+  "status": "created",
+  "fqn": "ExpPrivateInstancePrivateIp",
+  "logicalId": "ExpPrivateInstancePrivateIp",
+  "instanceId": "762fc17168f3366194a06ded4ea20727",
+  "resourceType": "AWS.SSM.Parameter",
+  "props": {
+    "name": "/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-PrivateInstancePrivateIp",
+    "type": "String",
+    "value": "172.17.0.6"
+  },
+  "attr": {
+    "parameterName": "/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-PrivateInstancePrivateIp",
+    "parameterArn": "arn:aws:ssm:us-east-1:000000000000:parameter/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-PrivateInstancePrivateIp",
+    "type": "String",
+    "version": 1
+  },
+  "bindings": [],
+  "providerVersion": 0,
+  "downstream": [],
+  "removalPolicy": "destroy"
+}

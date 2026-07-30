@@ -1,0 +1,35 @@
+{
+  "status": "created",
+  "fqn": "WebLaunchTemplate",
+  "logicalId": "WebLaunchTemplate",
+  "instanceId": "05765fa812632f5329c8725b1283057b",
+  "resourceType": "AWS.AutoScaling.LaunchTemplate",
+  "props": {
+    "launchTemplateName": "lt-000000000000-us-east-1",
+    "imageId": "ami-0f3f13f145e66a0a3",
+    "instanceType": "t3.micro",
+    "securityGroupIds": [
+      "sg-b78b0efe0a0ed0c53"
+    ],
+    "isExternal": true
+  },
+  "attr": {
+    "launchTemplateId": "lt-fa88f759c5a77cc1b",
+    "launchTemplateArn": "arn:aws:ec2:us-east-1:000000000000:launch-template/lt-fa88f759c5a77cc1b",
+    "launchTemplateName": "lt-000000000000-us-east-1",
+    "defaultVersionNumber": 1,
+    "latestVersionNumber": 1,
+    "tags": {
+      "alchemy::stack": "alchemy-effect-ec2-multiregion-us-east-1",
+      "alchemy::stage": "bench",
+      "alchemy::id": "WebLaunchTemplate"
+    },
+    "managedIam": false
+  },
+  "bindings": [],
+  "providerVersion": 0,
+  "downstream": [
+    "LaunchTemplateServer"
+  ],
+  "removalPolicy": "destroy"
+}

@@ -1,0 +1,40 @@
+{
+  "status": "created",
+  "fqn": "PublicSubnet",
+  "logicalId": "PublicSubnet",
+  "instanceId": "ff4209c43351d76569c5fa0ea98be495",
+  "resourceType": "AWS.EC2.Subnet",
+  "props": {
+    "vpcId": "vpc-09d89672",
+    "cidrBlock": "10.0.0.0/24",
+    "availabilityZone": "us-west-2a",
+    "mapPublicIpOnLaunch": true,
+    "tags": {
+      "Name": "Public"
+    }
+  },
+  "attr": {
+    "subnetId": "subnet-2398f1f6",
+    "subnetArn": "arn:aws:ec2:us-west-2:000000000000:subnet/subnet-2398f1f6",
+    "cidrBlock": "10.0.0.0/24",
+    "vpcId": "vpc-09d89672",
+    "availabilityZone": "us-west-2a",
+    "availabilityZoneId": "us-west-2-az1",
+    "state": "available",
+    "availableIpAddressCount": 251,
+    "mapPublicIpOnLaunch": true,
+    "assignIpv6AddressOnCreation": false,
+    "defaultForAz": false,
+    "ownerId": "000000000000",
+    "ipv6CidrBlockAssociationSet": [],
+    "enableDns64": false
+  },
+  "bindings": [],
+  "providerVersion": 0,
+  "downstream": [
+    "PublicAssociation",
+    "WebServer",
+    "ExpPublicSubnetId"
+  ],
+  "removalPolicy": "destroy"
+}

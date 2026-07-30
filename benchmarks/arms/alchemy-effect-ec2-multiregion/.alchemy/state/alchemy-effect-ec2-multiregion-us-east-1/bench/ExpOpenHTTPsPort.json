@@ -1,0 +1,22 @@
+{
+  "status": "created",
+  "fqn": "ExpOpenHTTPsPort",
+  "logicalId": "ExpOpenHTTPsPort",
+  "instanceId": "9a0126911649ecefd41d1abbdf627d56",
+  "resourceType": "AWS.SSM.Parameter",
+  "props": {
+    "name": "/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-OpenHTTPsPort",
+    "type": "String",
+    "value": "443"
+  },
+  "attr": {
+    "parameterName": "/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-OpenHTTPsPort",
+    "parameterArn": "arn:aws:ssm:us-east-1:000000000000:parameter/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-OpenHTTPsPort",
+    "type": "String",
+    "version": 1
+  },
+  "bindings": [],
+  "providerVersion": 0,
+  "downstream": [],
+  "removalPolicy": "destroy"
+}

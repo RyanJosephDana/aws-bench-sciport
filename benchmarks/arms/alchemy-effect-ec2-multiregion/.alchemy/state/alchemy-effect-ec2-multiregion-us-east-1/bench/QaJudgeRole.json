@@ -1,0 +1,57 @@
+{
+  "status": "created",
+  "fqn": "QaJudgeRole",
+  "logicalId": "QaJudgeRole",
+  "instanceId": "0986de1c7899f5553ffc091fe3af3142",
+  "resourceType": "AWS.IAM.Role",
+  "props": {
+    "roleName": "LLMJudgeFullBedrockAccessRole",
+    "assumeRolePolicyDocument": {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Principal": {
+            "AWS": "arn:aws:iam::000000000000:root"
+          },
+          "Action": "sts:AssumeRole"
+        }
+      ]
+    },
+    "managedPolicyArns": [
+      "arn:aws:iam::aws:policy/ReadOnlyAccess"
+    ]
+  },
+  "attr": {
+    "roleArn": "arn:aws:iam::000000000000:role/LLMJudgeFullBedrockAccessRole",
+    "roleName": "LLMJudgeFullBedrockAccessRole",
+    "roleId": "AROAOSZXUIIROGD1P1IM",
+    "path": "/",
+    "assumeRolePolicyDocument": {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Principal": {
+            "AWS": "arn:aws:iam::000000000000:root"
+          },
+          "Action": "sts:AssumeRole"
+        }
+      ]
+    },
+    "managedPolicyArns": [
+      "arn:aws:iam::aws:policy/ReadOnlyAccess"
+    ],
+    "inlinePolicies": {},
+    "maxSessionDuration": 3600,
+    "tags": {
+      "alchemy::stack": "alchemy-effect-ec2-multiregion-us-east-1",
+      "alchemy::stage": "bench",
+      "alchemy::id": "QaJudgeRole"
+    }
+  },
+  "bindings": [],
+  "providerVersion": 0,
+  "downstream": [],
+  "removalPolicy": "destroy"
+}

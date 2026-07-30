@@ -1,0 +1,23 @@
+{
+  "status": "created",
+  "fqn": "PublicAssociation",
+  "logicalId": "PublicAssociation",
+  "instanceId": "49f9cf0f6a821e343e1410e4a23fc502",
+  "resourceType": "AWS.EC2.RouteTableAssociation",
+  "props": {
+    "routeTableId": "rtb-6be5370d",
+    "subnetId": "subnet-2398f1f6"
+  },
+  "attr": {
+    "associationId": "rtbassoc-30a539b9",
+    "routeTableId": "rtb-6be5370d",
+    "subnetId": "subnet-2398f1f6",
+    "associationState": {
+      "state": "associated"
+    }
+  },
+  "bindings": [],
+  "providerVersion": 0,
+  "downstream": [],
+  "removalPolicy": "destroy"
+}

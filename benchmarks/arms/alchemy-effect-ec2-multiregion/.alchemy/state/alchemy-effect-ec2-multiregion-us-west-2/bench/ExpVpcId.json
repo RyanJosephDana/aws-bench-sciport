@@ -1,0 +1,22 @@
+{
+  "status": "created",
+  "fqn": "ExpVpcId",
+  "logicalId": "ExpVpcId",
+  "instanceId": "32c98b7716d3f46b03e0e611c19669ba",
+  "resourceType": "AWS.SSM.Parameter",
+  "props": {
+    "name": "/exports/ec2-multiregion-EC2-ls9fuhb522-us-west-2-VpcId",
+    "type": "String",
+    "value": "vpc-09d89672"
+  },
+  "attr": {
+    "parameterName": "/exports/ec2-multiregion-EC2-ls9fuhb522-us-west-2-VpcId",
+    "parameterArn": "arn:aws:ssm:us-west-2:000000000000:parameter/exports/ec2-multiregion-EC2-ls9fuhb522-us-west-2-VpcId",
+    "type": "String",
+    "version": 1
+  },
+  "bindings": [],
+  "providerVersion": 0,
+  "downstream": [],
+  "removalPolicy": "destroy"
+}

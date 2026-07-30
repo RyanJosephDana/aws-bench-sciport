@@ -1,0 +1,49 @@
+{
+  "status": "created",
+  "fqn": "WebServer",
+  "logicalId": "WebServer",
+  "instanceId": "2288e717dd6334e7ae18635785f64129",
+  "resourceType": "AWS.EC2.Instance",
+  "props": {
+    "imageId": "ami-0f3f13f145e66a0a3",
+    "instanceType": "t3.micro",
+    "subnetId": "subnet-2398f1f6",
+    "tags": {
+      "Name": "WebServerInstance"
+    },
+    "isExternal": true
+  },
+  "attr": {
+    "instanceId": "i-eb8c4f05b765af0f1",
+    "instanceArn": "arn:aws:ec2:us-west-2:000000000000:instance/i-eb8c4f05b765af0f1",
+    "imageId": "ami-0f3f13f145e66a0a3",
+    "instanceType": "t3.micro",
+    "state": "running",
+    "vpcId": "vpc-09d89672",
+    "subnetId": "subnet-2398f1f6",
+    "availabilityZone": "us-west-2a",
+    "securityGroupIds": [
+      "sg-default"
+    ],
+    "privateIpAddress": "172.17.0.4",
+    "publicIpAddress": "127.0.0.1",
+    "privateDnsName": "ip-172-17-0-4.ec2.internal",
+    "publicDnsName": "localhost",
+    "sourceDestCheck": true,
+    "launchTime": "2026-07-30T02:44:45.896Z",
+    "tags": {
+      "alchemy::stack": "alchemy-effect-ec2-multiregion-us-west-2",
+      "alchemy::stage": "bench",
+      "alchemy::id": "WebServer",
+      "Name": "WebServerInstance"
+    },
+    "managedIam": false
+  },
+  "bindings": [],
+  "providerVersion": 0,
+  "downstream": [
+    "ExpInstanceId",
+    "ExpPrivateIPOfInstance"
+  ],
+  "removalPolicy": "destroy"
+}

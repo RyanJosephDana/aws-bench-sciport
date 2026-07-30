@@ -1,0 +1,22 @@
+{
+  "status": "created",
+  "fqn": "ExpAMIName",
+  "logicalId": "ExpAMIName",
+  "instanceId": "561d520e66b6d74cd15105bf8f1bb677",
+  "resourceType": "AWS.SSM.Parameter",
+  "props": {
+    "name": "/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-AMIName",
+    "type": "String",
+    "value": "ami-000000000000-us-east-1"
+  },
+  "attr": {
+    "parameterName": "/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-AMIName",
+    "parameterArn": "arn:aws:ssm:us-east-1:000000000000:parameter/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-AMIName",
+    "type": "String",
+    "version": 1
+  },
+  "bindings": [],
+  "providerVersion": 0,
+  "downstream": [],
+  "removalPolicy": "destroy"
+}

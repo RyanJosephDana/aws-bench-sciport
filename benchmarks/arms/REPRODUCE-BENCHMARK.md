@@ -148,6 +148,7 @@ Per-arm values:
 | terraform | `briefing-terraform.md` | `benchmarks/arms/terraform-ec2-multiregion` → `/workspace/terraform` |
 | pulumi | `briefing-pulumi.md` | `benchmarks/arms/pulumi-ec2-multiregion` → `/workspace/pulumi` |
 | alchemy | `briefing-alchemy.md` | `benchmarks/arms/alchemy-ec2-multiregion` → `/workspace/alchemy` |
+| alchemy-effect | `briefing-alchemy-effect.md` | `benchmarks/arms/alchemy-effect-ec2-multiregion` → `/workspace/alchemy` |
 | cdk | `briefing-cdk.md` | the scenario's `cdk_app` (from `~/.aws-bench/cache`) → `/workspace/cdk_app` |
 
 Notes:

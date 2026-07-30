@@ -1,0 +1,74 @@
+{
+  "status": "created",
+  "fqn": "S3VectorsPolicy",
+  "logicalId": "S3VectorsPolicy",
+  "instanceId": "7956b9a70ac39ec861004aec8ad279fc",
+  "resourceType": "AWS.IAM.Policy",
+  "props": {
+    "policyName": "S3VectorsReadOnlyAccess-000000000000-us-east-1",
+    "description": "Read-only access to S3 Vectors operations",
+    "policyDocument": {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Sid": "AllowS3VectorsReadOnlyAccess",
+          "Effect": "Allow",
+          "Action": [
+            "s3vectors:ListVectors",
+            "s3vectors:GetVectors",
+            "s3vectors:GetIndex",
+            "s3vectors:GetVectorBucket",
+            "s3vectors:GetVectorBucketPolicy",
+            "s3vectors:ListIndexes",
+            "s3vectors:ListTagsForResource",
+            "s3vectors:ListVectorBuckets",
+            "s3vectors:QueryVectors"
+          ],
+          "Resource": "*"
+        }
+      ]
+    }
+  },
+  "attr": {
+    "policyArn": "arn:aws:iam::000000000000:policy/S3VectorsReadOnlyAccess-000000000000-us-east-1",
+    "policyName": "S3VectorsReadOnlyAccess-000000000000-us-east-1",
+    "policyId": "ANPA56KCSJY24QLQXYHE",
+    "path": "/",
+    "defaultVersionId": "v1",
+    "attachmentCount": 0,
+    "isAttachable": true,
+    "description": "Read-only access to S3 Vectors operations",
+    "policyDocument": {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Sid": "AllowS3VectorsReadOnlyAccess",
+          "Effect": "Allow",
+          "Action": [
+            "s3vectors:ListVectors",
+            "s3vectors:GetVectors",
+            "s3vectors:GetIndex",
+            "s3vectors:GetVectorBucket",
+            "s3vectors:GetVectorBucketPolicy",
+            "s3vectors:ListIndexes",
+            "s3vectors:ListTagsForResource",
+            "s3vectors:ListVectorBuckets",
+            "s3vectors:QueryVectors"
+          ],
+          "Resource": "*"
+        }
+      ]
+    },
+    "tags": {
+      "alchemy::stack": "alchemy-effect-ec2-multiregion-us-east-1",
+      "alchemy::stage": "bench",
+      "alchemy::id": "S3VectorsPolicy"
+    }
+  },
+  "bindings": [],
+  "providerVersion": 0,
+  "downstream": [
+    "QaReadonlyRole"
+  ],
+  "removalPolicy": "destroy"
+}

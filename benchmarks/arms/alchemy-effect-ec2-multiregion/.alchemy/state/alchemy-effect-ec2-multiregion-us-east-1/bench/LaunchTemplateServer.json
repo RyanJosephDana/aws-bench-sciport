@@ -1,0 +1,29 @@
+{
+  "status": "created",
+  "fqn": "LaunchTemplateServer",
+  "logicalId": "LaunchTemplateServer",
+  "instanceId": "ccb6eeb9d31bdd0d0b06c5c074e0fc9c",
+  "resourceType": "Bench.EC2.LaunchTemplateInstance",
+  "props": {
+    "subnetId": "subnet-9d2fedfb",
+    "launchTemplateId": "lt-fa88f759c5a77cc1b",
+    "launchTemplateVersion": "1",
+    "tags": {
+      "Name": "LaunchTemplateInstance"
+    }
+  },
+  "attr": {
+    "instanceId": "i-b2b369a4124954de8",
+    "privateIpAddress": "172.17.0.8",
+    "publicIpAddress": "127.0.0.1",
+    "subnetId": "subnet-9d2fedfb",
+    "launchTemplateId": "lt-fa88f759c5a77cc1b"
+  },
+  "bindings": [],
+  "providerVersion": 0,
+  "downstream": [
+    "ExpLaunchTemplateInstanceId",
+    "ExpPrivateIPOfInstanceWithLaunchTemplate"
+  ],
+  "removalPolicy": "destroy"
+}

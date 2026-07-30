@@ -1,0 +1,23 @@
+{
+  "status": "created",
+  "fqn": "InternetRoute",
+  "logicalId": "InternetRoute",
+  "instanceId": "e094c37d711abeb480e7624c95853d05",
+  "resourceType": "AWS.EC2.Route",
+  "props": {
+    "routeTableId": "rtb-ca7592c2",
+    "destinationCidrBlock": "0.0.0.0/0",
+    "gatewayId": "igw-1505939e"
+  },
+  "attr": {
+    "routeTableId": "rtb-ca7592c2",
+    "destinationCidrBlock": "0.0.0.0/0",
+    "origin": "CreateRoute",
+    "state": "active",
+    "gatewayId": "igw-1505939e"
+  },
+  "bindings": [],
+  "providerVersion": 0,
+  "downstream": [],
+  "removalPolicy": "destroy"
+}

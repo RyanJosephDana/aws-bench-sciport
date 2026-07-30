@@ -1,0 +1,22 @@
+{
+  "status": "created",
+  "fqn": "ExpOpenSSHPort",
+  "logicalId": "ExpOpenSSHPort",
+  "instanceId": "496393522307067f53d519f68faa71a0",
+  "resourceType": "AWS.SSM.Parameter",
+  "props": {
+    "name": "/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-OpenSSHPort",
+    "type": "String",
+    "value": "22"
+  },
+  "attr": {
+    "parameterName": "/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-OpenSSHPort",
+    "parameterArn": "arn:aws:ssm:us-east-1:000000000000:parameter/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-OpenSSHPort",
+    "type": "String",
+    "version": 1
+  },
+  "bindings": [],
+  "providerVersion": 0,
+  "downstream": [],
+  "removalPolicy": "destroy"
+}

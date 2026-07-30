@@ -1,0 +1,43 @@
+{
+  "status": "created",
+  "fqn": "ProofVpc",
+  "logicalId": "ProofVpc",
+  "instanceId": "5f0fad6c9c983adae08c743f33d83ce3",
+  "resourceType": "AWS.EC2.VPC",
+  "props": {
+    "cidrBlock": "10.88.0.0/16",
+    "tags": {
+      "Name": "ProofVpc"
+    }
+  },
+  "attr": {
+    "vpcId": "vpc-5cb90512",
+    "vpcArn": "arn:aws:ec2:us-east-1:000000000000:vpc/vpc-5cb90512",
+    "cidrBlock": "10.88.0.0/16",
+    "dhcpOptionsId": "dopt-default",
+    "state": "available",
+    "isDefault": false,
+    "ownerId": "000000000000",
+    "cidrBlockAssociationSet": [
+      {
+        "associationId": "vpc-cidr-assoc-c4ecafea",
+        "cidrBlock": "10.88.0.0/16",
+        "cidrBlockState": {
+          "state": "associated"
+        }
+      }
+    ],
+    "tags": {
+      "Name": "ProofVpc",
+      "alchemy::stack": "alchemy-effect-proof",
+      "alchemy::stage": "bench",
+      "alchemy::id": "ProofVpc"
+    }
+  },
+  "bindings": [],
+  "providerVersion": 0,
+  "downstream": [
+    "ProofSubnet"
+  ],
+  "removalPolicy": "destroy"
+}
