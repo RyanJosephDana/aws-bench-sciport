@@ -1,0 +1,57 @@
+{
+  "kind": "iam::Role",
+  "id": "qaJudge",
+  "fqn": "alchemy-ec2-multiregion/bench/qaJudge",
+  "seq": 76,
+  "data": {},
+  "status": "created",
+  "output": {
+    "Symbol(alchemy::ResourceKind)": "iam::Role",
+    "Symbol(alchemy::ResourceID)": "qaJudge",
+    "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/qaJudge",
+    "Symbol(alchemy::ResourceScope)": {
+      "@scope": null
+    },
+    "Symbol(alchemy::ResourceSeq)": 76,
+    "roleName": "LLMJudgeFullBedrockAccessRole",
+    "assumeRolePolicy": {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Principal": {
+            "AWS": "arn:aws:iam::000000000000:root"
+          },
+          "Action": "sts:AssumeRole"
+        }
+      ]
+    },
+    "managedPolicyArns": [
+      "arn:aws:iam::aws:policy/ReadOnlyAccess"
+    ],
+    "arn": "arn:aws:iam::000000000000:role/LLMJudgeFullBedrockAccessRole",
+    "uniqueId": "AROA8L7M6MND7D3BDPAE",
+    "roleId": "AROA8L7M6MND7D3BDPAE",
+    "createDate": {
+      "@date": "2026-07-30T01:16:17.896Z"
+    }
+  },
+  "props": {
+    "roleName": "LLMJudgeFullBedrockAccessRole",
+    "assumeRolePolicy": {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Principal": {
+            "AWS": "arn:aws:iam::000000000000:root"
+          },
+          "Action": "sts:AssumeRole"
+        }
+      ]
+    },
+    "managedPolicyArns": [
+      "arn:aws:iam::aws:policy/ReadOnlyAccess"
+    ]
+  }
+}

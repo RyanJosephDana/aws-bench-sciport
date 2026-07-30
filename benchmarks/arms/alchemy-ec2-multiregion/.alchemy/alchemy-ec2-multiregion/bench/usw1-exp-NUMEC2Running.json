@@ -1,0 +1,25 @@
+{
+  "kind": "aws::ExportParameter",
+  "id": "usw1-exp-NUMEC2Running",
+  "fqn": "alchemy-ec2-multiregion/bench/usw1-exp-NUMEC2Running",
+  "seq": 11,
+  "data": {},
+  "status": "created",
+  "output": {
+    "Symbol(alchemy::ResourceKind)": "aws::ExportParameter",
+    "Symbol(alchemy::ResourceID)": "usw1-exp-NUMEC2Running",
+    "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/usw1-exp-NUMEC2Running",
+    "Symbol(alchemy::ResourceScope)": {
+      "@scope": null
+    },
+    "Symbol(alchemy::ResourceSeq)": 11,
+    "region": "us-west-1",
+    "name": "/exports/ec2-multiregion-EC2-ls9fuhb522-us-west-1-NUMEC2Running",
+    "value": "1"
+  },
+  "props": {
+    "region": "us-west-1",
+    "name": "/exports/ec2-multiregion-EC2-ls9fuhb522-us-west-1-NUMEC2Running",
+    "value": "1"
+  }
+}

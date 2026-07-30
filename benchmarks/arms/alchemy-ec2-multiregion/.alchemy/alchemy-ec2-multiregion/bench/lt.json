@@ -1,0 +1,62 @@
+{
+  "kind": "aws::Ec2LaunchTemplate",
+  "id": "lt",
+  "fqn": "alchemy-ec2-multiregion/bench/lt",
+  "seq": 42,
+  "data": {},
+  "status": "created",
+  "output": {
+    "Symbol(alchemy::ResourceKind)": "aws::Ec2LaunchTemplate",
+    "Symbol(alchemy::ResourceID)": "lt",
+    "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/lt",
+    "Symbol(alchemy::ResourceScope)": {
+      "@scope": null
+    },
+    "Symbol(alchemy::ResourceSeq)": 42,
+    "region": "us-east-1",
+    "launchTemplateName": "lt-000000000000-us-east-1",
+    "launchTemplateData": {
+      "ImageId": "ami-0f3f13f145e66a0a3",
+      "InstanceType": "t3.micro",
+      "SecurityGroupIds": [
+        "sg-5444687056e1bcbda"
+      ],
+      "BlockDeviceMappings": [
+        {
+          "DeviceName": "/dev/xvda",
+          "Ebs": {
+            "VolumeSize": 8,
+            "VolumeType": "gp3"
+          }
+        }
+      ],
+      "MetadataOptions": {
+        "HttpTokens": "required"
+      }
+    },
+    "launchTemplateId": "lt-c94a7a04553b7457f"
+  },
+  "props": {
+    "region": "us-east-1",
+    "launchTemplateName": "lt-000000000000-us-east-1",
+    "launchTemplateData": {
+      "ImageId": "ami-0f3f13f145e66a0a3",
+      "InstanceType": "t3.micro",
+      "SecurityGroupIds": [
+        "sg-5444687056e1bcbda"
+      ],
+      "BlockDeviceMappings": [
+        {
+          "DeviceName": "/dev/xvda",
+          "Ebs": {
+            "VolumeSize": 8,
+            "VolumeType": "gp3"
+          }
+        }
+      ],
+      "MetadataOptions": {
+        "HttpTokens": "required"
+      }
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "status": "created",
+  "fqn": "ExpRestrictedActionModifyInstanceAttribute",
+  "logicalId": "ExpRestrictedActionModifyInstanceAttribute",
+  "instanceId": "3b8189daedd2f43f3122b9d9b629496a",
+  "resourceType": "AWS.SSM.Parameter",
+  "props": {
+    "name": "/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-RestrictedActionModifyInstanceAttribute",
+    "type": "String",
+    "value": "ec2:ModifyInstanceAttribute"
+  },
+  "attr": {
+    "parameterName": "/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-RestrictedActionModifyInstanceAttribute",
+    "parameterArn": "arn:aws:ssm:us-east-1:000000000000:parameter/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-RestrictedActionModifyInstanceAttribute",
+    "type": "String",
+    "version": 1
+  },
+  "bindings": [],
+  "providerVersion": 0,
+  "downstream": [],
+  "removalPolicy": "destroy"
+}

@@ -1,0 +1,22 @@
+{
+  "status": "created",
+  "fqn": "ExpNUMEC2Running",
+  "logicalId": "ExpNUMEC2Running",
+  "instanceId": "9a0361a844b048ac5a8e2d5d8b259888",
+  "resourceType": "AWS.SSM.Parameter",
+  "props": {
+    "name": "/exports/ec2-multiregion-EC2-ls9fuhb522-us-west-1-NUMEC2Running",
+    "type": "String",
+    "value": "1"
+  },
+  "attr": {
+    "parameterName": "/exports/ec2-multiregion-EC2-ls9fuhb522-us-west-1-NUMEC2Running",
+    "parameterArn": "arn:aws:ssm:us-west-1:000000000000:parameter/exports/ec2-multiregion-EC2-ls9fuhb522-us-west-1-NUMEC2Running",
+    "type": "String",
+    "version": 1
+  },
+  "bindings": [],
+  "providerVersion": 0,
+  "downstream": [],
+  "removalPolicy": "destroy"
+}

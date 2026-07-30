@@ -1,0 +1,29 @@
+{
+  "status": "created",
+  "fqn": "LaunchTemplateServer",
+  "logicalId": "LaunchTemplateServer",
+  "instanceId": "eb34745cae6060cbbf91e3c0e90b5513",
+  "resourceType": "AWS.EC2.LaunchTemplateInstance",
+  "props": {
+    "subnetId": "subnet-69986d1e",
+    "launchTemplateId": "lt-86d3a96d635a74e33",
+    "launchTemplateVersion": "1",
+    "tags": {
+      "Name": "LaunchTemplateInstance"
+    }
+  },
+  "attr": {
+    "instanceId": "i-f70c360c353f3dab7",
+    "privateIpAddress": "172.17.0.8",
+    "publicIpAddress": "127.0.0.1",
+    "subnetId": "subnet-69986d1e",
+    "launchTemplateId": "lt-86d3a96d635a74e33"
+  },
+  "bindings": [],
+  "providerVersion": 0,
+  "downstream": [
+    "ExpLaunchTemplateInstanceId",
+    "ExpPrivateIPOfInstanceWithLaunchTemplate"
+  ],
+  "removalPolicy": "destroy"
+}

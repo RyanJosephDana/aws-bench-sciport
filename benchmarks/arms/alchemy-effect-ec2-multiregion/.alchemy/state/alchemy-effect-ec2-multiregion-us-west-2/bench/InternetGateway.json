@@ -1,0 +1,28 @@
+{
+  "status": "created",
+  "fqn": "InternetGateway",
+  "logicalId": "InternetGateway",
+  "instanceId": "44f00d7943aaa01e32200618cce6b344",
+  "resourceType": "AWS.EC2.InternetGateway",
+  "props": {
+    "vpcId": "vpc-8bbd79d0"
+  },
+  "attr": {
+    "internetGatewayId": "igw-d048540b",
+    "internetGatewayArn": "arn:aws:ec2:us-west-2:000000000000:internet-gateway/igw-d048540b",
+    "vpcId": "vpc-8bbd79d0",
+    "ownerId": "000000000000",
+    "attachments": [
+      {
+        "state": "available",
+        "vpcId": "vpc-8bbd79d0"
+      }
+    ]
+  },
+  "bindings": [],
+  "providerVersion": 0,
+  "downstream": [
+    "InternetRoute"
+  ],
+  "removalPolicy": "destroy"
+}

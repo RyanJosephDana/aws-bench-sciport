@@ -1,0 +1,32 @@
+{
+  "status": "created",
+  "fqn": "PublicRouteTable",
+  "logicalId": "PublicRouteTable",
+  "instanceId": "d19baa7ce177b01ef58eaf4a9c07097c",
+  "resourceType": "AWS.EC2.RouteTable",
+  "props": {
+    "vpcId": "vpc-8bbd79d0"
+  },
+  "attr": {
+    "routeTableId": "rtb-4dcc4d46",
+    "routeTableArn": "arn:aws:ec2:us-west-2:000000000000:route-table/rtb-4dcc4d46",
+    "vpcId": "vpc-8bbd79d0",
+    "ownerId": "000000000000",
+    "associations": [],
+    "routes": [
+      {
+        "destinationCidrBlock": "10.0.0.0/16",
+        "gatewayId": "local",
+        "origin": "CreateRouteTable",
+        "state": "active"
+      }
+    ]
+  },
+  "bindings": [],
+  "providerVersion": 0,
+  "downstream": [
+    "InternetRoute",
+    "PublicAssociation"
+  ],
+  "removalPolicy": "destroy"
+}

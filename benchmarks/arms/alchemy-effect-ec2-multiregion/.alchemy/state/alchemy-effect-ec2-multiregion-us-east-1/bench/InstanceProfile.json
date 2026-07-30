@@ -1,0 +1,30 @@
+{
+  "status": "created",
+  "fqn": "InstanceProfile",
+  "logicalId": "InstanceProfile",
+  "instanceId": "d2707121cb4c03db9b57f2af1a2c5a0a",
+  "resourceType": "AWS.IAM.InstanceProfile",
+  "props": {
+    "instanceProfileName": "instanceprofile-000000000000-us-east-1",
+    "roleName": "role-000000000000-us-east-1"
+  },
+  "attr": {
+    "instanceProfileArn": "arn:aws:iam::000000000000:instance-profile/instanceprofile-000000000000-us-east-1",
+    "instanceProfileName": "instanceprofile-000000000000-us-east-1",
+    "instanceProfileId": "AIPA3VV51SOL3KHFSBMH",
+    "path": "/",
+    "roleName": "role-000000000000-us-east-1",
+    "tags": {
+      "alchemy::stack": "alchemy-effect-ec2-multiregion-us-east-1",
+      "alchemy::stage": "bench",
+      "alchemy::id": "InstanceProfile"
+    }
+  },
+  "bindings": [],
+  "providerVersion": 0,
+  "downstream": [
+    "WebServer",
+    "ExpInstanceProfileName"
+  ],
+  "removalPolicy": "destroy"
+}

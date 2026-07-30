@@ -1,0 +1,22 @@
+{
+  "status": "created",
+  "fqn": "ExpLaunchTemplateInstanceId",
+  "logicalId": "ExpLaunchTemplateInstanceId",
+  "instanceId": "9652aa04773c0257592ddb00478f47f1",
+  "resourceType": "AWS.SSM.Parameter",
+  "props": {
+    "name": "/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-LaunchTemplateInstanceId",
+    "type": "String",
+    "value": "i-f70c360c353f3dab7"
+  },
+  "attr": {
+    "parameterName": "/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-LaunchTemplateInstanceId",
+    "parameterArn": "arn:aws:ssm:us-east-1:000000000000:parameter/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-LaunchTemplateInstanceId",
+    "type": "String",
+    "version": 1
+  },
+  "bindings": [],
+  "providerVersion": 0,
+  "downstream": [],
+  "removalPolicy": "destroy"
+}

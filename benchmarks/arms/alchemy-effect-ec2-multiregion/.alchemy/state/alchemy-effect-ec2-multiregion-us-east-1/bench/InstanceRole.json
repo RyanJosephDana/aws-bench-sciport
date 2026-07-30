@@ -1,0 +1,89 @@
+{
+  "status": "created",
+  "fqn": "InstanceRole",
+  "logicalId": "InstanceRole",
+  "instanceId": "72f9231b889013d7b3bf4844474ccd4c",
+  "resourceType": "AWS.IAM.Role",
+  "props": {
+    "roleName": "role-000000000000-us-east-1",
+    "assumeRolePolicyDocument": {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Principal": {
+            "Service": "ec2.amazonaws.com"
+          },
+          "Action": "sts:AssumeRole"
+        }
+      ]
+    },
+    "managedPolicyArns": [
+      "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    ],
+    "inlinePolicies": {
+      "policy-000000000000-us-east-1": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Deny",
+            "Action": [
+              "ec2:ModifyInstanceAttribute",
+              "ec2:ModifyInstanceMetadataOptions"
+            ],
+            "Resource": "*"
+          }
+        ]
+      }
+    }
+  },
+  "attr": {
+    "roleArn": "arn:aws:iam::000000000000:role/role-000000000000-us-east-1",
+    "roleName": "role-000000000000-us-east-1",
+    "roleId": "AROAF3SW6EBIK8E11FBY",
+    "path": "/",
+    "assumeRolePolicyDocument": {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Principal": {
+            "Service": "ec2.amazonaws.com"
+          },
+          "Action": "sts:AssumeRole"
+        }
+      ]
+    },
+    "managedPolicyArns": [
+      "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    ],
+    "inlinePolicies": {
+      "policy-000000000000-us-east-1": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Deny",
+            "Action": [
+              "ec2:ModifyInstanceAttribute",
+              "ec2:ModifyInstanceMetadataOptions"
+            ],
+            "Resource": "*"
+          }
+        ]
+      }
+    },
+    "maxSessionDuration": 3600,
+    "tags": {
+      "alchemy::stack": "alchemy-effect-ec2-multiregion-us-east-1",
+      "alchemy::stage": "bench",
+      "alchemy::id": "InstanceRole"
+    }
+  },
+  "bindings": [],
+  "providerVersion": 0,
+  "downstream": [
+    "InstanceProfile",
+    "ExpRoleName"
+  ],
+  "removalPolicy": "destroy"
+}

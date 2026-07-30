@@ -1,0 +1,22 @@
+{
+  "status": "created",
+  "fqn": "ExpInstanceId",
+  "logicalId": "ExpInstanceId",
+  "instanceId": "0cdc40d84f6c2828f6d2d461289bb3f1",
+  "resourceType": "AWS.SSM.Parameter",
+  "props": {
+    "name": "/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-InstanceId",
+    "type": "String",
+    "value": "i-1af70430424159891"
+  },
+  "attr": {
+    "parameterName": "/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-InstanceId",
+    "parameterArn": "arn:aws:ssm:us-east-1:000000000000:parameter/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-InstanceId",
+    "type": "String",
+    "version": 1
+  },
+  "bindings": [],
+  "providerVersion": 0,
+  "downstream": [],
+  "removalPolicy": "destroy"
+}

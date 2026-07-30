@@ -1,0 +1,22 @@
+{
+  "status": "created",
+  "fqn": "ExpPrivateIPOfInstanceWithoutLaunchTemplate",
+  "logicalId": "ExpPrivateIPOfInstanceWithoutLaunchTemplate",
+  "instanceId": "07a5987a59872fc2ec20823fcc35c359",
+  "resourceType": "AWS.SSM.Parameter",
+  "props": {
+    "name": "/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-PrivateIPOfInstanceWithoutLaunchTemplate",
+    "type": "String",
+    "value": "172.17.0.7"
+  },
+  "attr": {
+    "parameterName": "/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-PrivateIPOfInstanceWithoutLaunchTemplate",
+    "parameterArn": "arn:aws:ssm:us-east-1:000000000000:parameter/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-PrivateIPOfInstanceWithoutLaunchTemplate",
+    "type": "String",
+    "version": 1
+  },
+  "bindings": [],
+  "providerVersion": 0,
+  "downstream": [],
+  "removalPolicy": "destroy"
+}

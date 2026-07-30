@@ -1,0 +1,32 @@
+{
+  "status": "created",
+  "fqn": "ProofSubnet",
+  "logicalId": "ProofSubnet",
+  "instanceId": "4261bc823f520df6481e3c78e0d4f7a3",
+  "resourceType": "AWS.EC2.Subnet",
+  "props": {
+    "vpcId": "vpc-5cb90512",
+    "cidrBlock": "10.88.1.0/24",
+    "availabilityZone": "us-east-1a"
+  },
+  "attr": {
+    "subnetId": "subnet-08c24d25",
+    "subnetArn": "arn:aws:ec2:us-east-1:000000000000:subnet/subnet-08c24d25",
+    "cidrBlock": "10.88.1.0/24",
+    "vpcId": "vpc-5cb90512",
+    "availabilityZone": "us-east-1a",
+    "availabilityZoneId": "us-east-1-az1",
+    "state": "available",
+    "availableIpAddressCount": 251,
+    "mapPublicIpOnLaunch": false,
+    "assignIpv6AddressOnCreation": false,
+    "defaultForAz": false,
+    "ownerId": "000000000000",
+    "ipv6CidrBlockAssociationSet": [],
+    "enableDns64": false
+  },
+  "bindings": [],
+  "providerVersion": 0,
+  "downstream": [],
+  "removalPolicy": "destroy"
+}

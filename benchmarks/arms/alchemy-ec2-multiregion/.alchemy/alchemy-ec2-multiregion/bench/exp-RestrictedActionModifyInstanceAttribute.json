@@ -1,0 +1,25 @@
+{
+  "kind": "aws::ExportParameter",
+  "id": "exp-RestrictedActionModifyInstanceAttribute",
+  "fqn": "alchemy-ec2-multiregion/bench/exp-RestrictedActionModifyInstanceAttribute",
+  "seq": 50,
+  "data": {},
+  "status": "created",
+  "output": {
+    "Symbol(alchemy::ResourceKind)": "aws::ExportParameter",
+    "Symbol(alchemy::ResourceID)": "exp-RestrictedActionModifyInstanceAttribute",
+    "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/exp-RestrictedActionModifyInstanceAttribute",
+    "Symbol(alchemy::ResourceScope)": {
+      "@scope": null
+    },
+    "Symbol(alchemy::ResourceSeq)": 50,
+    "region": "us-east-1",
+    "name": "/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-RestrictedActionModifyInstanceAttribute",
+    "value": "ec2:ModifyInstanceAttribute"
+  },
+  "props": {
+    "region": "us-east-1",
+    "name": "/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-RestrictedActionModifyInstanceAttribute",
+    "value": "ec2:ModifyInstanceAttribute"
+  }
+}

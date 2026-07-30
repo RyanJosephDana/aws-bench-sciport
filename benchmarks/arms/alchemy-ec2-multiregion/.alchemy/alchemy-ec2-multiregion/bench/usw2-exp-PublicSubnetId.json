@@ -1,0 +1,25 @@
+{
+  "kind": "aws::ExportParameter",
+  "id": "usw2-exp-PublicSubnetId",
+  "fqn": "alchemy-ec2-multiregion/bench/usw2-exp-PublicSubnetId",
+  "seq": 23,
+  "data": {},
+  "status": "created",
+  "output": {
+    "Symbol(alchemy::ResourceKind)": "aws::ExportParameter",
+    "Symbol(alchemy::ResourceID)": "usw2-exp-PublicSubnetId",
+    "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/usw2-exp-PublicSubnetId",
+    "Symbol(alchemy::ResourceScope)": {
+      "@scope": null
+    },
+    "Symbol(alchemy::ResourceSeq)": 23,
+    "region": "us-west-2",
+    "name": "/exports/ec2-multiregion-EC2-ls9fuhb522-us-west-2-PublicSubnetId",
+    "value": "subnet-bfd7390b"
+  },
+  "props": {
+    "region": "us-west-2",
+    "name": "/exports/ec2-multiregion-EC2-ls9fuhb522-us-west-2-PublicSubnetId",
+    "value": "subnet-bfd7390b"
+  }
+}
