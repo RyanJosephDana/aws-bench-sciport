@@ -2,12 +2,12 @@
   "status": "created",
   "fqn": "ExpSecurityGroupId",
   "logicalId": "ExpSecurityGroupId",
-  "instanceId": "1ef1d27ede8c74ab866d94af6a2bad0c",
+  "instanceId": "e86ea313f88c679f399bf457c3421192",
   "resourceType": "AWS.SSM.Parameter",
   "props": {
     "name": "/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-SecurityGroupId",
     "type": "String",
-    "value": "sg-b78b0efe0a0ed0c53"
+    "value": "sg-5ce1eb96a05da05d0"
   },
   "attr": {
     "parameterName": "/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-SecurityGroupId",

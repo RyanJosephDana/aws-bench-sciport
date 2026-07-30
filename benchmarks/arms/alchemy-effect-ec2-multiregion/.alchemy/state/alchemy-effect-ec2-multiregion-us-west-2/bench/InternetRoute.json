@@ -2,19 +2,19 @@
   "status": "created",
   "fqn": "InternetRoute",
   "logicalId": "InternetRoute",
-  "instanceId": "8a6bef79ce4f0b3237527f0f0bc56595",
+  "instanceId": "a2080a777485b31d0077e385526a1772",
   "resourceType": "AWS.EC2.Route",
   "props": {
-    "routeTableId": "rtb-6be5370d",
+    "routeTableId": "rtb-4dcc4d46",
     "destinationCidrBlock": "0.0.0.0/0",
-    "gatewayId": "igw-993eec3b"
+    "gatewayId": "igw-d048540b"
   },
   "attr": {
-    "routeTableId": "rtb-6be5370d",
+    "routeTableId": "rtb-4dcc4d46",
     "destinationCidrBlock": "0.0.0.0/0",
     "origin": "CreateRoute",
     "state": "active",
-    "gatewayId": "igw-993eec3b"
+    "gatewayId": "igw-d048540b"
   },
   "bindings": [],
   "providerVersion": 0,

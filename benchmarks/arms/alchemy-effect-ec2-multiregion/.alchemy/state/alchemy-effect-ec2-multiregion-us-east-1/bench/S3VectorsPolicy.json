@@ -2,7 +2,7 @@
   "status": "created",
   "fqn": "S3VectorsPolicy",
   "logicalId": "S3VectorsPolicy",
-  "instanceId": "7956b9a70ac39ec861004aec8ad279fc",
+  "instanceId": "3f9b159002a7f3f8c84d574c203f1101",
   "resourceType": "AWS.IAM.Policy",
   "props": {
     "policyName": "S3VectorsReadOnlyAccess-000000000000-us-east-1",
@@ -32,7 +32,7 @@
   "attr": {
     "policyArn": "arn:aws:iam::000000000000:policy/S3VectorsReadOnlyAccess-000000000000-us-east-1",
     "policyName": "S3VectorsReadOnlyAccess-000000000000-us-east-1",
-    "policyId": "ANPA56KCSJY24QLQXYHE",
+    "policyId": "ANPA9JKY6KS5859WS0QQ",
     "path": "/",
     "defaultVersionId": "v1",
     "attachmentCount": 0,

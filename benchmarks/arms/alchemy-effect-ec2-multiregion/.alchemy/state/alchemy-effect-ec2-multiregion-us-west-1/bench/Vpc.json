@@ -2,7 +2,7 @@
   "status": "created",
   "fqn": "Vpc",
   "logicalId": "Vpc",
-  "instanceId": "57070336445a8ca2d5a291f6593c1763",
+  "instanceId": "c0baad9eabe6c0663fd14095b67e354a",
   "resourceType": "AWS.EC2.VPC",
   "props": {
     "cidrBlock": "10.0.0.0/16",
@@ -11,8 +11,8 @@
     }
   },
   "attr": {
-    "vpcId": "vpc-d17ce019",
-    "vpcArn": "arn:aws:ec2:us-west-1:000000000000:vpc/vpc-d17ce019",
+    "vpcId": "vpc-ed9761b9",
+    "vpcArn": "arn:aws:ec2:us-west-1:000000000000:vpc/vpc-ed9761b9",
     "cidrBlock": "10.0.0.0/16",
     "dhcpOptionsId": "dopt-default",
     "state": "available",
@@ -20,7 +20,7 @@
     "ownerId": "000000000000",
     "cidrBlockAssociationSet": [
       {
-        "associationId": "vpc-cidr-assoc-c7003970",
+        "associationId": "vpc-cidr-assoc-a9948ce5",
         "cidrBlock": "10.0.0.0/16",
         "cidrBlockState": {
           "state": "associated"

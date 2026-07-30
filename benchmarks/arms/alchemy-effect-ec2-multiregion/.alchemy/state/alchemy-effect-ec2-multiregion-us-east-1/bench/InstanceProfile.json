@@ -2,7 +2,7 @@
   "status": "created",
   "fqn": "InstanceProfile",
   "logicalId": "InstanceProfile",
-  "instanceId": "bb597e6610317d4f82c8c83f7a11dd3a",
+  "instanceId": "d2707121cb4c03db9b57f2af1a2c5a0a",
   "resourceType": "AWS.IAM.InstanceProfile",
   "props": {
     "instanceProfileName": "instanceprofile-000000000000-us-east-1",
@@ -11,7 +11,7 @@
   "attr": {
     "instanceProfileArn": "arn:aws:iam::000000000000:instance-profile/instanceprofile-000000000000-us-east-1",
     "instanceProfileName": "instanceprofile-000000000000-us-east-1",
-    "instanceProfileId": "AIPABQ9RRQ138CFOTM3S",
+    "instanceProfileId": "AIPA3VV51SOL3KHFSBMH",
     "path": "/",
     "roleName": "role-000000000000-us-east-1",
     "tags": {

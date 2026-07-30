@@ -2,7 +2,7 @@
   "status": "created",
   "fqn": "ExpAMIName",
   "logicalId": "ExpAMIName",
-  "instanceId": "561d520e66b6d74cd15105bf8f1bb677",
+  "instanceId": "a2d6efe3adf7db947d8c0477741a15bb",
   "resourceType": "AWS.SSM.Parameter",
   "props": {
     "name": "/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-AMIName",

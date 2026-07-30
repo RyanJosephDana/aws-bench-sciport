@@ -2,7 +2,7 @@
   "status": "created",
   "fqn": "ExpPrivateIPOfInstanceWithDefaultVpc",
   "logicalId": "ExpPrivateIPOfInstanceWithDefaultVpc",
-  "instanceId": "19521e2c0a8fc3cc600123a02f140547",
+  "instanceId": "f3910e684a897a340d7703a93ad55f6f",
   "resourceType": "AWS.SSM.Parameter",
   "props": {
     "name": "/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-PrivateIPOfInstanceWithDefaultVpc",

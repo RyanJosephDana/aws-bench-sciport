@@ -2,12 +2,12 @@
   "status": "created",
   "fqn": "ExpVpcId",
   "logicalId": "ExpVpcId",
-  "instanceId": "32c98b7716d3f46b03e0e611c19669ba",
+  "instanceId": "ab61b4a0a9f73612ec52929cdafa22b1",
   "resourceType": "AWS.SSM.Parameter",
   "props": {
     "name": "/exports/ec2-multiregion-EC2-ls9fuhb522-us-west-2-VpcId",
     "type": "String",
-    "value": "vpc-09d89672"
+    "value": "vpc-8bbd79d0"
   },
   "attr": {
     "parameterName": "/exports/ec2-multiregion-EC2-ls9fuhb522-us-west-2-VpcId",

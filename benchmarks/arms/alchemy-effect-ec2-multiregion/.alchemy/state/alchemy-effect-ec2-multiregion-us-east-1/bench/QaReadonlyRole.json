@@ -2,7 +2,7 @@
   "status": "created",
   "fqn": "QaReadonlyRole",
   "logicalId": "QaReadonlyRole",
-  "instanceId": "d945c17b803bfd1b3e27d374a9088110",
+  "instanceId": "714ed226958445078b31400222ee17cc",
   "resourceType": "AWS.IAM.Role",
   "props": {
     "roleName": "QALocalInvocationApplicationRole",
@@ -26,7 +26,7 @@
   "attr": {
     "roleArn": "arn:aws:iam::000000000000:role/QALocalInvocationApplicationRole",
     "roleName": "QALocalInvocationApplicationRole",
-    "roleId": "AROAGBF4OW38K7PBCJRB",
+    "roleId": "AROAO3DCPPYBZTRW5IWR",
     "path": "/",
     "assumeRolePolicyDocument": {
       "Version": "2012-10-17",

@@ -2,20 +2,20 @@
   "status": "created",
   "fqn": "InternetGateway",
   "logicalId": "InternetGateway",
-  "instanceId": "12b99dc354d4c8f98329bd737447c5a2",
+  "instanceId": "44f00d7943aaa01e32200618cce6b344",
   "resourceType": "AWS.EC2.InternetGateway",
   "props": {
-    "vpcId": "vpc-09d89672"
+    "vpcId": "vpc-8bbd79d0"
   },
   "attr": {
-    "internetGatewayId": "igw-993eec3b",
-    "internetGatewayArn": "arn:aws:ec2:us-west-2:000000000000:internet-gateway/igw-993eec3b",
-    "vpcId": "vpc-09d89672",
+    "internetGatewayId": "igw-d048540b",
+    "internetGatewayArn": "arn:aws:ec2:us-west-2:000000000000:internet-gateway/igw-d048540b",
+    "vpcId": "vpc-8bbd79d0",
     "ownerId": "000000000000",
     "attachments": [
       {
         "state": "available",
-        "vpcId": "vpc-09d89672"
+        "vpcId": "vpc-8bbd79d0"
       }
     ]
   },

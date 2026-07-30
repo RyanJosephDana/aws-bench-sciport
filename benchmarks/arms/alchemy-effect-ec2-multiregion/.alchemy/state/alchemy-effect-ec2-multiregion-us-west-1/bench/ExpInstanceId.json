@@ -2,12 +2,12 @@
   "status": "created",
   "fqn": "ExpInstanceId",
   "logicalId": "ExpInstanceId",
-  "instanceId": "42fce3904df07f3eda8e35a490c3b0b9",
+  "instanceId": "0b74091a970f1337fd527a1c020d4073",
   "resourceType": "AWS.SSM.Parameter",
   "props": {
     "name": "/exports/ec2-multiregion-EC2-ls9fuhb522-us-west-1-InstanceId",
     "type": "String",
-    "value": "i-ea47cf920d0f9b675"
+    "value": "i-a25bf99079c2788c6"
   },
   "attr": {
     "parameterName": "/exports/ec2-multiregion-EC2-ls9fuhb522-us-west-1-InstanceId",

@@ -2,10 +2,10 @@
   "status": "created",
   "fqn": "PublicSubnet",
   "logicalId": "PublicSubnet",
-  "instanceId": "0e32dbee9ed05ec33e8fbe9495009201",
+  "instanceId": "b37095e178a81caac7d30fa0b0b5df26",
   "resourceType": "AWS.EC2.Subnet",
   "props": {
-    "vpcId": "vpc-f559cc0f",
+    "vpcId": "vpc-737a450b",
     "cidrBlock": "10.0.0.0/24",
     "availabilityZone": "us-east-1a",
     "mapPublicIpOnLaunch": true,
@@ -14,10 +14,10 @@
     }
   },
   "attr": {
-    "subnetId": "subnet-9d2fedfb",
-    "subnetArn": "arn:aws:ec2:us-east-1:000000000000:subnet/subnet-9d2fedfb",
+    "subnetId": "subnet-69986d1e",
+    "subnetArn": "arn:aws:ec2:us-east-1:000000000000:subnet/subnet-69986d1e",
     "cidrBlock": "10.0.0.0/24",
-    "vpcId": "vpc-f559cc0f",
+    "vpcId": "vpc-737a450b",
     "availabilityZone": "us-east-1a",
     "availabilityZoneId": "us-east-1-az1",
     "state": "available",

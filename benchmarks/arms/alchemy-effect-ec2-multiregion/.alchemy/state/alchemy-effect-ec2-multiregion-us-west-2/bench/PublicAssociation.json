@@ -2,16 +2,16 @@
   "status": "created",
   "fqn": "PublicAssociation",
   "logicalId": "PublicAssociation",
-  "instanceId": "49f9cf0f6a821e343e1410e4a23fc502",
+  "instanceId": "ea95a19c47874d00b6e90ff8c1ef7273",
   "resourceType": "AWS.EC2.RouteTableAssociation",
   "props": {
-    "routeTableId": "rtb-6be5370d",
-    "subnetId": "subnet-2398f1f6"
+    "routeTableId": "rtb-4dcc4d46",
+    "subnetId": "subnet-fca20ea5"
   },
   "attr": {
-    "associationId": "rtbassoc-30a539b9",
-    "routeTableId": "rtb-6be5370d",
-    "subnetId": "subnet-2398f1f6",
+    "associationId": "rtbassoc-950c688a",
+    "routeTableId": "rtb-4dcc4d46",
+    "subnetId": "subnet-fca20ea5",
     "associationState": {
       "state": "associated"
     }

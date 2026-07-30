@@ -2,7 +2,7 @@
   "status": "created",
   "fqn": "ExpPrivateIPOfInstance",
   "logicalId": "ExpPrivateIPOfInstance",
-  "instanceId": "ccb785197fb253fe2f84729f08d7e3fb",
+  "instanceId": "0351a9271e2111250f6867ed0ba5bf34",
   "resourceType": "AWS.SSM.Parameter",
   "props": {
     "name": "/exports/ec2-multiregion-EC2-ls9fuhb522-us-west-2-PrivateIPOfInstance",

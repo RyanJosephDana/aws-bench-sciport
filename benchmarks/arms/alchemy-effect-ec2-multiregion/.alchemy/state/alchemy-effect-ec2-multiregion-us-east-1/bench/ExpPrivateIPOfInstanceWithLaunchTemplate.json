@@ -2,7 +2,7 @@
   "status": "created",
   "fqn": "ExpPrivateIPOfInstanceWithLaunchTemplate",
   "logicalId": "ExpPrivateIPOfInstanceWithLaunchTemplate",
-  "instanceId": "51960f61346bc326c6e13ef1192c8e2e",
+  "instanceId": "27ba28eaf6dbf65521f7e8551afc730f",
   "resourceType": "AWS.SSM.Parameter",
   "props": {
     "name": "/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-PrivateIPOfInstanceWithLaunchTemplate",

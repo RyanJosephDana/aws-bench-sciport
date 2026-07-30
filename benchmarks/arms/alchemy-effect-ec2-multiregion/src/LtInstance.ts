@@ -31,13 +31,13 @@ export interface LtInstanceAttributes {
 
 export interface LtInstance
   extends Resource<
-    "Bench.EC2.LaunchTemplateInstance",
+    "AWS.EC2.LaunchTemplateInstance",
     LtInstanceProps,
     LtInstanceAttributes
   > {}
 
 export const LtInstance = Resource<LtInstance>(
-  "Bench.EC2.LaunchTemplateInstance",
+  "AWS.EC2.LaunchTemplateInstance",
 );
 
 const toAttributes = (

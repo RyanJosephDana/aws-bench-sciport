@@ -2,12 +2,12 @@
   "status": "created",
   "fqn": "ExpDefaultVPCInstanceId",
   "logicalId": "ExpDefaultVPCInstanceId",
-  "instanceId": "8ef8deb93e232cec56efcb51b3d06343",
+  "instanceId": "55094a82492505552b3c510a322edb6f",
   "resourceType": "AWS.SSM.Parameter",
   "props": {
     "name": "/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-DefaultVPCInstanceId",
     "type": "String",
-    "value": "i-da17aa764e516f616"
+    "value": "i-20331ebc4bd4186bc"
   },
   "attr": {
     "parameterName": "/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-DefaultVPCInstanceId",

@@ -2,30 +2,30 @@
   "status": "created",
   "fqn": "UnusedSecurityGroup",
   "logicalId": "UnusedSecurityGroup",
-  "instanceId": "6ba4d671683d3da34f3bb68bf54e621b",
+  "instanceId": "626374459a60c841bad36e3cacdadfc7",
   "resourceType": "AWS.EC2.SecurityGroup",
   "props": {
-    "vpcId": "vpc-f559cc0f",
+    "vpcId": "vpc-737a450b",
     "groupName": "unused-ec2-multiregion-EC2-ks84v1fh12-us-east-1",
     "description": "Unused security group"
   },
   "attr": {
-    "groupId": "sg-f78e615c3280027a7",
-    "groupArn": "arn:aws:ec2:us-east-1:000000000000:security-group/sg-f78e615c3280027a7",
+    "groupId": "sg-4e79eadad246a7974",
+    "groupArn": "arn:aws:ec2:us-east-1:000000000000:security-group/sg-4e79eadad246a7974",
     "groupName": "unused-ec2-multiregion-EC2-ks84v1fh12-us-east-1",
     "description": "Unused security group",
-    "vpcId": "vpc-f559cc0f",
+    "vpcId": "vpc-737a450b",
     "ownerId": "000000000000",
     "ingressRules": [],
     "egressRules": [
       {
-        "securityGroupRuleId": "sgr-06a79ab1812c7c5ca",
+        "securityGroupRuleId": "sgr-4fb51a6d522e0ee0a",
         "ipProtocol": "-1",
         "cidrIpv4": "0.0.0.0/0",
         "isEgress": true
       },
       {
-        "securityGroupRuleId": "sgr-b081eaa5663509354",
+        "securityGroupRuleId": "sgr-6aaac9fc362c47883",
         "ipProtocol": "-1",
         "cidrIpv4": "0.0.0.0/0",
         "isEgress": true

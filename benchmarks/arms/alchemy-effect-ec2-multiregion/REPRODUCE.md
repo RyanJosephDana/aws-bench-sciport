@@ -35,6 +35,12 @@ reachability question. You compute them by hand below.
   `@distilled.cloud/aws` SDK). Its state records the launch-template REFERENCE,
   not the security groups it resolves to — the same shape every other
   state-file arm gives this estate. The `ssh-reachable` task turns on that hop.
+  Its `resourceType` is `AWS.EC2.LaunchTemplateInstance` — deliberately inside
+  the `AWS.EC2.*` family. In every other arm the launch-template-launched
+  instance shares the common instance type (`aws_instance`,
+  `aws:ec2/instance:Instance`), so an out-of-family name here would be a trap
+  those arms don't have: an agent enumerating instances from state by type
+  would silently miss the sixth instance.
 - **Three stacks, one per region.** v2's `AWSEnvironment` carries a single
   region, so the estate deploys as `us-east-1.run.ts` / `us-west-1.run.ts` /
   `us-west-2.run.ts` (like the CDK arm's per-region stacks), each a
@@ -97,7 +103,7 @@ import json, glob, sys
 res = [json.load(open(p)) for p in glob.glob(f"{sys.argv[1]}/*/bench/*.json")]
 def rt(r): return r.get("resourceType")
 
-insts = [r for r in res if rt(r) in ("AWS.EC2.Instance", "Bench.EC2.LaunchTemplateInstance")]
+insts = [r for r in res if rt(r) in ("AWS.EC2.Instance", "AWS.EC2.LaunchTemplateInstance")]
 pub = {(r.get("attr") or {}).get("subnetId") or (r.get("props") or {}).get("subnetId")
        for r in res if rt(r) == "AWS.EC2.RouteTableAssociation"}
 open22 = set()
