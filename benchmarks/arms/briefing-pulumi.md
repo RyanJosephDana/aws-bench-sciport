@@ -1,18 +1,34 @@
-# Infrastructure source available
+# Answer estate questions from the Pulumi state — it is the source of truth
 
-The AWS estate you are working with was provisioned from the Pulumi program
-mounted read-only at `/workspace/pulumi`, already applied. It is the deployed
-source of truth for this account's infrastructure: stacks, regions, VPCs,
-subnets, instances, security groups, and their relationships are all defined
-there, and the applied Pulumi state records the resolved live ids and attributes.
+This AWS estate was deployed from the Pulumi program mounted read-only at
+`/workspace/pulumi`, already applied. The exported state records every resource
+with its resolved live ids, its inputs and outputs, and the dependency edges
+between resources.
 
-Inspect it to understand the infrastructure before or instead of enumerating it
-call-by-call:
+**Query the state rather than enumerating the account resource by resource.** A
+raw `aws ec2` sweep returns per-resource facts with no relationships; the state
+export already holds the graph, and it is the complete set of managed resources,
+so you know the denominator.
 
-- `cd /workspace/pulumi && ./pulumi-export` — the full applied state as JSON. Each
-  entry under `.deployment.resources[]` has a `type` (e.g. `aws:ec2/instance:Instance`)
-  and an `outputs` object with the resource's resolved attributes and references.
-- The `index.ts` source under `/workspace/pulumi` — for declared intent.
+Run from the project root:
 
-Use the AWS CLI to verify live state where the question depends on runtime values
-(generated ids, IPs, states) the state does not already carry.
+- `cd /workspace/pulumi && ./pulumi-export` — the whole applied state as JSON.
+  Each entry under `.deployment.resources[]` has:
+  - `type` — the resource type, e.g. `aws:ec2/instance:Instance`
+  - `urn` — its unique name
+  - `inputs` — what was declared
+  - `outputs` — the resolved attributes, including physical ids
+  - `parent` and `dependencies` — the edges to other resources
+
+  `jq` over `.deployment.resources[]` answers relationship questions without
+  hand-joining CLI output — filter by `type`, then follow `dependencies` or an
+  output id into the resources that reference it.
+
+Path to estate facts, in order:
+
+1. `./pulumi-export` piped through `jq` — the default, for every question. Use
+   `dependencies`/`parent` and output ids when the answer spans resources.
+2. The `index.ts` source under `/workspace/pulumi` — for intent and
+   configuration the export doesn't surface directly.
+3. `aws ec2 …` — for runtime values the state does not carry (instance states,
+   allocated addresses).

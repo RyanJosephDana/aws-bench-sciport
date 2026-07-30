@@ -1,34 +1,37 @@
-# Infrastructure source and search tooling available
+# Answer estate questions with `chant search` — it is the source of truth
 
-This estate was deployed by the chant project mounted read-only at
-`/workspace/chant` — it is the source of truth, and the chant CLI is
-installed in it.
+This AWS estate was deployed from the chant project mounted read-only at
+`/workspace/chant`, and the chant CLI is installed in it. chant holds a typed
+model of the estate — resource kinds, attributes, tags and the edges between
+resources — and joins it to live physical ids.
 
-Do not read the whole graph to answer a question. Query it. `chant search`
-answers estate questions with a few rows instead of a multi-thousand-token
-dump — it knows the declared topology AND joins live physical ids.
+**Query the model rather than enumerating the account resource by resource.** A
+raw `aws ec2` sweep returns per-resource facts with no relationships and a
+multi-thousand-token dump; a scoped query returns a few rows, and the model
+already holds the declared totals, so you know the denominator.
 
-Run searches from the project root (the `./bin/chant` launcher is self-contained — use it, not `npx`):
+Run from the project root (the `./bin/chant` launcher is self-contained — use
+it, not `npx`):
 `cd /workspace/chant && ./bin/chant search "<query>" --live --env floci [--show attr1,attr2]`
 
 Query grammar (space-separated terms, all must match):
-- `kind:<substr>`        — resource kind, e.g. `kind:EC2::Instance`
-- `attr:<name>=<val>`    — an attribute equals/contains a value
-- `tag:<key>=<val>`      — a tag with that key and value
+
+- `kind:<substr>` — resource kind, e.g. `kind:EC2::Instance`
+- `attr:<name>=<val>` — an attribute equals/contains a value
+- `tag:<key>=<val>` — a tag with that key and value
 - `->kind:X` / `->attr:n=v` — this resource has an edge TO one matching the
-  right side; `<-` is the reverse. This does the topology JOIN for you:
-  `kind:Instance ->attr:MapPublicIpOnLaunch=true` = instances that sit in a
-  public subnet — no hand-joining instance→subnet across many results.
+  right side; `<-` reverses it. This performs the join across the relationship,
+  so `kind:Instance ->attr:MapPublicIpOnLaunch=true` selects instances by a
+  property of their subnet.
 
-Each result row is `<logicalId>  <kind>  <physicalId>  <shown attrs>`.
-Use `--show` to surface specific attributes (e.g. `--show InstanceId`).
+Each result row is `<logicalId>  <kind>  <physicalId>  <shown attrs>`. `--show`
+surfaces specific attributes (e.g. `--show InstanceId`).
 
-Fastest path to estate facts, in order:
-1. `chant search` with a scoped query (above) — the default. One query per
-   question; add `->`/`<-` when the answer depends on a relationship.
-2. The typed source under `/workspace/chant/*/src/` — for intent and
-   configuration the query grammar doesn't cover.
-3. The AWS CLI — only for runtime values a search can't surface.
+## Path to estate facts, in order
 
-The project's declared totals tell you when a live sweep is incomplete —
-a search over the declared topology already knows how many should exist.
+1. `chant search "<query>" --live --env floci` — the default, for every
+   question. Add `->`/`<-` when the answer depends on a relationship.
+2. `/workspace/chant/graph.json`, the prebuilt declared-only graph, and the
+   typed source under `/workspace/chant/*/src/` — for intent and configuration
+   the grammar doesn't cover.
+3. `aws ec2 …` — for runtime values the model does not carry.

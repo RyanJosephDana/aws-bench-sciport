@@ -1,38 +1,40 @@
-# Infrastructure source available
+# Answer estate questions from the Alchemy state — it is the source of truth
 
-The AWS estate you are working with was provisioned from the Alchemy program
-mounted read-only at `/workspace/alchemy`, already applied. It is the deployed
-source of truth for this account's infrastructure: regions, VPCs, subnets,
-instances, security groups, and their relationships are all defined there, and
-the applied Alchemy state records the resolved live ids and attributes.
+This AWS estate was deployed from the Alchemy program mounted read-only at
+`/workspace/alchemy`, already applied, and the Alchemy CLI is installed in it.
+The applied state records every resource with its resolved live ids and
+attributes.
 
-## Query the applied state with the `alchemy state` CLI
+**Query the state rather than enumerating the account resource by resource.** A
+raw `aws ec2` sweep returns per-resource facts with no relationships; the state
+already holds each resource's resolved outputs and the ids it references, and
+`state list` is the complete set of managed resources, so you know the
+denominator.
 
-Alchemy ships a state inspector. Use it before enumerating the account
-call-by-call — it reads the same applied state the deploy wrote, already keyed
-by resource. Run from `/workspace/alchemy`:
+Run from the project root:
 
-- `alchemy state tree` — every stack/stage and the resources under it.
-- `alchemy state list` — the fully-qualified name of every resource, one per
-  line, suitable for scripting.
-- `alchemy state get <fqn>` — the full record for one resource as JSON. `kind`
-  is the resource type (e.g. `aws::Instance`, `aws::SecurityGroupRule`) and the
-  `output` object holds the resolved live attributes: physical ids, IPs, and
-  subnet and security-group references.
+- `cd /workspace/alchemy && alchemy state tree` — every stack and stage with the
+  resources under it.
+- `cd /workspace/alchemy && alchemy state list` — the fully-qualified name of
+  every resource, one per line. This is the full inventory.
+- `cd /workspace/alchemy && alchemy state get <fqn>` — one resource as JSON:
+  `kind` is the resource type (e.g. `aws::Instance`, `aws::SecurityGroupRule`)
+  and `output` holds the resolved attributes — physical ids, IPs, and the subnet
+  and security-group ids it references. Following those ids into other records
+  answers questions that span resources.
 
 Fully-qualified names look like `alchemy-ec2-multiregion/bench/webServer`, so
-`alchemy state list` followed by `alchemy state get` on the names you care about
-walks the whole estate.
-
+`alchemy state list` then `alchemy state get` over the names walks the estate.
 The same records are on disk under
 `/workspace/alchemy/.alchemy/alchemy-ec2-multiregion/bench/*.json` if you would
-rather read or grep the files directly, and `alchemy.run.ts` and `src/` under
-`/workspace/alchemy` carry the declared intent behind them.
+rather `jq` or grep the files directly.
 
-## Cloud state is authoritative
+Path to estate facts, in order:
 
-Alchemy's own guidance for agents is that applied state records what was
-deployed and is not a substitute for the cloud: read current state from the
-provider via describe/get APIs rather than trusting cached output attributes.
-Use the AWS CLI to confirm anything that depends on runtime values, and where
-the two disagree, the live API wins.
+1. `alchemy state list` / `alchemy state get` — the default, for every question.
+   Follow referenced ids between records when the answer spans resources.
+2. `alchemy.run.ts` and `src/` under `/workspace/alchemy` — for intent the state
+   doesn't surface directly.
+3. `aws ec2 …` — Alchemy's own guidance is that cloud state is authoritative and
+   describe/get wins over a cached output attribute, so use it for runtime
+   values and to confirm anything the state may have gone stale on.
