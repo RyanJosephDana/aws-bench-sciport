@@ -8,11 +8,13 @@ all defined there, and the applied Terraform state records the resolved live ids
 and attributes.
 
 Inspect it to understand the infrastructure before or instead of enumerating it
-call-by-call:
+call-by-call. The Terraform CLI is vendored in the workspace — run it as
+`./terraform` from `/workspace/terraform`:
 
-- `terraform show -json` (run in `/workspace/terraform`) — the full applied
-  state, every resource with its resolved attributes and references.
-- `terraform state list` — the resources under management.
+- `cd /workspace/terraform && ./terraform show -json` — the full applied state,
+  every resource with its resolved attributes and references.
+- `cd /workspace/terraform && ./terraform state list` — the resources under
+  management.
 - The `.tf` source under `/workspace/terraform` — for declared intent.
 
 Use the AWS CLI to verify live state where the question depends on runtime values

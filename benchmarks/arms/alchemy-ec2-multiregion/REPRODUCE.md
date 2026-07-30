@@ -58,7 +58,7 @@ cd ..
 ## 2. Get the estate
 ```sh
 git clone https://github.com/lex00/aws-bench
-cd aws-bench && git checkout scenario1-working
+cd aws-bench && git checkout feat/emulator-floci   # the scenario1-working tag predates this arm
 cd benchmarks/arms/alchemy-ec2-multiregion
 bun install
 ./apply-endpoint-patch.sh

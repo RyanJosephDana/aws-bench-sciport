@@ -31,6 +31,16 @@ chant folds multi-hop topology onto each instance so you don't hand-join it:
   through its launch template. A CLI sweep misses the launch-template hop and
   under-counts.
 
+"which instances are in a public subnet" is one query (internet-facing covers
+managed subnets AND the account's default VPC):
+`./bin/chant search "kind:EC2::Instance attr:internetFacing=true" --live --env floci --explain --show InstanceId`
+`chant`'s `internetFacing` is COMPLETE — it resolves the route-table→IGW path
+including the account's default VPC, whose main-route-table association
+`describe-route-tables` makes hard to confirm. `--explain` names the route
+table and IGW for each match. Do NOT re-derive this with `describe-route-tables`
+and do NOT drop any instance chant marks internet-facing; that is the exact case
+a manual CLI check gets wrong.
+
 So "which instances are reachable via SSH from the internet" is one query:
 `./bin/chant search "kind:EC2::Instance attr:internetFacing=true attr:effectiveIngress=tcp:22:0.0.0.0/0" --live --env floci --explain --show InstanceId`
 Trust the result — do not re-derive it with `describe-instances`/`describe-security-groups`; those miss launch-template SGs and route-table joins.
