@@ -1,4 +1,4 @@
-# Reproduce: the full four-arm benchmark on ec2-multiregion
+# Reproduce: the full five-arm benchmark on ec2-multiregion
 
 The per-arm `REPRODUCE.md` files prove each estate is faithful and derive the two
 reachability facts by hand. They stop short of the win-rate and cost table. This
@@ -10,21 +10,25 @@ only paid call is the agent-under-test (Haiku 4.5).
 
 ## What this reproduces
 
-| Task | chant | Terraform | Pulumi | CDK |
-|---|---|---|---|---|
-| ssh-reachable from internet | 3/3 | 3/3 | 2/3 | 0/3 |
-| cross-region connectivity | 3/3 | 3/3 | 3/3 | 3/3 |
-| list all regions | 3/3 | 3/3 | 3/3 | 3/3 |
-| instances by VPC | 3/3 | 3/3 | 3/3 | 3/3 |
-| in public subnets | 3/3 | 1/3 | 1/3 | 2/3 |
-| **Total (valid)** | **15/15** | **13/15** | **12/15** | **11/15** |
+| Task | chant | Terraform | Pulumi | CDK | Alchemy |
+|---|---|---|---|---|---|
+| ssh-reachable from internet | 3/3 | 3/3 | 2/3 | 0/3 | 1/3 |
+| cross-region connectivity | 3/3 | 3/3 | 3/3 | 3/3 | 3/3 |
+| list all regions | 3/3 | 3/3 | 3/3 | 3/3 | 3/3 |
+| instances by VPC | 3/3 | 3/3 | 3/3 | 3/3 | 2/3 |
+| in public subnets | 3/3 | 1/3 | 1/3 | 2/3 | 1/3 |
+| **Total (valid)** | **15/15** | **13/15** | **12/15** | **11/15** | **10/15** |
 
-Cost per arm lands near chant $1.33 / Terraform $2.17 / Pulumi $1.76 / CDK $1.87.
+Cost per arm lands near chant $1.33 / Terraform $2.17 / Pulumi $1.76 /
+CDK $1.87 / Alchemy $1.59.
 
-A fifth arm — Alchemy (`alchemy-ec2-multiregion`, published async
-`alchemy@0.93.12` with a local endpoint patch) — is built and estate-verified
-but has no recorded scores yet. Deploy and run it exactly like the others via
-the tables below; its first k=3 tally extends the table above.
+The Alchemy arm (`alchemy-ec2-multiregion`, published async `alchemy@0.93.12`
+with a local endpoint patch) clusters with the other state-file arms, as the
+program-vs-data claim predicts. Its ssh-reachable failures are instructive: the
+agent finds both open instances — including the launch-template hop — from
+state, then discounts them because Floci's emulated public IPs read
+`127.0.0.1`. The join the state does not fold still has to be argued by hand,
+and that is where the answer decays.
 
 ## Pin these first
 
@@ -163,6 +167,7 @@ then across tasks for the arm total.
 ## Expected outcome
 
 The reproduction succeeds when the per-task and total columns match the table at the
-top: chant 15/15, Terraform 13/15, Pulumi 12/15, CDK 11/15, with chant answering
-ssh-reachable 3/3 and public-subnet 3/3 where the CLI-driven arms fall to 0–1/3.
+top: chant 15/15, Terraform 13/15, Pulumi 12/15, CDK 11/15, Alchemy 10/15, with
+chant answering ssh-reachable 3/3 and public-subnet 3/3 where the other arms fall
+to 0–2/3.
 Token and cost totals land within run-to-run variance of the figures above.
