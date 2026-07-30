@@ -1,0 +1,28 @@
+# The Floci instance the benchmark runs against.
+#
+# The environment block is not incidental: each toggle exists because the
+# emulator's default diverges from live AWS in a way an agent can read, and an
+# arm that reasons from the live estate is judged on what it reads.
+services:
+  floci:
+    image: ghcr.io/lex00/floci:awsbench
+    ports: ["4566:4566"]
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./data:/app/data
+    environment:
+      # Report the subnet/CloudFormation private IP instead of the container
+      # bridge IP, so DescribeInstances and the CFN exports agree
+      # (floci-io/floci#1983).
+      FLOCI_SERVICES_EC2_AWS_FAITHFUL_PRIVATE_IP: "true"
+      # Report the AWS-shaped public DNS name. Safe for this scenario: nothing
+      # dials the value, and no ec2-multiregion UserData reads the IMDS
+      # public-hostname.
+      FLOCI_SERVICES_EC2_AWS_FAITHFUL_PUBLIC_DNS: "true"
+      # Region-restriction SCP stand-in. The scenario account deploys to these
+      # three regions and is locked to them; tasks that sweep "all regions"
+      # enumerate every region and skip the ones that come back AccessDenied,
+      # which is what their ground truth counts.
+      FLOCI_ALLOWED_REGIONS: "us-east-1,us-west-1,us-west-2"
+    networks: { floci_default: { aliases: [localhost.floci.io] } }
+networks: { floci_default: { name: floci_default } }

@@ -73,9 +73,15 @@ The report runs one Floci at a time and **wipes between arms** so no estate blee
 into the next:
 
 ```sh
-cd floci
+cd benchmarks/floci
 docker compose down -v && docker compose up -d   # fresh estate, port 4566
 ```
+
+That compose file carries the emulator-fidelity settings the run depends on —
+faithful private IP, AWS-shaped public DNS, and the region allow-list standing in
+for the account's region-restriction SCP. Starting Floci without them changes what
+the arms read from the live estate and therefore what they score; see the comments
+in `benchmarks/floci/docker-compose.yml` for why each one is set.
 
 Two Floci fidelity gaps to expect while deploying — neither is a code fix, and
 neither affects the scores:
@@ -125,6 +131,9 @@ services:
       FLOCI_BASE_URL: http://floci-b:4566
       FLOCI_SERVICES_EC2_SSH_PORT_RANGE_START: "2300"
       FLOCI_SERVICES_EC2_SSH_PORT_RANGE_END: "2399"
+      FLOCI_SERVICES_EC2_AWS_FAITHFUL_PRIVATE_IP: "true"
+      FLOCI_SERVICES_EC2_AWS_FAITHFUL_PUBLIC_DNS: "true"
+      FLOCI_ALLOWED_REGIONS: "us-east-1,us-west-1,us-west-2"
     networks: { floci_b_default: { aliases: [localhost.floci.io] } }
 networks: { floci_b_default: { name: floci_b_default } }
 ```
