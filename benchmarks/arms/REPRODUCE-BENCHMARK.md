@@ -12,15 +12,15 @@ only paid call is the agent-under-test (Haiku 4.5).
 
 | Task | chant | Terraform | Pulumi | CDK | Alchemy | Alchemy v2 (Effect) |
 |---|---|---|---|---|---|---|
-| ssh-reachable from internet | 3/3 | 3/3 | 2/3 | 0/3 | 1/3 | 1/3 |
-| cross-region connectivity | 3/3 | 3/3 | 3/3 | 3/3 | 3/3 | 2/3 |
-| list all regions | 3/3 | 3/3 | 3/3 | 3/3 | 3/3 | 0/3 |
-| instances by VPC | 3/3 | 3/3 | 3/3 | 3/3 | 2/3 | 0/3 |
-| in public subnets | 3/3 | 1/3 | 1/3 | 2/3 | 1/3 | 1/3 |
-| **Total (valid)** | **15/15** | **13/15** | **12/15** | **11/15** | **10/15** | **4/15** |
+| ssh-reachable from internet | 3/3 | 3/3 | 2/3 | 0/3 | 0/3 | 2/3 |
+| cross-region connectivity | 3/3 | 3/3 | 3/3 | 3/3 | 2/3 | 1/3 |
+| list all regions | 3/3 | 3/3 | 3/3 | 3/3 | 3/3 | 0/2 |
+| instances by VPC | 3/3 | 3/3 | 3/3 | 3/3 | 3/3 | 0/3 |
+| in public subnets | 3/3 | 1/3 | 1/3 | 2/3 | 2/3 | 0/3 |
+| **Total (valid)** | **15/15** | **13/15** | **12/15** | **11/15** | **10/15** | **3/15** |
 
 Cost per arm lands near chant $1.33 / Terraform $2.17 / Pulumi $1.76 /
-CDK $1.87 / Alchemy $1.59 / Alchemy v2 $1.39.
+CDK $1.87 / Alchemy $1.55 / Alchemy v2 $1.12.
 
 The Alchemy arm (`alchemy-ec2-multiregion`, published async `alchemy@0.93.12`
 with a local endpoint patch) clusters with the other state-file arms, as the
@@ -37,9 +37,11 @@ so that one instance is a custom resource with its own `resourceType` — and
 agents that census instances from state by exact type
 (`"resourceType":"AWS.EC2.Instance"`) silently miss the sixth instance. Every
 counting task decays with it. Trials that fell through to the live API scored;
-trials that trusted the state census did not. The per-task numbers are one k=3
-run; a prior run of the same arm landed 6/15 with the same signature, so the
-low cluster is stable even if individual rows wobble.
+trials that trusted the state census did not. The per-task numbers are one k=3 run;
+three runs of this arm landed 6/15, 4/15 and 3/15 with the same signature every
+time, so the low cluster is stable even though the number moves. One valid-set
+trial in the recorded run was lost to a verifier error, making the total 3 of 14
+scored trials.
 
 ## Pin these first
 
@@ -180,7 +182,8 @@ then across tasks for the arm total.
 
 The reproduction succeeds when the per-task and total columns match the table at the
 top: chant 15/15, Terraform 13/15, Pulumi 12/15, CDK 11/15, Alchemy 10/15,
-Alchemy v2 4/15 (expect wobble on individual v2 rows; the low cluster is the
-signal), with chant answering ssh-reachable 3/3 and public-subnet 3/3 where the
+Alchemy v2 3/15 (expect wobble on individual v2 rows; the low cluster is the
+signal; v1 has hit exactly 10/15 on two independent runs with rows
+redistributing), with chant answering ssh-reachable 3/3 and public-subnet 3/3 where the
 other arms fall to 0–2/3.
 Token and cost totals land within run-to-run variance of the figures above.
