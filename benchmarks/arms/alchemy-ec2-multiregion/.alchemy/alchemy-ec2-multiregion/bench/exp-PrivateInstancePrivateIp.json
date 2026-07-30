@@ -1,12 +1,12 @@
 {
-  "kind": "aws::ExportParameter",
+  "kind": "ssm::RegionalParameter",
   "id": "exp-PrivateInstancePrivateIp",
   "fqn": "alchemy-ec2-multiregion/bench/exp-PrivateInstancePrivateIp",
   "seq": 47,
   "data": {},
   "status": "created",
   "output": {
-    "Symbol(alchemy::ResourceKind)": "aws::ExportParameter",
+    "Symbol(alchemy::ResourceKind)": "ssm::RegionalParameter",
     "Symbol(alchemy::ResourceID)": "exp-PrivateInstancePrivateIp",
     "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/exp-PrivateInstancePrivateIp",
     "Symbol(alchemy::ResourceScope)": {

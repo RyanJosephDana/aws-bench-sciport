@@ -1,12 +1,12 @@
 {
-  "kind": "aws::ExportParameter",
+  "kind": "ssm::RegionalParameter",
   "id": "exp-OpenSSHPort",
   "fqn": "alchemy-ec2-multiregion/bench/exp-OpenSSHPort",
   "seq": 61,
   "data": {},
   "status": "created",
   "output": {
-    "Symbol(alchemy::ResourceKind)": "aws::ExportParameter",
+    "Symbol(alchemy::ResourceKind)": "ssm::RegionalParameter",
     "Symbol(alchemy::ResourceID)": "exp-OpenSSHPort",
     "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/exp-OpenSSHPort",
     "Symbol(alchemy::ResourceScope)": {

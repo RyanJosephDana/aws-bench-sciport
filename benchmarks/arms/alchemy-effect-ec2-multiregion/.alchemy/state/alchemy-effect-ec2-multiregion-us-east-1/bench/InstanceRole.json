@@ -2,7 +2,7 @@
   "status": "created",
   "fqn": "InstanceRole",
   "logicalId": "InstanceRole",
-  "instanceId": "72f9231b889013d7b3bf4844474ccd4c",
+  "instanceId": "f23d1c285bc0804817ba4ec397335a56",
   "resourceType": "AWS.IAM.Role",
   "props": {
     "roleName": "role-000000000000-us-east-1",
@@ -40,7 +40,7 @@
   "attr": {
     "roleArn": "arn:aws:iam::000000000000:role/role-000000000000-us-east-1",
     "roleName": "role-000000000000-us-east-1",
-    "roleId": "AROAF3SW6EBIK8E11FBY",
+    "roleId": "AROADKM04HZ688BINB3K",
     "path": "/",
     "assumeRolePolicyDocument": {
       "Version": "2012-10-17",

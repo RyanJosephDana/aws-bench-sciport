@@ -30,10 +30,10 @@
       "arn:aws:iam::aws:policy/ReadOnlyAccess"
     ],
     "arn": "arn:aws:iam::000000000000:role/LLMJudgeFullBedrockAccessRole",
-    "uniqueId": "AROA8L7M6MND7D3BDPAE",
-    "roleId": "AROA8L7M6MND7D3BDPAE",
+    "uniqueId": "AROAI52U5O0D5PLSXR68",
+    "roleId": "AROAI52U5O0D5PLSXR68",
     "createDate": {
-      "@date": "2026-07-30T01:16:17.896Z"
+      "@date": "2026-07-30T05:40:24.509Z"
     }
   },
   "props": {

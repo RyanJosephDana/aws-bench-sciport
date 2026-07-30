@@ -5,6 +5,12 @@
 // own AWS resources are — an async lifecycle function per resource — but on AWS
 // SDK v3 clients, which honor AWS_ENDPOINT_URL natively (no endpoint patch).
 //
+// Type strings follow the framework's own convention for these services —
+// `aws::Instance` / `aws::LaunchTemplate` alongside the native `aws::Vpc` and
+// `aws::Subnet`, `iam::InstanceProfile` alongside `iam::Role`. The regional
+// SSM parameter is `ssm::RegionalParameter` because `ssm::Parameter` is the
+// native (process-region-only) resource's own type.
+//
 // The Instance echoes only its DECLARED props into state plus runtime ids/IPs.
 // In particular an instance launched via launch template records the template
 // reference, not the security groups it resolves to — the same shape Terraform
@@ -51,7 +57,7 @@ export interface Ec2Instance extends Ec2InstanceProps {
 }
 
 export const Ec2Instance = Resource(
-  "aws::Ec2Instance",
+  "aws::Instance",
   async function (
     this: Context<Ec2Instance>,
     _id: string,
@@ -146,7 +152,7 @@ export interface Ec2LaunchTemplate extends Ec2LaunchTemplateProps {
 }
 
 export const Ec2LaunchTemplate = Resource(
-  "aws::Ec2LaunchTemplate",
+  "aws::LaunchTemplate",
   async function (
     this: Context<Ec2LaunchTemplate>,
     _id: string,
@@ -199,7 +205,7 @@ export interface IamInstanceProfile extends IamInstanceProfileProps {
 }
 
 export const IamInstanceProfile = Resource(
-  "aws::IamInstanceProfile",
+  "iam::InstanceProfile",
   async function (
     this: Context<IamInstanceProfile>,
     _id: string,
@@ -264,7 +270,7 @@ export interface ExportParameterProps {
 export type ExportParameter = ExportParameterProps;
 
 export const ExportParameter = Resource(
-  "aws::ExportParameter",
+  "ssm::RegionalParameter",
   async function (
     this: Context<ExportParameter>,
     _id: string,

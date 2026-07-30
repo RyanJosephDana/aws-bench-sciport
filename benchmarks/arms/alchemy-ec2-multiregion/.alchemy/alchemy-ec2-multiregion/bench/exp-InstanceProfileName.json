@@ -1,12 +1,12 @@
 {
-  "kind": "aws::ExportParameter",
+  "kind": "ssm::RegionalParameter",
   "id": "exp-InstanceProfileName",
   "fqn": "alchemy-ec2-multiregion/bench/exp-InstanceProfileName",
   "seq": 55,
   "data": {},
   "status": "created",
   "output": {
-    "Symbol(alchemy::ResourceKind)": "aws::ExportParameter",
+    "Symbol(alchemy::ResourceKind)": "ssm::RegionalParameter",
     "Symbol(alchemy::ResourceID)": "exp-InstanceProfileName",
     "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/exp-InstanceProfileName",
     "Symbol(alchemy::ResourceScope)": {

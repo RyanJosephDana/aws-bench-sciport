@@ -1,12 +1,12 @@
 {
-  "kind": "aws::Ec2Instance",
+  "kind": "aws::Instance",
   "id": "privateServer",
   "fqn": "alchemy-ec2-multiregion/bench/privateServer",
   "seq": 44,
   "data": {},
   "status": "created",
   "output": {
-    "Symbol(alchemy::ResourceKind)": "aws::Ec2Instance",
+    "Symbol(alchemy::ResourceKind)": "aws::Instance",
     "Symbol(alchemy::ResourceID)": "privateServer",
     "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/privateServer",
     "Symbol(alchemy::ResourceScope)": {
@@ -16,11 +16,11 @@
     "region": "us-east-1",
     "imageId": "ami-0f3f13f145e66a0a3",
     "instanceType": "t3.micro",
-    "subnetId": "subnet-a706d48c",
+    "subnetId": "subnet-8d50ca0a",
     "tags": {
       "Name": "PrivateInstance"
     },
-    "instanceId": "i-9a17439f68d573223",
+    "instanceId": "i-05703a8b347aa21dd",
     "privateIp": "172.17.0.11",
     "publicIp": "127.0.0.1"
   },
@@ -28,7 +28,7 @@
     "region": "us-east-1",
     "imageId": "ami-0f3f13f145e66a0a3",
     "instanceType": "t3.micro",
-    "subnetId": "subnet-a706d48c",
+    "subnetId": "subnet-8d50ca0a",
     "tags": {
       "Name": "PrivateInstance"
     }

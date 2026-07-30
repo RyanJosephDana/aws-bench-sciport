@@ -13,13 +13,13 @@
       "@scope": null
     },
     "Symbol(alchemy::ResourceSeq)": 33,
-    "associationId": "rtbassoc-0dbe6a1d",
-    "routeTableId": "rtb-238a4b79",
-    "subnetId": "subnet-4f813dee",
+    "associationId": "rtbassoc-57dda00c",
+    "routeTableId": "rtb-994793f5",
+    "subnetId": "subnet-616eb8f6",
     "isMain": false,
     "state": "associated",
-    "routeTable": "rtb-238a4b79",
-    "subnet": "subnet-4f813dee"
+    "routeTable": "rtb-994793f5",
+    "subnet": "subnet-616eb8f6"
   },
   "props": {
     "routeTable": {
@@ -30,10 +30,10 @@
         "@scope": null
       },
       "Symbol(alchemy::ResourceSeq)": 31,
-      "routeTableId": "rtb-238a4b79",
-      "vpcId": "vpc-18f2e570",
+      "routeTableId": "rtb-994793f5",
+      "vpcId": "vpc-9e5a4b5a",
       "region": "us-east-1",
-      "vpc": "vpc-18f2e570"
+      "vpc": "vpc-9e5a4b5a"
     },
     "subnet": {
       "Symbol(alchemy::ResourceKind)": "aws::Subnet",
@@ -43,13 +43,13 @@
         "@scope": null
       },
       "Symbol(alchemy::ResourceSeq)": 27,
-      "subnetId": "subnet-4f813dee",
-      "vpcId": "vpc-18f2e570",
+      "subnetId": "subnet-616eb8f6",
+      "vpcId": "vpc-9e5a4b5a",
       "state": "available",
       "availableIpAddressCount": 251,
       "defaultForAz": false,
       "region": "us-east-1",
-      "vpc": "vpc-18f2e570",
+      "vpc": "vpc-9e5a4b5a",
       "cidrBlock": "10.0.0.0/24",
       "availabilityZone": "us-east-1a",
       "mapPublicIpOnLaunch": true,

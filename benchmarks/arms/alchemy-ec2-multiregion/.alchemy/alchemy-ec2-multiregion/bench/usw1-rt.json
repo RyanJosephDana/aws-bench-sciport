@@ -13,10 +13,10 @@
       "@scope": null
     },
     "Symbol(alchemy::ResourceSeq)": 4,
-    "routeTableId": "rtb-24d500a6",
-    "vpcId": "vpc-cd9bf613",
+    "routeTableId": "rtb-f02dae79",
+    "vpcId": "vpc-555b1e5b",
     "region": "us-west-1",
-    "vpc": "vpc-cd9bf613"
+    "vpc": "vpc-555b1e5b"
   },
   "props": {
     "region": "us-west-1",
@@ -28,7 +28,7 @@
         "@scope": null
       },
       "Symbol(alchemy::ResourceSeq)": 0,
-      "vpcId": "vpc-cd9bf613",
+      "vpcId": "vpc-555b1e5b",
       "state": "available",
       "isDefault": false,
       "dhcpOptionsId": "dopt-default",

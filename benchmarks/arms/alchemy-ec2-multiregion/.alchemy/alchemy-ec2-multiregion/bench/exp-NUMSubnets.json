@@ -1,12 +1,12 @@
 {
-  "kind": "aws::ExportParameter",
+  "kind": "ssm::RegionalParameter",
   "id": "exp-NUMSubnets",
   "fqn": "alchemy-ec2-multiregion/bench/exp-NUMSubnets",
   "seq": 60,
   "data": {},
   "status": "created",
   "output": {
-    "Symbol(alchemy::ResourceKind)": "aws::ExportParameter",
+    "Symbol(alchemy::ResourceKind)": "ssm::RegionalParameter",
     "Symbol(alchemy::ResourceID)": "exp-NUMSubnets",
     "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/exp-NUMSubnets",
     "Symbol(alchemy::ResourceScope)": {

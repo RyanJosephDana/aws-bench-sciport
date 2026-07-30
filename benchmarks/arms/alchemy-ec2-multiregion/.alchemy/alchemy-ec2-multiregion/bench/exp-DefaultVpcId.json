@@ -1,12 +1,12 @@
 {
-  "kind": "aws::ExportParameter",
+  "kind": "ssm::RegionalParameter",
   "id": "exp-DefaultVpcId",
   "fqn": "alchemy-ec2-multiregion/bench/exp-DefaultVpcId",
   "seq": 68,
   "data": {},
   "status": "created",
   "output": {
-    "Symbol(alchemy::ResourceKind)": "aws::ExportParameter",
+    "Symbol(alchemy::ResourceKind)": "ssm::RegionalParameter",
     "Symbol(alchemy::ResourceID)": "exp-DefaultVpcId",
     "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/exp-DefaultVpcId",
     "Symbol(alchemy::ResourceScope)": {

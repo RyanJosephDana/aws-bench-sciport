@@ -2,7 +2,7 @@
   "status": "created",
   "fqn": "QaJudgeRole",
   "logicalId": "QaJudgeRole",
-  "instanceId": "43780ead19544e424a904353a806ab02",
+  "instanceId": "d66e9ee7ba2948a7ff44e810c35cf2c7",
   "resourceType": "AWS.IAM.Role",
   "props": {
     "roleName": "LLMJudgeFullBedrockAccessRole",
@@ -25,7 +25,7 @@
   "attr": {
     "roleArn": "arn:aws:iam::000000000000:role/LLMJudgeFullBedrockAccessRole",
     "roleName": "LLMJudgeFullBedrockAccessRole",
-    "roleId": "AROA5D0N7YU2N8FEUTVU",
+    "roleId": "AROAWAA7BLBY2LYFVWTP",
     "path": "/",
     "assumeRolePolicyDocument": {
       "Version": "2012-10-17",

@@ -1,12 +1,12 @@
 {
-  "kind": "aws::Ec2LaunchTemplate",
+  "kind": "aws::LaunchTemplate",
   "id": "lt",
   "fqn": "alchemy-ec2-multiregion/bench/lt",
   "seq": 42,
   "data": {},
   "status": "created",
   "output": {
-    "Symbol(alchemy::ResourceKind)": "aws::Ec2LaunchTemplate",
+    "Symbol(alchemy::ResourceKind)": "aws::LaunchTemplate",
     "Symbol(alchemy::ResourceID)": "lt",
     "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/lt",
     "Symbol(alchemy::ResourceScope)": {
@@ -19,7 +19,7 @@
       "ImageId": "ami-0f3f13f145e66a0a3",
       "InstanceType": "t3.micro",
       "SecurityGroupIds": [
-        "sg-5444687056e1bcbda"
+        "sg-031180c81eb0ff57e"
       ],
       "BlockDeviceMappings": [
         {
@@ -34,7 +34,7 @@
         "HttpTokens": "required"
       }
     },
-    "launchTemplateId": "lt-c94a7a04553b7457f"
+    "launchTemplateId": "lt-676aeb12618875f92"
   },
   "props": {
     "region": "us-east-1",
@@ -43,7 +43,7 @@
       "ImageId": "ami-0f3f13f145e66a0a3",
       "InstanceType": "t3.micro",
       "SecurityGroupIds": [
-        "sg-5444687056e1bcbda"
+        "sg-031180c81eb0ff57e"
       ],
       "BlockDeviceMappings": [
         {

@@ -2,20 +2,20 @@
   "status": "created",
   "fqn": "WebLaunchTemplate",
   "logicalId": "WebLaunchTemplate",
-  "instanceId": "b95089b57f08eb1280ae91a609e4dbe8",
+  "instanceId": "1b25c888127a5e2fb127492b5f7f7fc0",
   "resourceType": "AWS.AutoScaling.LaunchTemplate",
   "props": {
     "launchTemplateName": "lt-000000000000-us-east-1",
     "imageId": "ami-0f3f13f145e66a0a3",
     "instanceType": "t3.micro",
     "securityGroupIds": [
-      "sg-5ce1eb96a05da05d0"
+      "sg-b22db93a7122461fa"
     ],
     "isExternal": true
   },
   "attr": {
-    "launchTemplateId": "lt-86d3a96d635a74e33",
-    "launchTemplateArn": "arn:aws:ec2:us-east-1:000000000000:launch-template/lt-86d3a96d635a74e33",
+    "launchTemplateId": "lt-3990b405df8b3bf66",
+    "launchTemplateArn": "arn:aws:ec2:us-east-1:000000000000:launch-template/lt-3990b405df8b3bf66",
     "launchTemplateName": "lt-000000000000-us-east-1",
     "defaultVersionNumber": 1,
     "latestVersionNumber": 1,

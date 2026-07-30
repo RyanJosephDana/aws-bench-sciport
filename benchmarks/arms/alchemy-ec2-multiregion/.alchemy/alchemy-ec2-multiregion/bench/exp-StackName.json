@@ -1,12 +1,12 @@
 {
-  "kind": "aws::ExportParameter",
+  "kind": "ssm::RegionalParameter",
   "id": "exp-StackName",
   "fqn": "alchemy-ec2-multiregion/bench/exp-StackName",
   "seq": 64,
   "data": {},
   "status": "created",
   "output": {
-    "Symbol(alchemy::ResourceKind)": "aws::ExportParameter",
+    "Symbol(alchemy::ResourceKind)": "ssm::RegionalParameter",
     "Symbol(alchemy::ResourceID)": "exp-StackName",
     "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/exp-StackName",
     "Symbol(alchemy::ResourceScope)": {

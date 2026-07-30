@@ -2,12 +2,12 @@
   "status": "created",
   "fqn": "ExpPublicSubnetId",
   "logicalId": "ExpPublicSubnetId",
-  "instanceId": "51fa1225795fdcc119b9ae6dbcccb7c5",
+  "instanceId": "6c511bcb099e45b19f86ff75488d2d3c",
   "resourceType": "AWS.SSM.Parameter",
   "props": {
     "name": "/exports/ec2-multiregion-EC2-ls9fuhb522-us-west-2-PublicSubnetId",
     "type": "String",
-    "value": "subnet-fca20ea5"
+    "value": "subnet-1cfb862f"
   },
   "attr": {
     "parameterName": "/exports/ec2-multiregion-EC2-ls9fuhb522-us-west-2-PublicSubnetId",

@@ -1,12 +1,12 @@
 {
-  "kind": "aws::ExportParameter",
+  "kind": "ssm::RegionalParameter",
   "id": "exp-InstanceId",
   "fqn": "alchemy-ec2-multiregion/bench/exp-InstanceId",
   "seq": 57,
   "data": {},
   "status": "created",
   "output": {
-    "Symbol(alchemy::ResourceKind)": "aws::ExportParameter",
+    "Symbol(alchemy::ResourceKind)": "ssm::RegionalParameter",
     "Symbol(alchemy::ResourceID)": "exp-InstanceId",
     "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/exp-InstanceId",
     "Symbol(alchemy::ResourceScope)": {
@@ -15,11 +15,11 @@
     "Symbol(alchemy::ResourceSeq)": 57,
     "region": "us-east-1",
     "name": "/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-InstanceId",
-    "value": "i-5ec6e58010db0c81b"
+    "value": "i-9fd0c7353fdd4d745"
   },
   "props": {
     "region": "us-east-1",
     "name": "/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-InstanceId",
-    "value": "i-5ec6e58010db0c81b"
+    "value": "i-9fd0c7353fdd4d745"
   }
 }

@@ -94,7 +94,7 @@ res = [json.load(open(p)) for p in glob.glob(f"{root}/*.json")]
 def kind(r): return r.get("kind")
 def out(r): return {k: v for k, v in r.get("output", {}).items() if not k.startswith("Symbol")}
 
-insts = [out(r) for r in res if kind(r) == "aws::Ec2Instance"]
+insts = [out(r) for r in res if kind(r) == "aws::Instance"]
 pub = {out(r).get("subnetId") for r in res if kind(r) == "aws::RouteTableAssociation"}
 open22 = set()
 for r in res:
@@ -104,7 +104,7 @@ for r in res:
             sg = o.get("securityGroup")
             open22.add(sg.get("groupId") if isinstance(sg, dict) else sg)
 lt_sgs = {out(r)["launchTemplateId"]: set(out(r)["launchTemplateData"].get("SecurityGroupIds") or [])
-          for r in res if kind(r) == "aws::Ec2LaunchTemplate"}
+          for r in res if kind(r) == "aws::LaunchTemplate"}
 
 facing = ssh = 0
 for i in insts:

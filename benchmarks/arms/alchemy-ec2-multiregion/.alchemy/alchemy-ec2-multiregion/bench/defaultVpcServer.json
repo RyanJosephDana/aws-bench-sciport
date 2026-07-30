@@ -1,12 +1,12 @@
 {
-  "kind": "aws::Ec2Instance",
+  "kind": "aws::Instance",
   "id": "defaultVpcServer",
   "fqn": "alchemy-ec2-multiregion/bench/defaultVpcServer",
   "seq": 45,
   "data": {},
   "status": "created",
   "output": {
-    "Symbol(alchemy::ResourceKind)": "aws::Ec2Instance",
+    "Symbol(alchemy::ResourceKind)": "aws::Instance",
     "Symbol(alchemy::ResourceID)": "defaultVpcServer",
     "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/defaultVpcServer",
     "Symbol(alchemy::ResourceScope)": {
@@ -20,8 +20,8 @@
     "tags": {
       "Name": "MyEC2Instance"
     },
-    "instanceId": "i-26951e7aeb4969a82",
-    "privateIp": "172.17.0.12",
+    "instanceId": "i-ef3aa76f2849269fe",
+    "privateIp": "172.17.0.13",
     "publicIp": "127.0.0.1"
   },
   "props": {

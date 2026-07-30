@@ -1,12 +1,12 @@
 {
-  "kind": "aws::ExportParameter",
+  "kind": "ssm::RegionalParameter",
   "id": "usw2-exp-VpcId",
   "fqn": "alchemy-ec2-multiregion/bench/usw2-exp-VpcId",
   "seq": 21,
   "data": {},
   "status": "created",
   "output": {
-    "Symbol(alchemy::ResourceKind)": "aws::ExportParameter",
+    "Symbol(alchemy::ResourceKind)": "ssm::RegionalParameter",
     "Symbol(alchemy::ResourceID)": "usw2-exp-VpcId",
     "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/usw2-exp-VpcId",
     "Symbol(alchemy::ResourceScope)": {
@@ -15,11 +15,11 @@
     "Symbol(alchemy::ResourceSeq)": 21,
     "region": "us-west-2",
     "name": "/exports/ec2-multiregion-EC2-ls9fuhb522-us-west-2-VpcId",
-    "value": "vpc-e2e2efbd"
+    "value": "vpc-f320d749"
   },
   "props": {
     "region": "us-west-2",
     "name": "/exports/ec2-multiregion-EC2-ls9fuhb522-us-west-2-VpcId",
-    "value": "vpc-e2e2efbd"
+    "value": "vpc-f320d749"
   }
 }

@@ -2,35 +2,35 @@
   "status": "created",
   "fqn": "WebServer",
   "logicalId": "WebServer",
-  "instanceId": "0686a4d1e6d97de74d47d5f1708dc759",
+  "instanceId": "385e2556a2e7dc0b4d76f55e5307e4ce",
   "resourceType": "AWS.EC2.Instance",
   "props": {
     "imageId": "ami-0f3f13f145e66a0a3",
     "instanceType": "t3.micro",
-    "subnetId": "subnet-d7011f0b",
+    "subnetId": "subnet-e87018b8",
     "tags": {
       "Name": "WebServerInstance"
     },
     "isExternal": true
   },
   "attr": {
-    "instanceId": "i-a25bf99079c2788c6",
-    "instanceArn": "arn:aws:ec2:us-west-1:000000000000:instance/i-a25bf99079c2788c6",
+    "instanceId": "i-4c0124994dc0e4e86",
+    "instanceArn": "arn:aws:ec2:us-west-1:000000000000:instance/i-4c0124994dc0e4e86",
     "imageId": "ami-0f3f13f145e66a0a3",
     "instanceType": "t3.micro",
     "state": "running",
-    "vpcId": "vpc-ed9761b9",
-    "subnetId": "subnet-d7011f0b",
+    "vpcId": "vpc-1daee311",
+    "subnetId": "subnet-e87018b8",
     "availabilityZone": "us-west-1a",
     "securityGroupIds": [
       "sg-default"
     ],
-    "privateIpAddress": "172.17.0.3",
+    "privateIpAddress": "172.17.0.4",
     "publicIpAddress": "127.0.0.1",
-    "privateDnsName": "ip-172-17-0-3.ec2.internal",
+    "privateDnsName": "ip-172-17-0-4.ec2.internal",
     "publicDnsName": "localhost",
     "sourceDestCheck": true,
-    "launchTime": "2026-07-30T02:54:37.478Z",
+    "launchTime": "2026-07-30T05:50:44.214Z",
     "tags": {
       "alchemy::stack": "alchemy-effect-ec2-multiregion-us-west-1",
       "alchemy::stage": "bench",

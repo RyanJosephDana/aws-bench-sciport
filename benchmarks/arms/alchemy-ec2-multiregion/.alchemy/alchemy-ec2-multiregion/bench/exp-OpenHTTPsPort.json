@@ -1,12 +1,12 @@
 {
-  "kind": "aws::ExportParameter",
+  "kind": "ssm::RegionalParameter",
   "id": "exp-OpenHTTPsPort",
   "fqn": "alchemy-ec2-multiregion/bench/exp-OpenHTTPsPort",
   "seq": 63,
   "data": {},
   "status": "created",
   "output": {
-    "Symbol(alchemy::ResourceKind)": "aws::ExportParameter",
+    "Symbol(alchemy::ResourceKind)": "ssm::RegionalParameter",
     "Symbol(alchemy::ResourceID)": "exp-OpenHTTPsPort",
     "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/exp-OpenHTTPsPort",
     "Symbol(alchemy::ResourceScope)": {

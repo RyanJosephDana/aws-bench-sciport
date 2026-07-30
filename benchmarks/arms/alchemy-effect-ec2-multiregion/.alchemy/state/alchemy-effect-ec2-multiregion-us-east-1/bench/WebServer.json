@@ -2,14 +2,14 @@
   "status": "created",
   "fqn": "WebServer",
   "logicalId": "WebServer",
-  "instanceId": "0c259f57b2cffff92b81c23b4bd9a138",
+  "instanceId": "b12a9b83d7b1296beb3edf4e3c563bb8",
   "resourceType": "AWS.EC2.Instance",
   "props": {
     "imageId": "ami-0f3f13f145e66a0a3",
     "instanceType": "t3.micro",
-    "subnetId": "subnet-69986d1e",
+    "subnetId": "subnet-cfd43611",
     "securityGroupIds": [
-      "sg-5ce1eb96a05da05d0"
+      "sg-b22db93a7122461fa"
     ],
     "instanceProfileName": "instanceprofile-000000000000-us-east-1",
     "tags": {
@@ -18,26 +18,26 @@
     "isExternal": true
   },
   "attr": {
-    "instanceId": "i-1af70430424159891",
-    "instanceArn": "arn:aws:ec2:us-east-1:000000000000:instance/i-1af70430424159891",
+    "instanceId": "i-a5085149c67e92465",
+    "instanceArn": "arn:aws:ec2:us-east-1:000000000000:instance/i-a5085149c67e92465",
     "imageId": "ami-0f3f13f145e66a0a3",
     "instanceType": "t3.micro",
     "state": "running",
-    "vpcId": "vpc-737a450b",
-    "subnetId": "subnet-69986d1e",
+    "vpcId": "vpc-9d770387",
+    "subnetId": "subnet-cfd43611",
     "availabilityZone": "us-east-1a",
     "securityGroupIds": [
-      "sg-5ce1eb96a05da05d0"
+      "sg-b22db93a7122461fa"
     ],
-    "privateIpAddress": "172.17.0.7",
+    "privateIpAddress": "172.17.0.9",
     "publicIpAddress": "127.0.0.1",
-    "privateDnsName": "ip-172-17-0-7.ec2.internal",
+    "privateDnsName": "ip-172-17-0-9.ec2.internal",
     "publicDnsName": "localhost",
     "instanceProfileArn": "arn:aws:iam::000000000000:instance-profile/instanceprofile-000000000000-us-east-1",
-    "instanceProfileId": "AIPA7OY59YW7VKE9DUKRB",
+    "instanceProfileId": "AIPACPRYU3LC8LBQEJ1WK",
     "instanceProfileName": "instanceprofile-000000000000-us-east-1",
     "sourceDestCheck": true,
-    "launchTime": "2026-07-30T02:54:41.714Z",
+    "launchTime": "2026-07-30T05:50:47.588Z",
     "tags": {
       "alchemy::stack": "alchemy-effect-ec2-multiregion-us-east-1",
       "alchemy::stage": "bench",

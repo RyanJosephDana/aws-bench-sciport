@@ -1,12 +1,12 @@
 {
-  "kind": "aws::ExportParameter",
+  "kind": "ssm::RegionalParameter",
   "id": "exp-RestrictedActionModifyInstanceMetadataOptions",
   "fqn": "alchemy-ec2-multiregion/bench/exp-RestrictedActionModifyInstanceMetadataOptions",
   "seq": 51,
   "data": {},
   "status": "created",
   "output": {
-    "Symbol(alchemy::ResourceKind)": "aws::ExportParameter",
+    "Symbol(alchemy::ResourceKind)": "ssm::RegionalParameter",
     "Symbol(alchemy::ResourceID)": "exp-RestrictedActionModifyInstanceMetadataOptions",
     "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/exp-RestrictedActionModifyInstanceMetadataOptions",
     "Symbol(alchemy::ResourceScope)": {

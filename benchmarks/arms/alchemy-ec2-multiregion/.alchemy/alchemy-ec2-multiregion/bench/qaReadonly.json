@@ -31,10 +31,10 @@
       "arn:aws:iam::000000000000:policy/S3VectorsReadOnlyAccess-000000000000-us-east-1"
     ],
     "arn": "arn:aws:iam::000000000000:role/QALocalInvocationApplicationRole",
-    "uniqueId": "AROAINNSVX18SVFQS6OX",
-    "roleId": "AROAINNSVX18SVFQS6OX",
+    "uniqueId": "AROACS1ZJIVGMPT0GR3A",
+    "roleId": "AROACS1ZJIVGMPT0GR3A",
     "createDate": {
-      "@date": "2026-07-30T01:16:17.870Z"
+      "@date": "2026-07-30T05:40:24.487Z"
     }
   },
   "props": {

@@ -1,12 +1,12 @@
 {
-  "kind": "aws::ExportParameter",
+  "kind": "ssm::RegionalParameter",
   "id": "exp-DefaultPublicSubnetId1",
   "fqn": "alchemy-ec2-multiregion/bench/exp-DefaultPublicSubnetId1",
   "seq": 69,
   "data": {},
   "status": "created",
   "output": {
-    "Symbol(alchemy::ResourceKind)": "aws::ExportParameter",
+    "Symbol(alchemy::ResourceKind)": "ssm::RegionalParameter",
     "Symbol(alchemy::ResourceID)": "exp-DefaultPublicSubnetId1",
     "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/exp-DefaultPublicSubnetId1",
     "Symbol(alchemy::ResourceScope)": {

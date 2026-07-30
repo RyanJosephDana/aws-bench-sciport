@@ -1,12 +1,12 @@
 {
-  "kind": "aws::ExportParameter",
+  "kind": "ssm::RegionalParameter",
   "id": "exp-AMIName",
   "fqn": "alchemy-ec2-multiregion/bench/exp-AMIName",
   "seq": 56,
   "data": {},
   "status": "created",
   "output": {
-    "Symbol(alchemy::ResourceKind)": "aws::ExportParameter",
+    "Symbol(alchemy::ResourceKind)": "ssm::RegionalParameter",
     "Symbol(alchemy::ResourceID)": "exp-AMIName",
     "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/exp-AMIName",
     "Symbol(alchemy::ResourceScope)": {

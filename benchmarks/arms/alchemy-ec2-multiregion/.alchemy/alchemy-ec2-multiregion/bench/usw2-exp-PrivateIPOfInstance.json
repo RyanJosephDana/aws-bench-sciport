@@ -1,12 +1,12 @@
 {
-  "kind": "aws::ExportParameter",
+  "kind": "ssm::RegionalParameter",
   "id": "usw2-exp-PrivateIPOfInstance",
   "fqn": "alchemy-ec2-multiregion/bench/usw2-exp-PrivateIPOfInstance",
   "seq": 25,
   "data": {},
   "status": "created",
   "output": {
-    "Symbol(alchemy::ResourceKind)": "aws::ExportParameter",
+    "Symbol(alchemy::ResourceKind)": "ssm::RegionalParameter",
     "Symbol(alchemy::ResourceID)": "usw2-exp-PrivateIPOfInstance",
     "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/usw2-exp-PrivateIPOfInstance",
     "Symbol(alchemy::ResourceScope)": {
@@ -15,11 +15,11 @@
     "Symbol(alchemy::ResourceSeq)": 25,
     "region": "us-west-2",
     "name": "/exports/ec2-multiregion-EC2-ls9fuhb522-us-west-2-PrivateIPOfInstance",
-    "value": "172.17.0.4"
+    "value": "172.17.0.7"
   },
   "props": {
     "region": "us-west-2",
     "name": "/exports/ec2-multiregion-EC2-ls9fuhb522-us-west-2-PrivateIPOfInstance",
-    "value": "172.17.0.4"
+    "value": "172.17.0.7"
   }
 }

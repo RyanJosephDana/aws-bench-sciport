@@ -2,15 +2,15 @@
   "status": "created",
   "fqn": "PublicRouteTable",
   "logicalId": "PublicRouteTable",
-  "instanceId": "d19baa7ce177b01ef58eaf4a9c07097c",
+  "instanceId": "0afd8a6a6cfba85b388cf64fc27d12ef",
   "resourceType": "AWS.EC2.RouteTable",
   "props": {
-    "vpcId": "vpc-8bbd79d0"
+    "vpcId": "vpc-0fffbce9"
   },
   "attr": {
-    "routeTableId": "rtb-4dcc4d46",
-    "routeTableArn": "arn:aws:ec2:us-west-2:000000000000:route-table/rtb-4dcc4d46",
-    "vpcId": "vpc-8bbd79d0",
+    "routeTableId": "rtb-eb7a930c",
+    "routeTableArn": "arn:aws:ec2:us-west-2:000000000000:route-table/rtb-eb7a930c",
+    "vpcId": "vpc-0fffbce9",
     "ownerId": "000000000000",
     "associations": [],
     "routes": [
