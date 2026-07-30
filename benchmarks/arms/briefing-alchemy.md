@@ -6,14 +6,33 @@ source of truth for this account's infrastructure: regions, VPCs, subnets,
 instances, security groups, and their relationships are all defined there, and
 the applied Alchemy state records the resolved live ids and attributes.
 
-Inspect it to understand the infrastructure before or instead of enumerating it
-call-by-call:
+## Query the applied state with the `alchemy state` CLI
 
-- `/workspace/alchemy/.alchemy/alchemy-ec2-multiregion/bench/*.json` — the full
-  applied state, one JSON file per resource. Each file has a `kind` (e.g.
-  `aws::Ec2Instance`, `aws::SecurityGroupRule`) and an `output` object with the
-  resource's resolved attributes and references.
-- `alchemy.run.ts` and `src/` under `/workspace/alchemy` — for declared intent.
+Alchemy ships a state inspector. Use it before enumerating the account
+call-by-call — it reads the same applied state the deploy wrote, already keyed
+by resource. Run from `/workspace/alchemy`:
 
-Use the AWS CLI to verify live state where the question depends on runtime
-values (generated ids, IPs, states) the state does not already carry.
+- `alchemy state tree` — every stack/stage and the resources under it.
+- `alchemy state list` — the fully-qualified name of every resource, one per
+  line, suitable for scripting.
+- `alchemy state get <fqn>` — the full record for one resource as JSON. `kind`
+  is the resource type (e.g. `aws::Instance`, `aws::SecurityGroupRule`) and the
+  `output` object holds the resolved live attributes: physical ids, IPs, and
+  subnet and security-group references.
+
+Fully-qualified names look like `alchemy-ec2-multiregion/bench/webServer`, so
+`alchemy state list` followed by `alchemy state get` on the names you care about
+walks the whole estate.
+
+The same records are on disk under
+`/workspace/alchemy/.alchemy/alchemy-ec2-multiregion/bench/*.json` if you would
+rather read or grep the files directly, and `alchemy.run.ts` and `src/` under
+`/workspace/alchemy` carry the declared intent behind them.
+
+## Cloud state is authoritative
+
+Alchemy's own guidance for agents is that applied state records what was
+deployed and is not a substitute for the cloud: read current state from the
+provider via describe/get APIs rather than trusting cached output attributes.
+Use the AWS CLI to confirm anything that depends on runtime values, and where
+the two disagree, the live API wins.
