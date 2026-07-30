@@ -1,0 +1,36 @@
+{
+  "kind": "aws::Ec2Instance",
+  "id": "usw1-server",
+  "fqn": "alchemy-ec2-multiregion/bench/usw1-server",
+  "seq": 7,
+  "data": {},
+  "status": "created",
+  "output": {
+    "Symbol(alchemy::ResourceKind)": "aws::Ec2Instance",
+    "Symbol(alchemy::ResourceID)": "usw1-server",
+    "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/usw1-server",
+    "Symbol(alchemy::ResourceScope)": {
+      "@scope": null
+    },
+    "Symbol(alchemy::ResourceSeq)": 7,
+    "region": "us-west-1",
+    "imageId": "ami-0f3f13f145e66a0a3",
+    "instanceType": "t3.micro",
+    "subnetId": "subnet-31604232",
+    "tags": {
+      "Name": "WebServerInstance"
+    },
+    "instanceId": "i-af1010a64a35b4b65",
+    "privateIp": "172.17.0.3",
+    "publicIp": "127.0.0.1"
+  },
+  "props": {
+    "region": "us-west-1",
+    "imageId": "ami-0f3f13f145e66a0a3",
+    "instanceType": "t3.micro",
+    "subnetId": "subnet-31604232",
+    "tags": {
+      "Name": "WebServerInstance"
+    }
+  }
+}

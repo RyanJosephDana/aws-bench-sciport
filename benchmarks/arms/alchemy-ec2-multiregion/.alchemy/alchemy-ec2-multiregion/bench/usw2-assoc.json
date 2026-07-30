@@ -1,0 +1,61 @@
+{
+  "kind": "aws::RouteTableAssociation",
+  "id": "usw2-assoc",
+  "fqn": "alchemy-ec2-multiregion/bench/usw2-assoc",
+  "seq": 19,
+  "data": {},
+  "status": "created",
+  "output": {
+    "Symbol(alchemy::ResourceKind)": "aws::RouteTableAssociation",
+    "Symbol(alchemy::ResourceID)": "usw2-assoc",
+    "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/usw2-assoc",
+    "Symbol(alchemy::ResourceScope)": {
+      "@scope": null
+    },
+    "Symbol(alchemy::ResourceSeq)": 19,
+    "associationId": "rtbassoc-d1f4d5e3",
+    "routeTableId": "rtb-6d09f274",
+    "subnetId": "subnet-bfd7390b",
+    "isMain": false,
+    "state": "associated",
+    "routeTable": "rtb-6d09f274",
+    "subnet": "subnet-bfd7390b"
+  },
+  "props": {
+    "routeTable": {
+      "Symbol(alchemy::ResourceKind)": "aws::RouteTable",
+      "Symbol(alchemy::ResourceID)": "usw2-rt",
+      "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/usw2-rt",
+      "Symbol(alchemy::ResourceScope)": {
+        "@scope": null
+      },
+      "Symbol(alchemy::ResourceSeq)": 17,
+      "routeTableId": "rtb-6d09f274",
+      "vpcId": "vpc-e2e2efbd",
+      "region": "us-west-2",
+      "vpc": "vpc-e2e2efbd"
+    },
+    "subnet": {
+      "Symbol(alchemy::ResourceKind)": "aws::Subnet",
+      "Symbol(alchemy::ResourceID)": "usw2-public",
+      "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/usw2-public",
+      "Symbol(alchemy::ResourceScope)": {
+        "@scope": null
+      },
+      "Symbol(alchemy::ResourceSeq)": 14,
+      "subnetId": "subnet-bfd7390b",
+      "vpcId": "vpc-e2e2efbd",
+      "state": "available",
+      "availableIpAddressCount": 251,
+      "defaultForAz": false,
+      "region": "us-west-2",
+      "vpc": "vpc-e2e2efbd",
+      "cidrBlock": "10.0.0.0/24",
+      "availabilityZone": "us-west-2a",
+      "mapPublicIpOnLaunch": true,
+      "tags": {
+        "Name": "Public"
+      }
+    }
+  }
+}

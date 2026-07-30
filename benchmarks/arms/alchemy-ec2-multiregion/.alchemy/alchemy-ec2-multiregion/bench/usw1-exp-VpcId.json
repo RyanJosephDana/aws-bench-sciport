@@ -1,0 +1,25 @@
+{
+  "kind": "aws::ExportParameter",
+  "id": "usw1-exp-VpcId",
+  "fqn": "alchemy-ec2-multiregion/bench/usw1-exp-VpcId",
+  "seq": 8,
+  "data": {},
+  "status": "created",
+  "output": {
+    "Symbol(alchemy::ResourceKind)": "aws::ExportParameter",
+    "Symbol(alchemy::ResourceID)": "usw1-exp-VpcId",
+    "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/usw1-exp-VpcId",
+    "Symbol(alchemy::ResourceScope)": {
+      "@scope": null
+    },
+    "Symbol(alchemy::ResourceSeq)": 8,
+    "region": "us-west-1",
+    "name": "/exports/ec2-multiregion-EC2-ls9fuhb522-us-west-1-VpcId",
+    "value": "vpc-cd9bf613"
+  },
+  "props": {
+    "region": "us-west-1",
+    "name": "/exports/ec2-multiregion-EC2-ls9fuhb522-us-west-1-VpcId",
+    "value": "vpc-cd9bf613"
+  }
+}

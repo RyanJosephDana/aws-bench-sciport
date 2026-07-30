@@ -1,0 +1,44 @@
+{
+  "kind": "aws::RouteTable",
+  "id": "usw1-rt",
+  "fqn": "alchemy-ec2-multiregion/bench/usw1-rt",
+  "seq": 4,
+  "data": {},
+  "status": "created",
+  "output": {
+    "Symbol(alchemy::ResourceKind)": "aws::RouteTable",
+    "Symbol(alchemy::ResourceID)": "usw1-rt",
+    "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/usw1-rt",
+    "Symbol(alchemy::ResourceScope)": {
+      "@scope": null
+    },
+    "Symbol(alchemy::ResourceSeq)": 4,
+    "routeTableId": "rtb-24d500a6",
+    "vpcId": "vpc-cd9bf613",
+    "region": "us-west-1",
+    "vpc": "vpc-cd9bf613"
+  },
+  "props": {
+    "region": "us-west-1",
+    "vpc": {
+      "Symbol(alchemy::ResourceKind)": "aws::Vpc",
+      "Symbol(alchemy::ResourceID)": "usw1-vpc",
+      "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/usw1-vpc",
+      "Symbol(alchemy::ResourceScope)": {
+        "@scope": null
+      },
+      "Symbol(alchemy::ResourceSeq)": 0,
+      "vpcId": "vpc-cd9bf613",
+      "state": "available",
+      "isDefault": false,
+      "dhcpOptionsId": "dopt-default",
+      "region": "us-west-1",
+      "cidrBlock": "10.0.0.0/16",
+      "enableDnsSupport": true,
+      "enableDnsHostnames": true,
+      "tags": {
+        "Name": "ResourcesVpc"
+      }
+    }
+  }
+}

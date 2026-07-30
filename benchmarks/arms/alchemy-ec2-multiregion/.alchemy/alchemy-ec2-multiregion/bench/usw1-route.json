@@ -1,0 +1,72 @@
+{
+  "kind": "aws::Route",
+  "id": "usw1-route",
+  "fqn": "alchemy-ec2-multiregion/bench/usw1-route",
+  "seq": 5,
+  "data": {},
+  "status": "created",
+  "output": {
+    "Symbol(alchemy::ResourceKind)": "aws::Route",
+    "Symbol(alchemy::ResourceID)": "usw1-route",
+    "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/usw1-route",
+    "Symbol(alchemy::ResourceScope)": {
+      "@scope": null
+    },
+    "Symbol(alchemy::ResourceSeq)": 5,
+    "routeTableId": "rtb-24d500a6",
+    "state": "active",
+    "origin": "CreateRoute",
+    "region": "us-west-1",
+    "routeTable": "rtb-24d500a6",
+    "destinationCidrBlock": "0.0.0.0/0",
+    "target": {
+      "internetGateway": {
+        "Symbol(alchemy::ResourceKind)": "aws::InternetGateway",
+        "Symbol(alchemy::ResourceID)": "usw1-igw",
+        "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/usw1-igw",
+        "Symbol(alchemy::ResourceScope)": {
+          "@scope": null
+        },
+        "Symbol(alchemy::ResourceSeq)": 2,
+        "internetGatewayId": "igw-b133e5ad",
+        "state": "available",
+        "attachments": [],
+        "ownerId": 0,
+        "region": "us-west-1"
+      }
+    }
+  },
+  "props": {
+    "region": "us-west-1",
+    "routeTable": {
+      "Symbol(alchemy::ResourceKind)": "aws::RouteTable",
+      "Symbol(alchemy::ResourceID)": "usw1-rt",
+      "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/usw1-rt",
+      "Symbol(alchemy::ResourceScope)": {
+        "@scope": null
+      },
+      "Symbol(alchemy::ResourceSeq)": 4,
+      "routeTableId": "rtb-24d500a6",
+      "vpcId": "vpc-cd9bf613",
+      "region": "us-west-1",
+      "vpc": "vpc-cd9bf613"
+    },
+    "destinationCidrBlock": "0.0.0.0/0",
+    "target": {
+      "internetGateway": {
+        "Symbol(alchemy::ResourceKind)": "aws::InternetGateway",
+        "Symbol(alchemy::ResourceID)": "usw1-igw",
+        "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/usw1-igw",
+        "Symbol(alchemy::ResourceScope)": {
+          "@scope": null
+        },
+        "Symbol(alchemy::ResourceSeq)": 2,
+        "internetGatewayId": "igw-b133e5ad",
+        "state": "available",
+        "attachments": [],
+        "ownerId": 0,
+        "region": "us-west-1"
+      }
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "kind": "aws::Ec2Instance",
+  "id": "defaultVpcServer",
+  "fqn": "alchemy-ec2-multiregion/bench/defaultVpcServer",
+  "seq": 45,
+  "data": {},
+  "status": "created",
+  "output": {
+    "Symbol(alchemy::ResourceKind)": "aws::Ec2Instance",
+    "Symbol(alchemy::ResourceID)": "defaultVpcServer",
+    "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/defaultVpcServer",
+    "Symbol(alchemy::ResourceScope)": {
+      "@scope": null
+    },
+    "Symbol(alchemy::ResourceSeq)": 45,
+    "region": "us-east-1",
+    "imageId": "ami-0f3f13f145e66a0a3",
+    "instanceType": "t3.micro",
+    "subnetId": "subnet-default-c",
+    "tags": {
+      "Name": "MyEC2Instance"
+    },
+    "instanceId": "i-26951e7aeb4969a82",
+    "privateIp": "172.17.0.12",
+    "publicIp": "127.0.0.1"
+  },
+  "props": {
+    "region": "us-east-1",
+    "imageId": "ami-0f3f13f145e66a0a3",
+    "instanceType": "t3.micro",
+    "subnetId": "subnet-default-c",
+    "tags": {
+      "Name": "MyEC2Instance"
+    }
+  }
+}

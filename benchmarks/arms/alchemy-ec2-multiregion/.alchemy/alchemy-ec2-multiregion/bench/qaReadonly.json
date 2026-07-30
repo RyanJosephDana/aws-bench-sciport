@@ -1,0 +1,59 @@
+{
+  "kind": "iam::Role",
+  "id": "qaReadonly",
+  "fqn": "alchemy-ec2-multiregion/bench/qaReadonly",
+  "seq": 74,
+  "data": {},
+  "status": "created",
+  "output": {
+    "Symbol(alchemy::ResourceKind)": "iam::Role",
+    "Symbol(alchemy::ResourceID)": "qaReadonly",
+    "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/qaReadonly",
+    "Symbol(alchemy::ResourceScope)": {
+      "@scope": null
+    },
+    "Symbol(alchemy::ResourceSeq)": 74,
+    "roleName": "QALocalInvocationApplicationRole",
+    "assumeRolePolicy": {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Principal": {
+            "AWS": "arn:aws:iam::000000000000:root"
+          },
+          "Action": "sts:AssumeRole"
+        }
+      ]
+    },
+    "managedPolicyArns": [
+      "arn:aws:iam::aws:policy/ReadOnlyAccess",
+      "arn:aws:iam::000000000000:policy/S3VectorsReadOnlyAccess-000000000000-us-east-1"
+    ],
+    "arn": "arn:aws:iam::000000000000:role/QALocalInvocationApplicationRole",
+    "uniqueId": "AROAINNSVX18SVFQS6OX",
+    "roleId": "AROAINNSVX18SVFQS6OX",
+    "createDate": {
+      "@date": "2026-07-30T01:16:17.870Z"
+    }
+  },
+  "props": {
+    "roleName": "QALocalInvocationApplicationRole",
+    "assumeRolePolicy": {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Principal": {
+            "AWS": "arn:aws:iam::000000000000:root"
+          },
+          "Action": "sts:AssumeRole"
+        }
+      ]
+    },
+    "managedPolicyArns": [
+      "arn:aws:iam::aws:policy/ReadOnlyAccess",
+      "arn:aws:iam::000000000000:policy/S3VectorsReadOnlyAccess-000000000000-us-east-1"
+    ]
+  }
+}

@@ -21,6 +21,11 @@ only paid call is the agent-under-test (Haiku 4.5).
 
 Cost per arm lands near chant $1.33 / Terraform $2.17 / Pulumi $1.76 / CDK $1.87.
 
+A fifth arm — Alchemy (`alchemy-ec2-multiregion`, published async
+`alchemy@0.93.12` with a local endpoint patch) — is built and estate-verified
+but has no recorded scores yet. Deploy and run it exactly like the others via
+the tables below; its first k=3 tally extends the table above.
+
 ## Pin these first
 
 The one thing that makes results drift is an unpinned toolchain. Fix all of it:
@@ -45,7 +50,8 @@ Docker · Node 20+ · uv · git · a real Anthropic credential
 
 ## 1. Deploy each arm's estate
 
-Follow each arm's own `REPRODUCE.md` for the estate (chant, terraform, pulumi, cdk).
+Follow each arm's own `REPRODUCE.md` for the estate (chant, terraform, pulumi,
+alchemy, cdk).
 The report runs one Floci at a time and **wipes between arms** so no estate bleeds
 into the next:
 
@@ -137,6 +143,7 @@ Per-arm values:
 | chant | `briefing-chant-search-v2.md` | `benchmarks/arms/chant-ec2-multiregion-search-v2` → `/workspace/chant` |
 | terraform | `briefing-terraform.md` | `benchmarks/arms/terraform-ec2-multiregion` → `/workspace/terraform` |
 | pulumi | `briefing-pulumi.md` | `benchmarks/arms/pulumi-ec2-multiregion` → `/workspace/pulumi` |
+| alchemy | `briefing-alchemy.md` | `benchmarks/arms/alchemy-ec2-multiregion` → `/workspace/alchemy` |
 | cdk | `briefing-cdk.md` | the scenario's `cdk_app` (from `~/.aws-bench/cache`) → `/workspace/cdk_app` |
 
 Notes:

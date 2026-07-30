@@ -1,0 +1,49 @@
+{
+  "kind": "aws::SecurityGroup",
+  "id": "unused",
+  "fqn": "alchemy-ec2-multiregion/bench/unused",
+  "seq": 38,
+  "data": {},
+  "status": "created",
+  "output": {
+    "Symbol(alchemy::ResourceKind)": "aws::SecurityGroup",
+    "Symbol(alchemy::ResourceID)": "unused",
+    "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/unused",
+    "Symbol(alchemy::ResourceScope)": {
+      "@scope": null
+    },
+    "Symbol(alchemy::ResourceSeq)": 38,
+    "groupId": "sg-d6bb270c47b90e9f8",
+    "groupName": "unused-ec2-multiregion-EC2-ks84v1fh12-us-east-1",
+    "vpcId": "vpc-18f2e570",
+    "ownerId": 0,
+    "region": "us-east-1",
+    "vpc": "vpc-18f2e570",
+    "description": "Unused security group"
+  },
+  "props": {
+    "region": "us-east-1",
+    "vpc": {
+      "Symbol(alchemy::ResourceKind)": "aws::Vpc",
+      "Symbol(alchemy::ResourceID)": "vpc",
+      "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/vpc",
+      "Symbol(alchemy::ResourceScope)": {
+        "@scope": null
+      },
+      "Symbol(alchemy::ResourceSeq)": 26,
+      "vpcId": "vpc-18f2e570",
+      "state": "available",
+      "isDefault": false,
+      "dhcpOptionsId": "dopt-default",
+      "region": "us-east-1",
+      "cidrBlock": "10.0.0.0/16",
+      "enableDnsSupport": true,
+      "enableDnsHostnames": true,
+      "tags": {
+        "Name": "ResourcesVpc"
+      }
+    },
+    "groupName": "unused-ec2-multiregion-EC2-ks84v1fh12-us-east-1",
+    "description": "Unused security group"
+  }
+}

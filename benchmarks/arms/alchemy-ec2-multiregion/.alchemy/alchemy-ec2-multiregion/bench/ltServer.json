@@ -1,0 +1,40 @@
+{
+  "kind": "aws::Ec2Instance",
+  "id": "ltServer",
+  "fqn": "alchemy-ec2-multiregion/bench/ltServer",
+  "seq": 43,
+  "data": {},
+  "status": "created",
+  "output": {
+    "Symbol(alchemy::ResourceKind)": "aws::Ec2Instance",
+    "Symbol(alchemy::ResourceID)": "ltServer",
+    "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/ltServer",
+    "Symbol(alchemy::ResourceScope)": {
+      "@scope": null
+    },
+    "Symbol(alchemy::ResourceSeq)": 43,
+    "region": "us-east-1",
+    "subnetId": "subnet-4f813dee",
+    "launchTemplate": {
+      "launchTemplateId": "lt-c94a7a04553b7457f",
+      "version": "1"
+    },
+    "tags": {
+      "Name": "LaunchTemplateInstance"
+    },
+    "instanceId": "i-3f8b28b6c72193829",
+    "privateIp": "172.17.0.8",
+    "publicIp": "127.0.0.1"
+  },
+  "props": {
+    "region": "us-east-1",
+    "subnetId": "subnet-4f813dee",
+    "launchTemplate": {
+      "launchTemplateId": "lt-c94a7a04553b7457f",
+      "version": "1"
+    },
+    "tags": {
+      "Name": "LaunchTemplateInstance"
+    }
+  }
+}

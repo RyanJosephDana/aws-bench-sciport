@@ -13,6 +13,17 @@ clusters with Pulumi/CDK (≈11–13/15), not near chant's 15/15**, because the 
 still derives reachability by hand from state or the live API. If it lands there,
 it proves the point; report the number honestly either way.
 
+## Status: BUILT (2026-07-29) — awaiting the paid k=3 run
+Steps 1–4 of the remaining build are done: extended patch
+(`apply-endpoint-patch.sh`), estate (`alchemy.run.ts` + `src/aws-extra.ts`),
+`../briefing-alchemy.md`, `REPRODUCE.md`, benchmark-runbook wiring. Estate
+verified on Floci: 4/1/1 running, internet-facing 5 / ssh-reachable 2 derived
+from state. One deviation from the plan below: Floci's Cloud Control API is
+read-only and the published async Alchemy has no Instance/LaunchTemplate/
+InstanceProfile resources, so those are custom resources in `src/aws-extra.ts`
+(SDK-based, endpoint via env) — see REPRODUCE for the full accounting. Step 5
+(the scored run) still needs a real Anthropic credential.
+
 ## Status: gate CLEARED
 The blocker was whether Alchemy can target Floci at all. It can, with a small patch.
 Proven: `proof/alchemy.run.ts` deployed a VPC + subnet into Floci

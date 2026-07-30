@@ -1,0 +1,44 @@
+{
+  "kind": "aws::Ec2Instance",
+  "id": "webServer",
+  "fqn": "alchemy-ec2-multiregion/bench/webServer",
+  "seq": 41,
+  "data": {},
+  "status": "created",
+  "output": {
+    "Symbol(alchemy::ResourceKind)": "aws::Ec2Instance",
+    "Symbol(alchemy::ResourceID)": "webServer",
+    "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/webServer",
+    "Symbol(alchemy::ResourceScope)": {
+      "@scope": null
+    },
+    "Symbol(alchemy::ResourceSeq)": 41,
+    "region": "us-east-1",
+    "imageId": "ami-0f3f13f145e66a0a3",
+    "instanceType": "t3.micro",
+    "subnetId": "subnet-4f813dee",
+    "securityGroupIds": [
+      "sg-5444687056e1bcbda"
+    ],
+    "iamInstanceProfile": "instanceprofile-000000000000-us-east-1",
+    "tags": {
+      "Name": "WebServerInstance"
+    },
+    "instanceId": "i-5ec6e58010db0c81b",
+    "privateIp": "172.17.0.5",
+    "publicIp": "127.0.0.1"
+  },
+  "props": {
+    "region": "us-east-1",
+    "imageId": "ami-0f3f13f145e66a0a3",
+    "instanceType": "t3.micro",
+    "subnetId": "subnet-4f813dee",
+    "securityGroupIds": [
+      "sg-5444687056e1bcbda"
+    ],
+    "iamInstanceProfile": "instanceprofile-000000000000-us-east-1",
+    "tags": {
+      "Name": "WebServerInstance"
+    }
+  }
+}
