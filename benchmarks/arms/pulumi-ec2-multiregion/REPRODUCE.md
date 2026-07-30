@@ -18,7 +18,7 @@ Docker · Pulumi CLI · Node 18+ · AWS CLI v2 · Python 3 · git
 ## 1. Start the Floci emulator
 ```sh
 git clone https://github.com/lex00/floci
-cd floci && git checkout scenario1-working
+cd floci && git checkout awsbench-integration-v2
 docker compose up -d            # AWS-shaped services at http://localhost:4566
 cd ..
 ```
@@ -26,7 +26,7 @@ cd ..
 ## 2. Get the estate
 ```sh
 git clone https://github.com/lex00/aws-bench
-cd aws-bench && git checkout scenario1-working
+cd aws-bench && git checkout awsbench-integration-v2
 cd benchmarks/arms/pulumi-ec2-multiregion
 npm install
 ```
@@ -107,4 +107,4 @@ does not reproduce the full win-rate or cost; those need the aws-bench harness
 the scores across all four arms, see `../REPRODUCE-BENCHMARK.md`.
 
 ---
-Tested with Pulumi 3.255.0 + @pulumi/aws 6.x against Floci `scenario1-working`.
+Tested with Pulumi 3.255.0 + @pulumi/aws 6.x against Floci `awsbench-integration-v2`.

@@ -50,7 +50,7 @@ Docker · Bun · AWS CLI v2 · Python 3 · git
 ## 1. Start the Floci emulator
 ```sh
 git clone https://github.com/lex00/floci
-cd floci && git checkout scenario1-working
+cd floci && git checkout awsbench-integration-v2
 docker compose up -d            # AWS-shaped services at http://localhost:4566
 cd ..
 ```
@@ -58,7 +58,7 @@ cd ..
 ## 2. Get the estate
 ```sh
 git clone https://github.com/lex00/aws-bench
-cd aws-bench && git checkout feat/emulator-floci   # the scenario1-working tag predates this arm
+cd aws-bench && git checkout feat/emulator-floci   # feat/emulator-floci carries the arms
 cd benchmarks/arms/alchemy-ec2-multiregion
 bun install
 ./apply-endpoint-patch.sh

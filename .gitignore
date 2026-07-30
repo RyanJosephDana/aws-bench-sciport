@@ -33,3 +33,8 @@ site/
 
 .mcp.json
 bedrock.env
+
+# Local credentials — never commit
+.bench.env
+*.env
+!.env.example

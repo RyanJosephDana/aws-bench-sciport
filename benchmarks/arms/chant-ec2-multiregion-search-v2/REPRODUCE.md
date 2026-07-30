@@ -14,7 +14,7 @@ Docker · Node 20+ · AWS CLI v2 · git
 Build it from the pinned public tag (works on any architecture):
 ```sh
 git clone https://github.com/lex00/floci
-cd floci && git checkout scenario1-working
+cd floci && git checkout awsbench-integration-v2
 docker compose up -d            # AWS-shaped services at http://localhost:4566
 cd ..
 ```
@@ -22,13 +22,13 @@ On Apple Silicon / arm64 you can skip the build and pull the prebuilt image
 instead:
 ```sh
 docker run -d -p 4566:4566 -v /var/run/docker.sock:/var/run/docker.sock \
-  ghcr.io/lex00/floci:scenario1-arm64
+  ghcr.io/lex00/floci:awsbench
 ```
 
 ## 2. Get the estate (a chant project)
 ```sh
 git clone https://github.com/lex00/aws-bench
-cd aws-bench && git checkout scenario1-working
+cd aws-bench && git checkout awsbench-integration-v2
 cd benchmarks/arms/chant-ec2-multiregion-search-v2
 npm install                     # pulls released @intentius/chant + lexicon-aws (0.33.0)
 ```

@@ -51,8 +51,8 @@ The one thing that makes results drift is an unpinned toolchain. Fix all of it:
 |---|---|
 | chant | `@intentius/chant@0.33.0` + `@intentius/chant-lexicon-aws@0.33.0` (released on npm) |
 | chant arm | `benchmarks/arms/chant-ec2-multiregion-search-v2` + `briefing-chant-search-v2.md` |
-| Floci | `github.com/lex00/floci` branch `scenario1-working` (or `ghcr.io/lex00/floci:awsbench`) |
-| aws-bench | `github.com/lex00/aws-bench` branch `scenario1-working` |
+| Floci | `github.com/lex00/floci` branch `feat/emulator-floci` (or `ghcr.io/lex00/floci:awsbench`) |
+| aws-bench | `github.com/lex00/aws-bench` branch `feat/emulator-floci` |
 | Agent-under-test | `claude-code` on `claude-haiku-4-5-20251001`, k=3 |
 | Valid set | all `ec2-multiregion` tasks **except** `describe-cfn-stack-resources` (its CFN-shaped ground truth measures the generator, not the agent) |
 
@@ -146,9 +146,14 @@ docker compose -p floci-b up -d   # -> localhost:4567
 One job per arm, k=3. Swap the three per-arm values (endpoint, briefing, mount) and
 keep everything else fixed:
 
+The agent authenticates with a Claude Code OAuth token. Put it in `~/.anthropic`
+(what `claude setup-token` writes) and the run picks it up — there is no need to
+write it into the repo, and a token file inside the working tree is one
+`git add -A` away from being published.
+
 ```sh
 cd aws-bench
-echo "CLAUDE_CODE_OAUTH_TOKEN=<your token>" > .bench.env
+claude setup-token          # writes ~/.anthropic, once per machine
 
 # --- chant arm (repeat the block per arm with the table below) ---
 AWS_BENCH_EMULATOR=floci \
@@ -159,7 +164,7 @@ uv run aws-bench run --env-name awsbench -d ec2-multiregion \
   -a claude-code -m claude-haiku-4-5-20251001 -k 3 \
   --extra-instruction-path benchmarks/arms/briefing-chant-search-v2.md \
   --mounts '[{"type":"bind","source":"'"$PWD"'/benchmarks/arms/chant-ec2-multiregion-search-v2","target":"/workspace/chant","read_only":true}]' \
-  --no-verify-env --env-file .bench.env --yes
+  --no-verify-env --yes
 ```
 
 Per-arm values:
@@ -178,6 +183,8 @@ Notes:
 - `--no-verify-env` is required: the estate was deployed by hand, so the harness has
   no POST_SETUP baseline snapshot to verify against.
 - `-n <N>` runs trials concurrently to cut wall-clock; it does not change scores.
+- Set `CLAUDE_CODE_OAUTH_TOKEN` in the environment instead if you would rather not
+  use `~/.anthropic`; it takes precedence. Do not put it in a file under the repo.
 - Point the CDK arm at port 4567 if you deployed it on the second Floci instance.
 
 ## 3. Tally
