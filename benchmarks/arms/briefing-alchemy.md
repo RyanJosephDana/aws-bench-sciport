@@ -35,6 +35,6 @@ Path to estate facts, in order:
    Follow referenced ids between records when the answer spans resources.
 2. `alchemy.run.ts` and `src/` under `/workspace/alchemy` — for intent the state
    doesn't surface directly.
-3. `aws ec2 …` — Alchemy's own guidance is that cloud state is authoritative and
-   describe/get wins over a cached output attribute, so use it for runtime
-   values and to confirm anything the state may have gone stale on.
+3. `aws ec2 …` — Alchemy treats cloud state as authoritative, so use it for
+   runtime values the state does not carry (instance states, allocated
+   addresses).
