@@ -34,7 +34,7 @@ export AWS_DEFAULT_REGION=us-east-1 AWS_REGION=us-east-1
 
 case "$ARM" in
   chant)          SRC=chant-ec2-multiregion-search-v2; TARGET=/workspace/chant
-                  BRIEFING=briefing-chant-search-v2.md ;;
+                  BRIEFING=briefing-chant-snapshot.md ;;
   terraform)      SRC=terraform-ec2-multiregion;       TARGET=/workspace/terraform
                   BRIEFING=briefing-terraform.md ;;
   pulumi)         SRC=pulumi-ec2-multiregion;          TARGET=/workspace/pulumi
@@ -91,6 +91,15 @@ echo "==> [$ARM] re-exporting the workspace so trials get the deployed state"
 # Pulumi stack, .alchemy/. Trials mount the export, not that directory, so an
 # export from before the deploy would hand the agent an empty state file.
 python3 benchmarks/agent-env/prepare.py "$ARM" --export
+
+# The export rebuilds the workspace from the arm image, which deletes the orphan
+# branch chant records its state snapshot on. Without re-recording, every trial's
+# `search --at latest` fails with "No snapshots found" — and fails quietly, since
+# the agent just falls back and the run scores as bad answers rather than a
+# missing prerequisite.
+if [ "$ARM" = chant ]; then
+  ./benchmarks/agent-env/record-snapshot.sh floci
+fi
 
 echo "==> [$ARM] preflight: can it answer with its own tooling?"
 python3 benchmarks/agent-env/preflight.py "$ARM" --keep-going
