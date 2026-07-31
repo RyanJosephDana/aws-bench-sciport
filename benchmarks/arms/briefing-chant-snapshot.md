@@ -71,8 +71,14 @@ and, for each non-match, the term it failed.
 
 ## Derived attributes
 
-Besides the attributes AWS returns directly, chant folds multi-hop topology onto
-each instance and exposes the result as an attribute:
+Besides the attributes AWS returns directly, chant records two facts about every
+resource — `region`, and `providerDefault: true` on the ones AWS created rather
+than anyone declaring them (a default VPC and its subnets, a VPC's default
+security group, a main route table, AWS-managed keys and policies). Both are
+plain attributes: query them with `attr:`, show them with `--show`.
+
+It also folds multi-hop topology onto each instance and exposes the result as an
+attribute:
 
 - `internetFacing` — whether the instance's subnet routes to an internet
   gateway, resolved through the route table, including a default VPC's main
