@@ -32,10 +32,10 @@ Warnings go to stderr, so stdout is already valid JSON — redirect with
 `2>/dev/null`, not `2>&1`, or the warnings land in the JSON and break the parse.
 Both `search` and `graph` take `--at latest` to read the recording.
 
-Add `--ambient` to any `search` to include resources of a kind this estate
-manages that exist in the account without being declared or referenced — a
-default security group, something left behind. They are marked distinctly, and
-without the flag they are not reported at all.
+The snapshot already includes resources of a kind this estate manages that exist
+in the account without being declared or referenced — a default security group,
+something left behind. They are in every `--at` answer, marked distinctly; there
+is no flag to add.
 
 Every answer states what backed it — `— observed from snapshot <commit> taken
 <time> · bound N/M` — so you can see the estate has already been read, and how
@@ -51,18 +51,18 @@ Query grammar (space-separated terms, all must match):
 - `kind:<substr>` — resource kind, e.g. `kind:EC2::Instance`
 - `attr:<name>=<val>` — an attribute equals/contains a value
 - `tag:<key>=<val>` — a tag with that key and value
-- `!<term>` — prefix any term to require its ABSENCE. `!<-kind:X` selects
-  nodes nothing of kind X references, which is how you ask what is unreferenced.
+- `!<term>` — prefix any term to require its ABSENCE. `!<-` on its own selects
+  nodes nothing points at at all; `!<-kind:X` narrows that to "nothing of kind X
+  points at it". Those are different questions — ask the one you mean.
 - `->attr:n=v` / `->kind:X` — this resource has an edge TO one matching the
   right side; `<-` reverses it. This performs the join across the relationship,
   so `kind:EC2::Instance ->attr:MapPublicIpOnLaunch=true` selects instances by a
   property of their subnet.
 
-Terms compose, and the flags compose with them — asking what is unreferenced is
-usually also asking about things nothing declared, so those two go together:
+Terms compose:
 
-    chant search "kind:EC2::Subnet !<-kind:EC2::Instance" --at latest --ambient
-    chant search "kind:EC2::Instance" --at latest --show VpcId,PrivateIpAddress
+    chant search "kind:EC2::Subnet !<-kind:EC2::Instance" --at latest --env floci
+    chant search "kind:EC2::Instance" --at latest --env floci --show VpcId,PrivateIpAddress
 
 Each result row is `<logicalId>  <kind>  <physicalId>  <shown attrs>`. `--show`
 takes the resource's own property names as the account reports them.
