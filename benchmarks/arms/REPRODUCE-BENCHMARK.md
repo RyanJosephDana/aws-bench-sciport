@@ -50,7 +50,7 @@ The one thing that makes results drift is an unpinned toolchain. Fix all of it:
 | Piece | Pin |
 |---|---|
 | chant | `@intentius/chant@0.33.0` + `@intentius/chant-lexicon-aws@0.33.0` (released on npm) |
-| chant arm | `benchmarks/arms/chant-ec2-multiregion-search-v2` + `briefing-chant-search-v2.md` |
+| chant arm | `benchmarks/arms/chant-ec2-multiregion-search-v2` + `briefing-chant-snapshot.md` |
 | Floci | `github.com/lex00/floci` branch `feat/emulator-floci` (or `ghcr.io/lex00/floci:awsbench`) |
 | aws-bench | `github.com/lex00/aws-bench` branch `feat/emulator-floci` |
 | Agent-under-test | `claude-code` on `claude-haiku-4-5-20251001`, k=3 |
@@ -58,8 +58,7 @@ The one thing that makes results drift is an unpinned toolchain. Fix all of it:
 
 There is no "v3" chant. The effective-SG enrichment the scores rely on is the
 `attr:effectiveIngress` / `attr:internetFacing` search in 0.33.0, exercised by
-`briefing-chant-search-v2.md`. The older `chant-ec2-multiregion-search` arm (vendored
-0.28.0) is superseded — do not use it.
+`briefing-chant-snapshot.md`. 28.0) is superseded — do not use it.
 
 ## Prerequisites
 Docker · Node 20+ · uv · git · a real Anthropic credential
@@ -203,7 +202,7 @@ AWS_BENCH_EMULATOR_CONTAINER_ENDPOINT=http://host.docker.internal:4566 \
 AWSBENCH_SCAN_METHOD=fastscan \
 uv run aws-bench run --env-name awsbench -d ec2-multiregion \
   -a claude-code -m claude-haiku-4-5-20251001 -k 3 \
-  --extra-instruction-path benchmarks/arms/briefing-chant-search-v2.md \
+  --extra-instruction-path benchmarks/arms/briefing-chant-snapshot.md \
   --mounts '[
     {"type":"bind","source":"'"$HOME"'/.aws-bench/agent-env/toolchain","target":"/opt/awsbench-toolchain","read_only":true},
     {"type":"bind","source":"'"$HOME"'/.aws-bench/agent-env/workspaces/'"$ARM"'","target":"/opt/awsbench-arm","read_only":true}
@@ -225,7 +224,7 @@ Per-arm values:
 
 | Arm | briefing | `ARM` | `TARGET` |
 |---|---|---|---|
-| chant | `briefing-chant-search-v2.md` | `chant` | `/workspace/chant` |
+| chant | `briefing-chant-snapshot.md` | `chant` | `/workspace/chant` |
 | terraform | `briefing-terraform.md` | `terraform` | `/workspace/terraform` |
 | pulumi | `briefing-pulumi.md` | `pulumi` | `/workspace/pulumi` |
 | alchemy | `briefing-alchemy.md` | `alchemy` | `/workspace/alchemy` |
