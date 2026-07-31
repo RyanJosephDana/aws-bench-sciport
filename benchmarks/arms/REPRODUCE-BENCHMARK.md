@@ -103,11 +103,16 @@ uv run aws-bench env init --env-name awsbench-cdk -d ec2-multiregion   # populat
 cp -r ~/.aws-bench/cache/scenarios/*/ec2-multiregion/scenario/cdk_app ./cdk_app
 cd cdk_app && npm install
 ```
-Two source edits are Floci-sandbox workarounds, not methodology changes — both remove
-Lambda-backed custom resources Floci can't run in a cgroup-limited sandbox:
-- `cdk.json`: set `@aws-cdk/aws-ec2:restrictDefaultSecurityGroup` to `false`.
-- `stacks/ec2_*.ts`: delete the `CreateAmi` `cr.AwsCustomResource` block, then bake the
-  AMI by hand after deploy (`aws ec2 create-image` against the web instance).
+Deploy the app **unmodified**. Earlier runs removed two Lambda-backed custom resources
+(`@aws-cdk/aws-ec2:restrictDefaultSecurityGroup` and the `CreateAmi`
+`cr.AwsCustomResource`) on the belief Floci could not execute them. It can. They were
+failing with `ECONNREFUSED …:443` because a custom resource's `cfn-response` callback is
+sent by bundled code that hardcodes `https://` and ignores the port in the ResponseURL,
+so the PUT lands on 443 — a port Floci binds only when TLS is on. `benchmarks/floci/
+docker-compose.yml` sets `FLOCI_TLS_ENABLED` and publishes 443, and both custom resources
+then run: the AMI is baked by `CreateAmi`, and `Custom::VpcRestrictDefaultSG` leaves the
+default security group with no ingress rules. Stripping them measured CDK with two of its
+own features removed, so do not.
 ```sh
 npm run build
 export AWS_ENDPOINT_URL=http://localhost:4567 AWS_ACCESS_KEY_ID=test AWS_SECRET_ACCESS_KEY=test AWS_DEFAULT_REGION=us-east-1 CDK_DEFAULT_ACCOUNT=000000000000
