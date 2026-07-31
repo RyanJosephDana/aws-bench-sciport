@@ -10,6 +10,7 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import logging
+import os
 from collections.abc import AsyncGenerator
 
 from harbor.agents.oracle import OracleAgent
@@ -216,6 +217,21 @@ class AwsBenchSingleStepTrial(SingleStepTrial):
             # Point the container's AWS SDK/CLI traffic at Floci; the staged
             # profiles above still supply the (placeholder) credentials.
             cred_env.update(emulator.container_endpoint_env())
+            # Opt-in: deny the AGENT live access, so an arm has to answer from
+            # whatever state it recorded rather than by reading the account as
+            # it answers. Scoped to the agent because the verifier resolves the
+            # reference answer's placeholders against the estate — take that
+            # away and grading breaks rather than the arm being tested.
+            #
+            # Set here, after container_endpoint_env, because that call
+            # overwrites AWS_ENDPOINT_URL and so silently undid an attempt to do
+            # this through `--ae`, which is how the first offline run came back
+            # with the agent reading live state and a plausible-looking score.
+            #
+            # A closed port, not an unset variable: unset sends the SDK at real
+            # AWS and hangs on a connect timeout, measuring patience.
+            if role_type is RoleType.AGENT and os.environ.get("AWS_BENCH_DENY_AGENT_LIVE"):
+                cred_env["AWS_ENDPOINT_URL"] = "http://127.0.0.1:9999"
 
         try:
             yield cred_env

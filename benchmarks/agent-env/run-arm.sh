@@ -67,9 +67,10 @@ case "$ARM" in
                       --ae CDK_DEFAULT_REGION=us-east-1) ;;
   alchemy) AGENT_ENV=(--ae DO_NOT_TRACK=1) ;;
   alchemy-effect) AGENT_ENV=(--ae DO_NOT_TRACK=1 --ae CI=1) ;;
-  # A closed port rather than an unset variable: unset would send the SDK at
-  # real AWS and hang on a timeout, which measures patience, not capability.
-  chant-offline)  AGENT_ENV=(--ae AWS_ENDPOINT_URL=http://127.0.0.1:9999) ;;
+  # Denial happens in aws-bench (AWS_BENCH_DENY_AGENT_LIVE, exported below), not
+  # here: the trial sets AWS_ENDPOINT_URL from the emulator AFTER applying --ae,
+  # so doing it through the agent env looks like it worked and does nothing.
+  chant-offline)  AGENT_ENV=() ;;
 esac
 
 # Everything below — reset, deploy, export, snapshot, audit — is chant's; only
@@ -121,6 +122,10 @@ echo "==> [$ARM] preflight: can it answer with its own tooling?"
 python3 benchmarks/agent-env/preflight.py "$BASE_ARM" --keep-going
 
 echo "==> [$ARM] running k=3"
+# The estate is unreachable to the agent, and only to the agent — the verifier
+# still resolves the reference answer's placeholders against it.
+if [ "$ARM" = chant-offline ]; then export AWS_BENCH_DENY_AGENT_LIVE=1; fi
+
 AWS_BENCH_EMULATOR=floci \
 AWS_BENCH_EMULATOR_ENDPOINT=http://localhost:4566 \
 AWS_BENCH_EMULATOR_CONTAINER_ENDPOINT=http://host.docker.internal:4566 \
