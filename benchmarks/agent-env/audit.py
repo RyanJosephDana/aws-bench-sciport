@@ -33,6 +33,21 @@ from arms import ARMS  # noqa: E402
 # 30+ `alchemy: command not found` in the Alchemy arm.
 MISSING = re.compile(r"command not found|No such file or directory|executable file not found")
 
+# Which command a shell says is absent. `bash: line 7: column: command not
+# found` names it, and the name is what decides whether the ARM's tooling was
+# missing or some unrelated utility the agent reached for. Without this, a
+# trial that piped a working `chant` into an absent `column` was recorded as
+# chant not being installed — and it read as the arm being broken for four runs.
+MISSING_NAME = re.compile(r"(?:^|:\s*)([\w./-]+): (?:command not found|not found)", re.M)
+
+# A command that reads the AWS account as it answers, rather than reading state
+# the arm already holds. Every briefing permits this as a last resort for
+# runtime values, so it is not a failure — but it is the thing the comparison is
+# about, and it should be counted rather than assumed. An arm that answers
+# without it answered from its own state; one that leans on it is being carried
+# by the AWS CLI.
+LIVE_READ = re.compile(r"\baws\s+(?:ec2|iam|cloudformation|s3api|sts)\b|--live\b")
+
 
 @dataclass
 class TrialAudit:
@@ -46,6 +61,8 @@ class TrialAudit:
     """Commands that failed because the tool is not installed."""
     tool_failed: int
     """Commands using the tool that ran but exited nonzero."""
+    live_reads: int
+    """Commands that read the AWS account directly rather than the arm's state."""
 
     @property
     def used_tool(self) -> bool:
@@ -103,7 +120,7 @@ def arm_of(job: Path) -> str | None:
     return next((name for name in ARMS if job.name.startswith(name)), None)
 
 
-def audit_trial(trial: Path, pattern: re.Pattern[str]) -> TrialAudit | None:
+def audit_trial(trial: Path, pattern: re.Pattern[str], tool_names: set[str]) -> TrialAudit | None:
     """Count one trial's tool calls, or None if it has no agent log."""
     log = trial / "agent" / "claude-code.txt"
     if not log.exists():
@@ -112,17 +129,26 @@ def audit_trial(trial: Path, pattern: re.Pattern[str]) -> TrialAudit | None:
     reward = reward_file.read_text().strip() if reward_file.exists() else "-"
 
     ok = missing = failed = 0
+    live = 0
     for command, output, is_error in bash_calls(log):
+        if LIVE_READ.search(command):
+            live += 1
         if not pattern.search(command):
             continue
         head = output[:2000]
-        if MISSING.search(head):
+        named = {m.group(1).rsplit("/", 1)[-1] for m in MISSING_NAME.finditer(head)}
+        # Only the arm's own binary counts as missing tooling. Anything else the
+        # shell could not find is the agent reaching for a utility, which is a
+        # different fact and belongs in the failed bucket.
+        if named and not (named & tool_names):
+            failed += 1
+        elif MISSING.search(head):
             missing += 1
         elif is_error or re.match(r"\s*Exit code [1-9]", head):
             failed += 1
         else:
             ok += 1
-    return TrialAudit(trial.name, reward, ok, missing, failed)
+    return TrialAudit(trial.name, reward, ok, missing, failed, live)
 
 
 def audit_job(job: Path) -> tuple[bool, list[str]]:
@@ -132,7 +158,12 @@ def audit_job(job: Path) -> tuple[bool, list[str]]:
         return True, [f"{job.name}: no arm identified, skipped"]
 
     pattern = re.compile(ARMS[name].tool_pattern)
-    audits = [a for t in sorted(job.iterdir()) if t.is_dir() and (a := audit_trial(t, pattern))]
+    # The binaries that ARE this arm's tooling, taken from the pattern itself so
+    # the two cannot drift apart.
+    tool_names = set(re.findall(r"\w+", ARMS[name].tool_pattern)) | {name}
+    audits = [
+        a for t in sorted(job.iterdir()) if t.is_dir() and (a := audit_trial(t, pattern, tool_names))
+    ]
     if not audits:
         return True, [f"{job.name} [{name}]: no trial logs, skipped"]
 
@@ -159,7 +190,72 @@ def audit_job(job: Path) -> tuple[bool, list[str]]:
             f"    {len(unused)} of {len(audits)} trials answered without the tool"
             + (f", {len(scored)} of them scored" if scored else "")
         )
-    return not unused, lines
+
+    # A `command not found` for the arm's own CLI fails the job, even when the
+    # trial went on to score. It means that trial answered some other way, so it
+    # is not a measurement of this arm — and a run containing one is not a
+    # comparison. This was a note for four consecutive runs while every one of
+    # them was reported as clean, which is the same "tooling broke and nobody
+    # noticed" this whole gate exists to catch.
+    broken = [a for a in audits if a.tool_missing]
+    if broken:
+        lines.append(
+            f"    {len(broken)} of {len(audits)} trials could not find {name} on PATH"
+            f" — the run is not a measurement of this arm"
+        )
+
+    # Not a gate: every briefing allows a raw account read for runtime values.
+    # Reported because it is the whole point of the comparison — an arm that
+    # never needs it answered from its own state.
+    leaned = [a for a in audits if a.live_reads]
+    total_live = sum(a.live_reads for a in audits)
+    lines.append(
+        f"    account reads: {total_live} call(s) across {len(leaned)}/{len(audits)} trials"
+        + (" — answered entirely from its own state" if not leaned else "")
+    )
+
+    # An agent that died did not answer the question. Harbor records the
+    # exception and carries on with a smaller denominator, so the job still
+    # prints a rate; that rate is over the trials that survived.
+    crashed = crashed_trials(job)
+    if crashed:
+        lines.append(f"    {len(crashed)} trial(s) ended in an agent exception: {', '.join(crashed[:3])}")
+
+    return not (unused or broken or crashed), lines
+
+
+def crashed_trials(job: Path) -> list[str]:
+    """Trials whose agent exited nonzero or raised, by name.
+
+    Harbor writes the exception into the trial's result.json and keeps going.
+    Nothing downstream re-reads it, so a crashed trial silently shrinks the
+    denominator and the printed pass rate is over the survivors.
+    """
+    # The job's own result.json is the authority: Harbor tallies every raised
+    # exception under `exception_stats`, keyed by type, with the trial names.
+    out: list[str] = []
+    result = job / "result.json"
+    if result.exists():
+        try:
+            stats = json.loads(result.read_text()).get("stats", {}).get("exception_stats") or {}
+            for trials in stats.values():
+                out.extend(trials if isinstance(trials, list) else [str(trials)])
+        except (OSError, ValueError):
+            pass
+    if out:
+        return sorted(set(out))
+    # Fall back to the per-trial record, which carries `exception_info` when the
+    # job summary is missing or was written by an older harness.
+    for trial in sorted(job.iterdir()):
+        if not trial.is_dir() or not (trial / "result.json").exists():
+            continue
+        try:
+            info = json.loads((trial / "result.json").read_text()).get("exception_info")
+        except (OSError, ValueError):
+            continue
+        if info:
+            out.append(trial.name)
+    return sorted(set(out))
 
 
 def main() -> int:

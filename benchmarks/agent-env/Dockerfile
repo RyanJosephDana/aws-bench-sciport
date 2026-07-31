@@ -29,8 +29,12 @@ ARG PULUMI_VERSION=3.255.0
 # `lifecycle snapshot` writes its state record to a `chant/lifecycle` orphan
 # branch and fails with "git rev-parse HEAD failed" without it, and because the
 # agent adapter installs git anyway when plugins are requested.
+# bsdextrautils supplies `column`. One of the eight tasks asks for the answer
+# "in a table format" and `column -t` is the obvious way to produce one, so its
+# absence penalises whichever arm's agent reaches for it — a shell builtin gap
+# scoring as a tooling difference. Every arm gets it.
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates curl unzip less groff jq zip git \
+    ca-certificates curl unzip less groff jq zip git bsdextrautils \
     && rm -rf /var/lib/apt/lists/*
 
 RUN ARCH=$(uname -m) && \
