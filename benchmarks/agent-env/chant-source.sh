@@ -41,9 +41,17 @@ case "$MODE" in
 
     echo "==> packing local chant from $SRC"
     rm -rf "$VENDOR"; mkdir -p "$VENDOR"
-    # npm pack prints the tarball name on stdout; build noise goes to stderr.
-    core=$(cd "$SRC/packages/core" && npm pack --pack-destination "$VENDOR" --silent | tail -1)
-    lex=$(cd "$SRC/lexicons/aws" && npm pack --pack-destination "$VENDOR" --silent | tail -1)
+    # Do NOT parse npm pack's stdout for the tarball name. `prepack` builds, and
+    # the aws lexicon's build writes its progress to stdout too, so the last line
+    # is whatever the generator happened to print last ("All validation checks
+    # passed."). That produced a file: dependency pointing at a tarball that does
+    # not exist, and the failure surfaced later as a stale package rather than as
+    # a packing error.
+    ( cd "$SRC/packages/core" && npm pack --pack-destination "$VENDOR" >/dev/null )
+    ( cd "$SRC/lexicons/aws" && npm pack --pack-destination "$VENDOR" >/dev/null )
+    core=$(cd "$VENDOR" && ls intentius-chant-*.tgz | grep -v lexicon | head -1)
+    lex=$(cd "$VENDOR" && ls intentius-chant-lexicon-aws-*.tgz | head -1)
+    [ -n "$core" ] && [ -n "$lex" ] || { echo "npm pack produced no tarballs in $VENDOR" >&2; exit 1; }
     echo "    $core"
     echo "    $lex"
 
