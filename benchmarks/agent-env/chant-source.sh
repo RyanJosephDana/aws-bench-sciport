@@ -19,6 +19,8 @@ MODE="${1:?usage: chant-source.sh local|published|show [path|version]}"
 REPO="$(cd "$(dirname "$0")/../.." && pwd)"
 ARM="$REPO/benchmarks/arms/chant-ec2-multiregion-search-v2"
 VENDOR="$ARM/vendor-local"
+# Where prepare.py --export writes; the workspace a trial actually mounts.
+EXPORTS="$HOME/.aws-bench/agent-env"
 
 show() {
   python3 - "$ARM/package.json" <<'PY'
@@ -97,3 +99,41 @@ python3 "$REPO/benchmarks/agent-env/prepare.py" chant --export
 echo "==> installed in the image:"
 docker run --rm awsbench-arm-chant:latest sh -c \
   'cd /workspace/chant && node -e "console.log(\"  chant\", require(\"./node_modules/@intentius/chant/package.json\").version, \"| lexicon-aws\", require(\"./node_modules/@intentius/chant-lexicon-aws/package.json\").version)"'
+
+# Prove the export is the source that was just packed, rather than assuming it.
+#
+# The version number cannot tell you this: a local build carries the same
+# 0.33.1 as the published release and as whatever was exported an hour ago.
+# When the packing step failed, the previous export stayed in place and the next
+# container ran the OLD build — a verification against it passed while measuring
+# code that had already been replaced.
+#
+# Content is the only honest check. Hash the source trees on both sides,
+# path-independently, and compare.
+if [ "$MODE" = "local" ]; then
+  fingerprint() {
+    # Contents only, in a stable order: the two trees live at different paths,
+    # so anything including filenames would never match.
+    ( cd "$1" 2>/dev/null && find . -type f -name '*.ts' | LC_ALL=C sort | xargs cat 2>/dev/null ) | shasum -a 256 | cut -d' ' -f1
+  }
+  echo "==> verifying the export is this working tree"
+  mismatch=0
+  for pair in "packages/core:@intentius/chant" "lexicons/aws:@intentius/chant-lexicon-aws"; do
+    local_dir="$SRC/${pair%%:*}/src"
+    export_dir="$EXPORTS/workspaces/chant/node_modules/${pair##*:}/src"
+    if [ ! -d "$export_dir" ]; then
+      echo "    MISSING  ${pair##*:} is not in the exported workspace" >&2
+      mismatch=1; continue
+    fi
+    if [ "$(fingerprint "$local_dir")" = "$(fingerprint "$export_dir")" ]; then
+      echo "    ok    ${pair##*:}"
+    else
+      echo "    STALE  ${pair##*:} in the export does not match $local_dir" >&2
+      mismatch=1
+    fi
+  done
+  [ "$mismatch" -eq 0 ] || {
+    echo "The exported workspace is not the code you just built — do not trust a run against it." >&2
+    exit 1
+  }
+fi
