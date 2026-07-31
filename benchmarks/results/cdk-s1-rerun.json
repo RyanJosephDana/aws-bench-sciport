@@ -2,10 +2,10 @@
   "schema": 1,
   "bench": "aws-bench",
   "scenario": "ec2-multiregion",
-  "arm": "chant",
+  "arm": "cdk",
   "run": {
-    "id": "chant-s15-revert",
-    "finished_at": "2026-07-31T10:10:37.865042",
+    "id": "cdk-s1-rerun",
+    "finished_at": "2026-07-30T19:02:56.527403",
     "harness_commit": "a9fe29f"
   },
   "agent": {
@@ -14,10 +14,10 @@
     "k": 3
   },
   "score": {
-    "trials": 23,
+    "trials": 24,
     "expected_trials": 24,
-    "passed": 19,
-    "pass_rate": 0.8261,
+    "passed": 17,
+    "pass_rate": 0.7083,
     "by_task": {
       "describe-ec-instances-cross-regi": [
         1,
@@ -27,24 +27,25 @@
       "ec-instances-without-default-vpc": [
         1,
         1,
-        1
+        0
       ],
       "find-ec-instances-in-public-subn": [
-        1,
+        0,
         1,
         1
       ],
       "list-ec-instances-all-regions": [
-        0,
-        0,
-        1
+        1,
+        1,
+        0
       ],
       "list-ec-instances-all-regions-1": [
-        1,
         0,
+        1,
         1
       ],
       "list-ec-instances-by-vpc-across": [
+        1,
         1,
         1
       ],
@@ -55,32 +56,29 @@
       ],
       "list-unused-security-groups-all": [
         0,
-        1,
-        1
+        0,
+        0
       ]
     }
   },
   "gates": {
     "audit": false,
     "tool_missing": false,
-    "exceptions": {
-      "NonZeroAgentExitCodeError": 1
-    },
-    "errored_trials": 1,
-    "complete": false
+    "exceptions": {},
+    "complete": true
   },
   "independence": {
-    "account_reads": 2,
+    "account_reads": 77,
     "answered_from_own_state": false
   },
   "effort": {
-    "tool_calls": 5.43,
-    "turns": 7.35,
-    "wall_seconds": 45.15
+    "tool_calls": 11.04,
+    "turns": 14.88,
+    "wall_seconds": 71.34
   },
   "briefing": {
-    "path": "benchmarks/arms/briefing-chant-snapshot.md",
-    "sha256": "8af55640cf40"
+    "path": "benchmarks/arms/briefing-cdk.md",
+    "sha256": "0214c5b545ad"
   },
-  "reproduce": "benchmarks/arms/chant-ec2-multiregion-search-v2/REPRODUCE.md"
+  "reproduce": "benchmarks/arms/cdk_app/REPRODUCE.md"
 }

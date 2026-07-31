@@ -2,10 +2,10 @@
   "schema": 1,
   "bench": "aws-bench",
   "scenario": "ec2-multiregion",
-  "arm": "chant",
+  "arm": "pulumi",
   "run": {
-    "id": "chant-s15-revert",
-    "finished_at": "2026-07-31T10:10:37.865042",
+    "id": "pulumi-s1-rerun",
+    "finished_at": "2026-07-30T16:21:46.124137",
     "harness_commit": "a9fe29f"
   },
   "agent": {
@@ -14,10 +14,10 @@
     "k": 3
   },
   "score": {
-    "trials": 23,
+    "trials": 24,
     "expected_trials": 24,
-    "passed": 19,
-    "pass_rate": 0.8261,
+    "passed": 20,
+    "pass_rate": 0.8333,
     "by_task": {
       "describe-ec-instances-cross-regi": [
         1,
@@ -32,19 +32,20 @@
       "find-ec-instances-in-public-subn": [
         1,
         1,
-        1
+        0
       ],
       "list-ec-instances-all-regions": [
-        0,
-        0,
+        1,
+        1,
         1
       ],
       "list-ec-instances-all-regions-1": [
         1,
-        0,
+        1,
         1
       ],
       "list-ec-instances-by-vpc-across": [
+        1,
         1,
         1
       ],
@@ -55,32 +56,29 @@
       ],
       "list-unused-security-groups-all": [
         0,
-        1,
-        1
+        0,
+        0
       ]
     }
   },
   "gates": {
-    "audit": false,
+    "audit": true,
     "tool_missing": false,
-    "exceptions": {
-      "NonZeroAgentExitCodeError": 1
-    },
-    "errored_trials": 1,
-    "complete": false
+    "exceptions": {},
+    "complete": true
   },
   "independence": {
-    "account_reads": 2,
-    "answered_from_own_state": false
+    "account_reads": 0,
+    "answered_from_own_state": true
   },
   "effort": {
-    "tool_calls": 5.43,
-    "turns": 7.35,
-    "wall_seconds": 45.15
+    "tool_calls": 7.67,
+    "turns": 9.92,
+    "wall_seconds": 47.94
   },
   "briefing": {
-    "path": "benchmarks/arms/briefing-chant-snapshot.md",
-    "sha256": "8af55640cf40"
+    "path": "benchmarks/arms/briefing-pulumi.md",
+    "sha256": "483cca6296aa"
   },
-  "reproduce": "benchmarks/arms/chant-ec2-multiregion-search-v2/REPRODUCE.md"
+  "reproduce": "benchmarks/arms/pulumi-ec2-multiregion/REPRODUCE.md"
 }

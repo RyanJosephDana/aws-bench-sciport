@@ -141,7 +141,15 @@ def emit(job_name: str) -> dict:
 
     summary = json.loads((job / "result.json").read_text())
     stats = summary.get("stats", {})
-    exceptions = stats.get("exception_stats") or {}
+    # `exception_stats` sits under a per-eval key, not directly on `stats`, so
+    # reading the obvious path reported {} for a run that had crashed — the
+    # emitter exists to make provenance trustworthy, so it has to find it.
+    # `n_errored_trials` is the authoritative count either way.
+    exceptions: dict[str, list[str]] = {}
+    for eval_stats in (stats.get("evals") or {}).values():
+        for kind, trials in (eval_stats.get("exception_stats") or {}).items():
+            exceptions.setdefault(kind, []).extend(trials if isinstance(trials, list) else [str(trials)])
+    n_errored = stats.get("n_errored_trials") or 0
 
     by_task: dict[str, list[int]] = defaultdict(list)
     live_reads = 0
@@ -209,7 +217,8 @@ def emit(job_name: str) -> dict:
             "audit": audit.returncode == 0,
             "tool_missing": tool_missing,
             "exceptions": {k: len(v) for k, v in exceptions.items()},
-            "complete": trials == summary.get("n_total_trials"),
+            "errored_trials": n_errored,
+            "complete": trials == summary.get("n_total_trials") and n_errored == 0,
         },
         "independence": {
             "account_reads": live_reads,

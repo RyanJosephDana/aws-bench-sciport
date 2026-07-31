@@ -2,10 +2,10 @@
   "schema": 1,
   "bench": "aws-bench",
   "scenario": "ec2-multiregion",
-  "arm": "chant",
+  "arm": "alchemy",
   "run": {
-    "id": "chant-s15-revert",
-    "finished_at": "2026-07-31T10:10:37.865042",
+    "id": "alchemy-s1-rerun",
+    "finished_at": "2026-07-30T19:31:35.164308",
     "harness_commit": "a9fe29f"
   },
   "agent": {
@@ -14,10 +14,10 @@
     "k": 3
   },
   "score": {
-    "trials": 23,
+    "trials": 24,
     "expected_trials": 24,
-    "passed": 19,
-    "pass_rate": 0.8261,
+    "passed": 16,
+    "pass_rate": 0.6667,
     "by_task": {
       "describe-ec-instances-cross-regi": [
         1,
@@ -30,21 +30,22 @@
         1
       ],
       "find-ec-instances-in-public-subn": [
+        0,
         1,
-        1,
-        1
+        0
       ],
       "list-ec-instances-all-regions": [
-        0,
+        1,
         0,
         1
       ],
       "list-ec-instances-all-regions-1": [
-        1,
+        0,
         0,
         1
       ],
       "list-ec-instances-by-vpc-across": [
+        1,
         1,
         1
       ],
@@ -55,32 +56,29 @@
       ],
       "list-unused-security-groups-all": [
         0,
-        1,
-        1
+        0,
+        0
       ]
     }
   },
   "gates": {
     "audit": false,
-    "tool_missing": false,
-    "exceptions": {
-      "NonZeroAgentExitCodeError": 1
-    },
-    "errored_trials": 1,
-    "complete": false
+    "tool_missing": true,
+    "exceptions": {},
+    "complete": true
   },
   "independence": {
-    "account_reads": 2,
-    "answered_from_own_state": false
+    "account_reads": 0,
+    "answered_from_own_state": true
   },
   "effort": {
-    "tool_calls": 5.43,
-    "turns": 7.35,
-    "wall_seconds": 45.15
+    "tool_calls": 8.67,
+    "turns": 18.75,
+    "wall_seconds": 54.83
   },
   "briefing": {
-    "path": "benchmarks/arms/briefing-chant-snapshot.md",
-    "sha256": "8af55640cf40"
+    "path": "benchmarks/arms/briefing-alchemy.md",
+    "sha256": "799dcc65a424"
   },
-  "reproduce": "benchmarks/arms/chant-ec2-multiregion-search-v2/REPRODUCE.md"
+  "reproduce": "benchmarks/arms/alchemy-ec2-multiregion/REPRODUCE.md"
 }

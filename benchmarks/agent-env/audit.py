@@ -237,9 +237,11 @@ def crashed_trials(job: Path) -> list[str]:
     result = job / "result.json"
     if result.exists():
         try:
-            stats = json.loads(result.read_text()).get("stats", {}).get("exception_stats") or {}
-            for trials in stats.values():
-                out.extend(trials if isinstance(trials, list) else [str(trials)])
+            stats = json.loads(result.read_text()).get("stats", {})
+            # Nested under a per-eval key, not directly on `stats`.
+            for eval_stats in (stats.get("evals") or {}).values():
+                for trials in (eval_stats.get("exception_stats") or {}).values():
+                    out.extend(trials if isinstance(trials, list) else [str(trials)])
         except (OSError, ValueError):
             pass
     if out:

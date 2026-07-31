@@ -4,8 +4,8 @@
   "scenario": "ec2-multiregion",
   "arm": "chant",
   "run": {
-    "id": "chant-s15-revert",
-    "finished_at": "2026-07-31T10:10:37.865042",
+    "id": "chant-s17-eni",
+    "finished_at": "2026-07-31T11:50:55.397922",
     "harness_commit": "a9fe29f"
   },
   "agent": {
@@ -14,10 +14,10 @@
     "k": 3
   },
   "score": {
-    "trials": 23,
+    "trials": 24,
     "expected_trials": 24,
-    "passed": 19,
-    "pass_rate": 0.8261,
+    "passed": 22,
+    "pass_rate": 0.9167,
     "by_task": {
       "describe-ec-instances-cross-regi": [
         1,
@@ -35,16 +35,17 @@
         1
       ],
       "list-ec-instances-all-regions": [
-        0,
+        1,
         0,
         1
       ],
       "list-ec-instances-all-regions-1": [
         1,
-        0,
+        1,
         1
       ],
       "list-ec-instances-by-vpc-across": [
+        1,
         1,
         1
       ],
@@ -54,29 +55,27 @@
         1
       ],
       "list-unused-security-groups-all": [
-        0,
         1,
-        1
+        1,
+        0
       ]
     }
   },
   "gates": {
-    "audit": false,
+    "audit": true,
     "tool_missing": false,
-    "exceptions": {
-      "NonZeroAgentExitCodeError": 1
-    },
-    "errored_trials": 1,
-    "complete": false
+    "exceptions": {},
+    "errored_trials": 0,
+    "complete": true
   },
   "independence": {
-    "account_reads": 2,
+    "account_reads": 1,
     "answered_from_own_state": false
   },
   "effort": {
-    "tool_calls": 5.43,
-    "turns": 7.35,
-    "wall_seconds": 45.15
+    "tool_calls": 3.96,
+    "turns": 5.92,
+    "wall_seconds": 37.84
   },
   "briefing": {
     "path": "benchmarks/arms/briefing-chant-snapshot.md",

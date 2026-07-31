@@ -1,0 +1,10 @@
+describe-cloudformation-stack-re;fail 677105
+describe-ec-instances-cross-regi;pass 1395500
+ec-instances-without-default-vpc;pass 971929
+find-ec-instances-in-public-subn;fail 1465478
+list-ec-instances-all-regions-1;fail 1819107
+list-ec-instances-all-regions;pass 981158
+list-ec-instances-by-vpc-across;fail 658617
+list-ec-instances-by-vpc-across;pass 323713
+list-ec-private-ips-all-regions;fail 660217
+list-unused-security-groups-all;fail 2210405
