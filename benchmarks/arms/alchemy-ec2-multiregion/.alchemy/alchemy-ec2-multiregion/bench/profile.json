@@ -22,7 +22,7 @@
     },
     "region": "us-east-1",
     "id": "instanceprofile-000000000000-us-east-1",
-    "createdAt": 1785460596644,
+    "createdAt": 1785531270241,
     "InstanceProfileName": "instanceprofile-000000000000-us-east-1",
     "Arn": "arn:aws:iam::000000000000:instance-profile/instanceprofile-000000000000-us-east-1",
     "Path": "/"

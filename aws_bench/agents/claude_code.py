@@ -66,13 +66,25 @@ fi
 # `chant search --at latest` reported "No snapshots found" — a tool answering
 # from recorded state looking exactly like a tool with no recorded state.
 if ! command -v git >/dev/null 2>&1; then
-    if command -v apt-get >/dev/null 2>&1; then
-        apt-get update >/dev/null 2>&1 && apt-get install -y git >/dev/null 2>&1
-    elif command -v apk >/dev/null 2>&1; then
-        apk add --no-cache git >/dev/null 2>&1
-    elif command -v yum >/dev/null 2>&1; then
-        yum install -y git >/dev/null 2>&1
-    fi
+    # Retried, and never fatal in itself. Every trial in a run reaches this at
+    # the same moment and a package manager under eight-way concurrency loses
+    # often: 34 trials across two arms died here with an opaque `exit 100` from
+    # `set -e`, which read as those tools scoring badly rather than as their
+    # agents never having started. The explicit check below is the error worth
+    # showing, so nothing in here is allowed to abort first.
+    for attempt in 1 2 3; do
+        if command -v apt-get >/dev/null 2>&1; then
+            { apt-get update >/dev/null 2>&1 && apt-get install -y git >/dev/null 2>&1; } || true
+        elif command -v apk >/dev/null 2>&1; then
+            apk add --no-cache git >/dev/null 2>&1 || true
+        elif command -v yum >/dev/null 2>&1; then
+            yum install -y git >/dev/null 2>&1 || true
+        fi
+        if command -v git >/dev/null 2>&1; then
+            break
+        fi
+        sleep "$attempt"
+    done
 fi
 command -v git >/dev/null 2>&1 || {{
     echo "aws-bench: git is unavailable and could not be installed; a tool that keeps state in git cannot read it" >&2

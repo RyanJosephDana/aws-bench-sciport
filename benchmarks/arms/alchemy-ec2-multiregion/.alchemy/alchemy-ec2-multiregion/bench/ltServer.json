@@ -15,9 +15,9 @@
     "Symbol(alchemy::ResourceSeq)": 43,
     "typeName": "AWS::EC2::Instance",
     "desiredState": {
-      "SubnetId": "subnet-40f33e18",
+      "SubnetId": "subnet-91b9cb92",
       "LaunchTemplate": {
-        "LaunchTemplateId": "lt-9587335aeb5f60798",
+        "LaunchTemplateId": "lt-a222cd18ca15a33fe",
         "Version": "1"
       },
       "Tags": [
@@ -28,13 +28,13 @@
       ]
     },
     "region": "us-east-1",
-    "id": "i-02d08b0c77bd0a369",
-    "createdAt": 1785460596664,
-    "InstanceId": "i-02d08b0c77bd0a369",
+    "id": "i-e749f8379910f4de4",
+    "createdAt": 1785531270267,
+    "InstanceId": "i-e749f8379910f4de4",
     "ImageId": "ami-0f3f13f145e66a0a3",
     "InstanceType": "t3.micro",
-    "SubnetId": "subnet-40f33e18",
-    "VpcId": "vpc-cf57ad04",
+    "SubnetId": "subnet-91b9cb92",
+    "VpcId": "vpc-3728cb06",
     "PrivateIp": "10.0.0.11",
     "AvailabilityZone": "us-east-1a",
     "State": "pending",
@@ -44,9 +44,9 @@
   },
   "props": {
     "region": "us-east-1",
-    "SubnetId": "subnet-40f33e18",
+    "SubnetId": "subnet-91b9cb92",
     "LaunchTemplate": {
-      "LaunchTemplateId": "lt-9587335aeb5f60798",
+      "LaunchTemplateId": "lt-a222cd18ca15a33fe",
       "Version": "1"
     },
     "Tags": [

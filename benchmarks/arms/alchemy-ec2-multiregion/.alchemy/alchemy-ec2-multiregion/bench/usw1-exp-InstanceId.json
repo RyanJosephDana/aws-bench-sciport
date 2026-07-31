@@ -15,11 +15,11 @@
     "Symbol(alchemy::ResourceSeq)": 9,
     "region": "us-west-1",
     "name": "/exports/ec2-multiregion-EC2-ls9fuhb522-us-west-1-InstanceId",
-    "value": "i-4b5f5c49a28bc211f"
+    "value": "i-ee54db44932e6fc08"
   },
   "props": {
     "region": "us-west-1",
     "name": "/exports/ec2-multiregion-EC2-ls9fuhb522-us-west-1-InstanceId",
-    "value": "i-4b5f5c49a28bc211f"
+    "value": "i-ee54db44932e6fc08"
   }
 }

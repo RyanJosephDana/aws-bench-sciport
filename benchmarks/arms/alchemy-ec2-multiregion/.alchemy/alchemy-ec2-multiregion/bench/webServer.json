@@ -17,9 +17,9 @@
     "desiredState": {
       "ImageId": "ami-0f3f13f145e66a0a3",
       "InstanceType": "t3.micro",
-      "SubnetId": "subnet-40f33e18",
+      "SubnetId": "subnet-91b9cb92",
       "SecurityGroupIds": [
-        "sg-5b90f995108ef3c1a"
+        "sg-180599eee96718d8c"
       ],
       "IamInstanceProfile": "instanceprofile-000000000000-us-east-1",
       "Tags": [
@@ -30,27 +30,27 @@
       ]
     },
     "region": "us-east-1",
-    "id": "i-844b2021a30cb07db",
-    "createdAt": 1785460596649,
-    "InstanceId": "i-844b2021a30cb07db",
+    "id": "i-61d07fa591ab637e9",
+    "createdAt": 1785531270250,
+    "InstanceId": "i-61d07fa591ab637e9",
     "ImageId": "ami-0f3f13f145e66a0a3",
     "InstanceType": "t3.micro",
-    "SubnetId": "subnet-40f33e18",
-    "VpcId": "vpc-cf57ad04",
+    "SubnetId": "subnet-91b9cb92",
+    "VpcId": "vpc-3728cb06",
     "PrivateIp": "10.0.0.10",
     "AvailabilityZone": "us-east-1a",
     "State": "pending",
     "SecurityGroupIds": [
-      "sg-5b90f995108ef3c1a"
+      "sg-180599eee96718d8c"
     ]
   },
   "props": {
     "region": "us-east-1",
     "ImageId": "ami-0f3f13f145e66a0a3",
     "InstanceType": "t3.micro",
-    "SubnetId": "subnet-40f33e18",
+    "SubnetId": "subnet-91b9cb92",
     "SecurityGroupIds": [
-      "sg-5b90f995108ef3c1a"
+      "sg-180599eee96718d8c"
     ],
     "IamInstanceProfile": "instanceprofile-000000000000-us-east-1",
     "Tags": [

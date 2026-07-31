@@ -15,11 +15,11 @@
     "Symbol(alchemy::ResourceSeq)": 49,
     "region": "us-east-1",
     "name": "/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-VpcId",
-    "value": "vpc-cf57ad04"
+    "value": "vpc-3728cb06"
   },
   "props": {
     "region": "us-east-1",
     "name": "/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-VpcId",
-    "value": "vpc-cf57ad04"
+    "value": "vpc-3728cb06"
   }
 }

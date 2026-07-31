@@ -13,7 +13,7 @@
       "@scope": null
     },
     "Symbol(alchemy::ResourceSeq)": 35,
-    "ruleId": "sg-5b90f995108ef3c1a-ingress-tcp-22-22-0.0.0.0/0-",
+    "ruleId": "sg-180599eee96718d8c-ingress-tcp-22-22-0.0.0.0/0-",
     "securityGroup": {
       "Symbol(alchemy::ResourceKind)": "aws::SecurityGroup",
       "Symbol(alchemy::ResourceID)": "web",
@@ -22,12 +22,12 @@
         "@scope": null
       },
       "Symbol(alchemy::ResourceSeq)": 34,
-      "groupId": "sg-5b90f995108ef3c1a",
+      "groupId": "sg-180599eee96718d8c",
       "groupName": "web-ec2-multiregion-EC2-ks84v1fh12-us-east-1",
-      "vpcId": "vpc-cf57ad04",
+      "vpcId": "vpc-3728cb06",
       "ownerId": 0,
       "region": "us-east-1",
-      "vpc": "vpc-cf57ad04",
+      "vpc": "vpc-3728cb06",
       "description": "Allow specific inbound traffic"
     },
     "type": "ingress",
@@ -48,12 +48,12 @@
         "@scope": null
       },
       "Symbol(alchemy::ResourceSeq)": 34,
-      "groupId": "sg-5b90f995108ef3c1a",
+      "groupId": "sg-180599eee96718d8c",
       "groupName": "web-ec2-multiregion-EC2-ks84v1fh12-us-east-1",
-      "vpcId": "vpc-cf57ad04",
+      "vpcId": "vpc-3728cb06",
       "ownerId": 0,
       "region": "us-east-1",
-      "vpc": "vpc-cf57ad04",
+      "vpc": "vpc-3728cb06",
       "description": "Allow specific inbound traffic"
     },
     "type": "ingress",

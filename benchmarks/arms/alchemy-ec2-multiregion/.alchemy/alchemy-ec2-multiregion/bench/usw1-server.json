@@ -17,7 +17,7 @@
     "desiredState": {
       "ImageId": "ami-0f3f13f145e66a0a3",
       "InstanceType": "t3.micro",
-      "SubnetId": "subnet-979e434f",
+      "SubnetId": "subnet-f65c2758",
       "Tags": [
         {
           "Key": "Name",
@@ -26,13 +26,13 @@
       ]
     },
     "region": "us-west-1",
-    "id": "i-4b5f5c49a28bc211f",
-    "createdAt": 1785460592398,
-    "InstanceId": "i-4b5f5c49a28bc211f",
+    "id": "i-ee54db44932e6fc08",
+    "createdAt": 1785531265938,
+    "InstanceId": "i-ee54db44932e6fc08",
     "ImageId": "ami-0f3f13f145e66a0a3",
     "InstanceType": "t3.micro",
-    "SubnetId": "subnet-979e434f",
-    "VpcId": "vpc-036d7d58",
+    "SubnetId": "subnet-f65c2758",
+    "VpcId": "vpc-dbb9ee81",
     "PrivateIp": "10.0.0.10",
     "AvailabilityZone": "us-west-1a",
     "State": "pending",
@@ -44,7 +44,7 @@
     "region": "us-west-1",
     "ImageId": "ami-0f3f13f145e66a0a3",
     "InstanceType": "t3.micro",
-    "SubnetId": "subnet-979e434f",
+    "SubnetId": "subnet-f65c2758",
     "Tags": [
       {
         "Key": "Name",

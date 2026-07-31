@@ -20,7 +20,7 @@
         "ImageId": "ami-0f3f13f145e66a0a3",
         "InstanceType": "t3.micro",
         "SecurityGroupIds": [
-          "sg-5b90f995108ef3c1a"
+          "sg-180599eee96718d8c"
         ],
         "BlockDeviceMappings": [
           {
@@ -37,9 +37,9 @@
       }
     },
     "region": "us-east-1",
-    "id": "lt-9587335aeb5f60798",
-    "createdAt": 1785460596656,
-    "LaunchTemplateId": "lt-9587335aeb5f60798",
+    "id": "lt-a222cd18ca15a33fe",
+    "createdAt": 1785531270259,
+    "LaunchTemplateId": "lt-a222cd18ca15a33fe",
     "LaunchTemplateName": "lt-000000000000-us-east-1",
     "LatestVersionNumber": "1",
     "DefaultVersionNumber": "1"
@@ -51,7 +51,7 @@
       "ImageId": "ami-0f3f13f145e66a0a3",
       "InstanceType": "t3.micro",
       "SecurityGroupIds": [
-        "sg-5b90f995108ef3c1a"
+        "sg-180599eee96718d8c"
       ],
       "BlockDeviceMappings": [
         {

@@ -1,0 +1,68 @@
+{
+  "schema": 1,
+  "bench": "aws-bench",
+  "scenario": "ec2-multiregion",
+  "arm": "pulumi",
+  "run": {
+    "id": "pulumi-cur",
+    "finished_at": "2026-07-31T14:53:54.598863",
+    "harness_commit": "dd1dc2d"
+  },
+  "agent": {
+    "name": "claude-code",
+    "model": "claude-haiku-4-5-20251001",
+    "k": 3
+  },
+  "score": {
+    "trials": 9,
+    "expected_trials": 24,
+    "passed": 5,
+    "pass_rate": 0.5556,
+    "by_task": {
+      "ec-instances-without-default-vpc": [
+        1
+      ],
+      "find-ec-instances-in-public-subn": [
+        0,
+        0
+      ],
+      "list-ec-instances-all-regions": [
+        1
+      ],
+      "list-ec-instances-all-regions-1": [
+        1
+      ],
+      "list-ec-private-ips-all-regions": [
+        1,
+        1
+      ],
+      "list-unused-security-groups-all": [
+        0,
+        0
+      ]
+    }
+  },
+  "gates": {
+    "audit": false,
+    "tool_missing": false,
+    "exceptions": {
+      "NonZeroAgentExitCodeError": 15
+    },
+    "errored_trials": 15,
+    "complete": false
+  },
+  "independence": {
+    "account_reads": 0,
+    "answered_from_own_state": true
+  },
+  "effort": {
+    "tool_calls": 9.33,
+    "turns": 11.56,
+    "wall_seconds": 53.5
+  },
+  "briefing": {
+    "path": "benchmarks/arms/briefing-pulumi.md",
+    "sha256": "483cca6296aa"
+  },
+  "reproduce": "benchmarks/arms/pulumi-ec2-multiregion/REPRODUCE.md"
+}

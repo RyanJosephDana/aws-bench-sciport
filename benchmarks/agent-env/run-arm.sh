@@ -95,12 +95,18 @@ echo "==> [$ARM] deploying the estate"
     pulumi)    export PULUMI_CONFIG_PASSPHRASE=floci PULUMI_BACKEND_URL="file://$PWD"
                pulumi up --yes ;;
     cdk)       # The three regions bootstrap independently; serially they are
-               # most of this arm's deploy time.
+               # most of this arm's deploy time. Each gets its own synth output
+               # directory: they all synthesize on the way to bootstrapping, and
+               # three processes writing one cdk.out collide on asset paths —
+               # `EEXIST: file already exists, mkdir cdk.out/asset.…` killed the
+               # deploy before the estate existed.
                for r in us-east-1 us-west-1 us-west-2; do
                  CDK_DEFAULT_ACCOUNT=000000000000 \
-                   npx cdk bootstrap "aws://000000000000/$r" >/dev/null &
+                   npx cdk bootstrap "aws://000000000000/$r" \
+                     --output "cdk.out.bootstrap.$r" >/dev/null &
                done
                wait
+               rm -rf cdk.out.bootstrap.*
                CDK_DEFAULT_ACCOUNT=000000000000 npx cdk deploy --all \
                  --require-approval never --concurrency 4 ;;
     alchemy|alchemy-effect)
