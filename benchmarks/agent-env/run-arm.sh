@@ -35,6 +35,12 @@ export AWS_DEFAULT_REGION=us-east-1 AWS_REGION=us-east-1
 case "$ARM" in
   chant)          SRC=chant-ec2-multiregion-search-v2; TARGET=/workspace/chant
                   BRIEFING=briefing-chant-snapshot.md ;;
+  # Same source, same briefing, same recorded snapshot — the agent's AWS
+  # endpoint points at a closed port, so the estate is unreachable to it. Every
+  # other arm keeps live access. The question is whether an answer built from a
+  # recording holds up against tools reading the account as they answer.
+  chant-offline)  SRC=chant-ec2-multiregion-search-v2; TARGET=/workspace/chant
+                  BRIEFING=briefing-chant-snapshot.md ;;
   terraform)      SRC=terraform-ec2-multiregion;       TARGET=/workspace/terraform
                   BRIEFING=briefing-terraform.md ;;
   pulumi)         SRC=pulumi-ec2-multiregion;          TARGET=/workspace/pulumi
@@ -61,15 +67,22 @@ case "$ARM" in
                       --ae CDK_DEFAULT_REGION=us-east-1) ;;
   alchemy) AGENT_ENV=(--ae DO_NOT_TRACK=1) ;;
   alchemy-effect) AGENT_ENV=(--ae DO_NOT_TRACK=1 --ae CI=1) ;;
+  # A closed port rather than an unset variable: unset would send the SDK at
+  # real AWS and hang on a timeout, which measures patience, not capability.
+  chant-offline)  AGENT_ENV=(--ae AWS_ENDPOINT_URL=http://127.0.0.1:9999) ;;
 esac
 
+# Everything below — reset, deploy, export, snapshot, audit — is chant's; only
+# the agent's environment differs.
+BASE_ARM="${ARM%-offline}"
+
 echo "==> [$ARM] wiping the emulator and this arm's state"
-./benchmarks/floci/reset.sh "$ARM"
+./benchmarks/floci/reset.sh "$BASE_ARM"
 
 echo "==> [$ARM] deploying the estate"
 (
   cd "$ARMS/$SRC"
-  case "$ARM" in
+  case "$BASE_ARM" in
     chant)     ./deploy.sh ;;
     terraform) terraform init -input=false >/dev/null && terraform apply -auto-approve ;;
     pulumi)    export PULUMI_CONFIG_PASSPHRASE=floci PULUMI_BACKEND_URL="file://$PWD"
@@ -93,19 +106,19 @@ echo "==> [$ARM] re-exporting the workspace so trials get the deployed state"
 # The estate deploy writes state into the arm directory — terraform.tfstate, the
 # Pulumi stack, .alchemy/. Trials mount the export, not that directory, so an
 # export from before the deploy would hand the agent an empty state file.
-python3 benchmarks/agent-env/prepare.py "$ARM" --export
+python3 benchmarks/agent-env/prepare.py "$BASE_ARM" --export
 
 # The export rebuilds the workspace from the arm image, which deletes the orphan
 # branch chant records its state snapshot on. Without re-recording, every trial's
 # `search --at latest` fails with "No snapshots found" — and fails quietly, since
 # the agent just falls back and the run scores as bad answers rather than a
 # missing prerequisite.
-if [ "$ARM" = chant ]; then
+if [ "$BASE_ARM" = chant ]; then
   ./benchmarks/agent-env/record-snapshot.sh floci
 fi
 
 echo "==> [$ARM] preflight: can it answer with its own tooling?"
-python3 benchmarks/agent-env/preflight.py "$ARM" --keep-going
+python3 benchmarks/agent-env/preflight.py "$BASE_ARM" --keep-going
 
 echo "==> [$ARM] running k=3"
 AWS_BENCH_EMULATOR=floci \
@@ -119,7 +132,7 @@ uv run aws-bench run --env-name awsbench -d ec2-multiregion \
   --extra-instruction-path "benchmarks/arms/$BRIEFING" \
   --mounts '[
     {"type":"bind","source":"'"$EXPORTS"'/toolchain","target":"/opt/awsbench-toolchain","read_only":true},
-    {"type":"bind","source":"'"$EXPORTS"'/workspaces/'"$ARM"'","target":"/opt/awsbench-arm","read_only":true}
+    {"type":"bind","source":"'"$EXPORTS"'/workspaces/'"$BASE_ARM"'","target":"/opt/awsbench-arm","read_only":true}
   ]' \
   --ak toolchain=/opt/awsbench-toolchain \
   --ak arm_src=/opt/awsbench-arm \
