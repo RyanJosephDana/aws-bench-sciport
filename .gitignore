@@ -38,3 +38,22 @@ bedrock.env
 .bench.env
 *.env
 !.env.example
+
+# Vendored tool binaries and language runtimes for the benchmark arms. Large,
+# platform-specific and rebuildable — each arm's REPRODUCE.md says how to fetch
+# them, and benchmarks/agent-env/ now provisions them into the agent container.
+benchmarks/arms/*/vendor/
+benchmarks/arms/*/vendor-local/
+benchmarks/arms/*/.runtime/
+benchmarks/arms/terraform-ec2-multiregion/terraform
+benchmarks/arms/*/.terraform/
+benchmarks/arms/*/cdk.out/
+
+# Emulator runtime state — recreated by benchmarks/floci/reset.sh.
+benchmarks/floci/data/
+
+# prepare.py --export writes to ~/.aws-bench/agent-env. Guarded here too, since
+# an in-repo export is ~3.5GB and ruff walks anything inside the tree, including
+# the Python that ships inside Node's own share/doc.
+benchmarks/agent-env/toolchain/
+benchmarks/agent-env/workspaces/

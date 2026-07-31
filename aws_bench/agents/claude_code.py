@@ -13,6 +13,9 @@ Marketplaces and plugins are supplied as constructor kwargs, so they flow from
       --ak plugins='["aws-core@claude-plugins-official"]'
 
 With no ``plugins``, no plugin install runs.
+
+It also stands the benchmark arm's tooling up before the task, when the run
+mounts one. See :func:`_arm_setup_command`.
 """
 
 from __future__ import annotations
@@ -27,6 +30,41 @@ from harbor.environments.base import BaseEnvironment
 # exec shell; prepend it so `claude plugin install` resolves.
 _PATH_RESTORE = 'export PATH="$HOME/.local/bin:$PATH"'
 
+# Where a benchmark run bind-mounts the pieces prepared by
+# benchmarks/agent-env/prepare.py --export. Set as environment config on the job.
+_TOOLCHAIN_MOUNT = "AWS_BENCH_TOOLCHAIN"
+_ARM_SOURCE_MOUNT = "AWS_BENCH_ARM_SRC"
+_ARM_WORKDIR = "AWS_BENCH_ARM_WORKDIR"
+
+# Runs as root before the task. Names are substituted, values are read in the
+# container. A missing mount exits nonzero: a half-built arm is how a tool ends
+# up silently unavailable and the trial scores from jq instead.
+_ARM_SETUP_SCRIPT = """
+set -e
+[ -n "${{{workdir}:-}}" ] && [ -n "${{{source}:-}}" ] || exit 0
+
+if [ ! -d "${{{source}}}" ]; then
+    echo "aws-bench: {source} points at ${{{source}}}, which is not mounted" >&2
+    exit 1
+fi
+
+if [ -n "${{{toolchain}:-}}" ]; then
+    if [ ! -d "${{{toolchain}}}" ]; then
+        echo "aws-bench: {toolchain} points at ${{{toolchain}}}, which is not mounted" >&2
+        exit 1
+    fi
+    # Symlink rather than export PATH: each agent command gets a fresh shell
+    # that inherits nothing exported here.
+    for dir in "${{{toolchain}}}"/*/bin "${{{toolchain}}}"/pulumi; do
+        [ -d "$dir" ] && ln -sf "$dir"/* /usr/local/bin/ 2>/dev/null || true
+    done
+fi
+
+rm -rf "${{{workdir}}}"
+mkdir -p "$(dirname "${{{workdir}}}")"
+cp -a "${{{source}}}" "${{{workdir}}}"
+"""
+
 
 class ClaudeCode(_HarborClaudeCode):
     """Claude Code that installs plugins from marketplaces per trial."""
@@ -36,16 +74,25 @@ class ClaudeCode(_HarborClaudeCode):
         logs_dir: Path,
         marketplaces: list[str] | None = None,
         plugins: list[str] | None = None,
+        arm_src: str | None = None,
+        arm_workdir: str | None = None,
+        toolchain: str | None = None,
         *args,
         **kwargs,
     ):
-        """Store the marketplaces to add and plugins to install.
+        """Store the marketplaces, plugins, and benchmark arm layout.
 
         Args:
             logs_dir: Trial logs directory, forwarded to the base agent.
             marketplaces: Marketplace git sources to add, each an ``owner/repo``
                 slug or a clone URL.
             plugins: Plugin specs to install, each ``<plugin>@<marketplace>``.
+            arm_src: Container path where the arm's prepared workspace is mounted
+                read-only. Given together with ``arm_workdir``.
+            arm_workdir: Writable container path the workspace is copied to,
+                matching the path the arm's briefing sends the agent to.
+            toolchain: Container path where the exported toolchain is mounted;
+                its binaries are symlinked onto ``PATH``.
             *args: Forwarded to the base agent.
             **kwargs: Forwarded to the base agent.
         """
@@ -56,10 +103,18 @@ class ClaudeCode(_HarborClaudeCode):
                 "marketplaces were given without plugins; a marketplace is only "
                 "added when a plugin from it is installed"
             )
+        if bool(arm_src) != bool(arm_workdir):
+            raise ValueError(
+                "arm_src and arm_workdir go together; one without the other would "
+                "leave the arm's tooling unavailable to the agent"
+            )
+        self._arm_src = arm_src
+        self._arm_workdir = arm_workdir
+        self._toolchain = toolchain
         super().__init__(logs_dir, *args, **kwargs)
 
     async def install(self, environment: BaseEnvironment) -> None:
-        """Install Claude Code, plus git when plugins are requested.
+        """Install Claude Code, the benchmark arm's tooling, and git for plugins.
 
         Claude Code shells out to ``git`` to clone a plugin marketplace, but the
         agent base image does not ship it. Install it during agent setup using
@@ -68,6 +123,7 @@ class ClaudeCode(_HarborClaudeCode):
         public marketplace clone.
         """
         await super().install(environment)
+        await self._setup_arm(environment)
 
         if not self._plugins:
             return
@@ -90,6 +146,45 @@ class ClaudeCode(_HarborClaudeCode):
             environment,
             command=('git config --global url."https://github.com/".insteadOf "git@github.com:"'),
         )
+
+    async def _setup_arm(self, environment: BaseEnvironment) -> None:
+        """Put the benchmark arm's tooling and workspace in place, or fail loudly.
+
+        Nothing happens unless the run mounts an arm, so ordinary tasks are
+        unaffected. When it does, two things have to be true before the agent
+        starts, and in the scenario-1 runs neither was:
+
+        The tool has to exist. The dataset's task image is python:3.13-slim plus
+        the AWS CLI and jq, with no JavaScript or IaC runtime, so the CDK and
+        Alchemy arms could not run a single ``cdk`` or ``alchemy`` command. The
+        agent quietly answered from ``jq`` over raw state instead and still
+        scored, which makes the result a measurement of jq, not of the tool.
+
+        The workspace has to be writable. The arm was bind-mounted read-only, so
+        ``terraform init`` could not write ``.terraform/`` — leaving
+        ``show -json`` refusing — and ``cdk ls`` died on
+        ``EROFS ... cdk.out/synth.lock``. Copying to a writable path also keeps a
+        trial from mutating the shared arm directory.
+
+        A failure here raises rather than degrading, because a degraded arm
+        produces rewards that look exactly like real ones.
+        """
+        if not self._arm_workdir or not self._arm_src:
+            return
+
+        # Supplied explicitly to the exec rather than read from the container's
+        # own environment: --agent-env lands on the agent process, and this runs
+        # as root before the agent exists.
+        env = {_ARM_WORKDIR: self._arm_workdir, _ARM_SOURCE_MOUNT: self._arm_src}
+        if self._toolchain:
+            env[_TOOLCHAIN_MOUNT] = self._toolchain
+
+        command = _ARM_SETUP_SCRIPT.format(
+            workdir=_ARM_WORKDIR,
+            source=_ARM_SOURCE_MOUNT,
+            toolchain=_TOOLCHAIN_MOUNT,
+        )
+        await self.exec_as_root(environment, command=command, env=env)
 
     def _build_register_mcp_servers_command(self) -> str | None:
         """Chain plugin installation onto the per-trial config setup command.

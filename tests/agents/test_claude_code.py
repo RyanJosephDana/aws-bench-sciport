@@ -186,3 +186,101 @@ async def test_rewrites_github_ssh_to_https(plugin_agent: ClaudeCode):
     await plugin_agent.install(environment)
 
     assert any("insteadOf" in c and "git@github.com:" in c for c in _commands(environment))
+
+
+# ── benchmark arm setup ──
+
+_ARM_SRC = "/opt/awsbench-arm"
+_ARM_WORKDIR = "/workspace/chant"
+_TOOLCHAIN = "/opt/awsbench-toolchain"
+
+
+@pytest.fixture
+def arm_agent(logs_dir: Path) -> ClaudeCode:
+    return ClaudeCode(
+        logs_dir=logs_dir,
+        arm_src=_ARM_SRC,
+        arm_workdir=_ARM_WORKDIR,
+        toolchain=_TOOLCHAIN,
+    )
+
+
+def _envs(environment: MagicMock) -> list[dict[str, str]]:
+    return [c.kwargs.get("env") or {} for c in environment.exec.call_args_list]
+
+
+def test_arm_defaults_to_unset(logs_dir: Path):
+    """No arm mounted means ordinary tasks are untouched."""
+    agent = ClaudeCode(logs_dir=logs_dir)
+
+    assert agent._arm_src is None
+    assert agent._arm_workdir is None
+
+
+def test_arm_src_without_workdir_raises(logs_dir: Path):
+    """Half a mount would leave the arm's tooling unavailable to the agent."""
+    with pytest.raises(ValueError, match="go together"):
+        ClaudeCode(logs_dir=logs_dir, arm_src=_ARM_SRC)
+
+
+def test_arm_workdir_without_src_raises(logs_dir: Path):
+    """The reverse half is just as broken."""
+    with pytest.raises(ValueError, match="go together"):
+        ClaudeCode(logs_dir=logs_dir, arm_workdir=_ARM_WORKDIR)
+
+
+@pytest.mark.asyncio
+async def test_no_arm_setup_without_an_arm(logs_dir: Path):
+    """A run with no arm mounted issues no arm setup."""
+    agent = ClaudeCode(logs_dir=logs_dir)
+    environment = _fresh_environment()
+
+    await agent.install(environment)
+
+    assert not any(_ARM_SRC in c for c in _commands(environment))
+
+
+@pytest.mark.asyncio
+async def test_copies_arm_to_a_writable_workdir(arm_agent: ClaudeCode):
+    """The read-only mount is copied out; terraform and cdk need somewhere to write."""
+    environment = _fresh_environment()
+
+    await arm_agent.install(environment)
+
+    setup = next(c for c in _commands(environment) if "AWS_BENCH_ARM_SRC" in c)
+    assert 'cp -a "${AWS_BENCH_ARM_SRC}" "${AWS_BENCH_ARM_WORKDIR}"' in setup
+
+
+@pytest.mark.asyncio
+async def test_symlinks_the_toolchain_onto_path(arm_agent: ClaudeCode):
+    """Each agent command gets a fresh shell, so PATH is not exported but linked."""
+    environment = _fresh_environment()
+
+    await arm_agent.install(environment)
+
+    setup = next(c for c in _commands(environment) if "AWS_BENCH_TOOLCHAIN" in c)
+    assert "ln -sf" in setup and "/usr/local/bin/" in setup
+
+
+@pytest.mark.asyncio
+async def test_passes_paths_as_exec_env(arm_agent: ClaudeCode):
+    """Supplied to the root exec, not --agent-env: setup precedes the agent process."""
+    environment = _fresh_environment()
+
+    await arm_agent.install(environment)
+
+    env = next(e for e in _envs(environment) if "AWS_BENCH_ARM_SRC" in e)
+    assert env["AWS_BENCH_ARM_SRC"] == _ARM_SRC
+    assert env["AWS_BENCH_ARM_WORKDIR"] == _ARM_WORKDIR
+    assert env["AWS_BENCH_TOOLCHAIN"] == _TOOLCHAIN
+
+
+@pytest.mark.asyncio
+async def test_missing_mount_is_fatal(arm_agent: ClaudeCode):
+    """A half-built arm scores from jq and looks identical, so it must not proceed."""
+    environment = _fresh_environment()
+
+    await arm_agent.install(environment)
+
+    setup = next(c for c in _commands(environment) if "AWS_BENCH_ARM_SRC" in c)
+    assert "is not mounted" in setup and "exit 1" in setup

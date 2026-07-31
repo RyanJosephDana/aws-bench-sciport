@@ -153,10 +153,34 @@ networks: { floci_b_default: { name: floci_b_default } }
 docker compose -p floci-b up -d   # -> localhost:4567
 ```
 
-## 2. Run the trials
+## 2. Prepare the agent environment, and prove the tooling works
 
-One job per arm, k=3. Swap the three per-arm values (endpoint, briefing, mount) and
-keep everything else fixed:
+Do not skip this. The agent-under-test container is the dataset's
+`python:3.13-slim` with the AWS CLI and `jq` — no JavaScript or IaC runtime — and
+the arm mount was read-only. In the first scenario-1 runs that meant the CDK and
+Alchemy arms never executed a single `cdk` or `alchemy` command and Terraform's
+`show -json` refused, while all three scored anyway from `jq` over raw state.
+`benchmarks/agent-env/` fixes the environment and gates on it; see its README for
+what broke and why.
+
+```sh
+# Once. Bakes each arm's dependencies for linux into an image, then exports the
+# toolchain and workspaces to ~/.aws-bench/agent-env for the trials to mount.
+python3 benchmarks/agent-env/prepare.py --export
+
+# Before every arm's run. Exits nonzero if that arm cannot answer with its own
+# tooling, so it chains onto the run command.
+python3 benchmarks/agent-env/preflight.py <arm>
+```
+
+Preflight needs the arm's estate already deployed — it runs the arm's real query
+commands. Run it after step 1 for that arm, not before.
+
+## 3. Run the trials
+
+One job per arm, k=3. Swap the four per-arm values (briefing, arm name, workspace
+target, and the endpoint if you are using two Floci instances) and keep the rest
+fixed:
 
 The agent authenticates with a Claude Code OAuth token. Put it in `~/.anthropic`
 (what `claude setup-token` writes) and the run picks it up — there is no need to
@@ -168,6 +192,11 @@ cd aws-bench
 claude setup-token          # writes ~/.anthropic, once per machine
 
 # --- chant arm (repeat the block per arm with the table below) ---
+ARM=chant
+TARGET=/workspace/chant
+
+python3 benchmarks/agent-env/preflight.py "$ARM" || exit 1
+
 AWS_BENCH_EMULATOR=floci \
 AWS_BENCH_EMULATOR_ENDPOINT=http://localhost:4566 \
 AWS_BENCH_EMULATOR_CONTAINER_ENDPOINT=http://host.docker.internal:4566 \
@@ -175,20 +204,39 @@ AWSBENCH_SCAN_METHOD=fastscan \
 uv run aws-bench run --env-name awsbench -d ec2-multiregion \
   -a claude-code -m claude-haiku-4-5-20251001 -k 3 \
   --extra-instruction-path benchmarks/arms/briefing-chant-search-v2.md \
-  --mounts '[{"type":"bind","source":"'"$PWD"'/benchmarks/arms/chant-ec2-multiregion-search-v2","target":"/workspace/chant","read_only":true}]' \
+  --mounts '[
+    {"type":"bind","source":"'"$HOME"'/.aws-bench/agent-env/toolchain","target":"/opt/awsbench-toolchain","read_only":true},
+    {"type":"bind","source":"'"$HOME"'/.aws-bench/agent-env/workspaces/'"$ARM"'","target":"/opt/awsbench-arm","read_only":true}
+  ]' \
+  --ak toolchain=/opt/awsbench-toolchain \
+  --ak arm_src=/opt/awsbench-arm \
+  --ak arm_workdir="$TARGET" \
   --no-verify-env --yes
 ```
 
+The three `--ak` values are what the agent adapter uses to stand the arm up
+before the task: it symlinks the toolchain onto `PATH` and copies the workspace
+to a **writable** path. They are agent kwargs rather than `--agent-env` because
+the setup runs as root before the agent process exists, so an agent-process
+variable would not reach it. Omit them and nothing happens — the trial silently
+reverts to the behaviour that produced the bad numbers.
+
 Per-arm values:
 
-| Arm | briefing | mount source → target |
-|---|---|---|
-| chant | `briefing-chant-search-v2.md` | `benchmarks/arms/chant-ec2-multiregion-search-v2` → `/workspace/chant` |
-| terraform | `briefing-terraform.md` | `benchmarks/arms/terraform-ec2-multiregion` → `/workspace/terraform` |
-| pulumi | `briefing-pulumi.md` | `benchmarks/arms/pulumi-ec2-multiregion` → `/workspace/pulumi` |
-| alchemy | `briefing-alchemy.md` | `benchmarks/arms/alchemy-ec2-multiregion` → `/workspace/alchemy` |
-| alchemy-effect | `briefing-alchemy-effect.md` | `benchmarks/arms/alchemy-effect-ec2-multiregion` → `/workspace/alchemy` |
-| cdk | `briefing-cdk.md` | the scenario's `cdk_app` (from `~/.aws-bench/cache`) → `/workspace/cdk_app` |
+| Arm | briefing | `ARM` | `TARGET` |
+|---|---|---|---|
+| chant | `briefing-chant-search-v2.md` | `chant` | `/workspace/chant` |
+| terraform | `briefing-terraform.md` | `terraform` | `/workspace/terraform` |
+| pulumi | `briefing-pulumi.md` | `pulumi` | `/workspace/pulumi` |
+| alchemy | `briefing-alchemy.md` | `alchemy` | `/workspace/alchemy` |
+| alchemy-effect | `briefing-alchemy-effect.md` | `alchemy-effect` | `/workspace/alchemy` |
+| cdk | `briefing-cdk.md` | `cdk` | `/workspace/cdk_app` |
+
+Some arms need their own environment as well — Pulumi's backend and passphrase,
+CDK's account and region, Alchemy v2's `CI=1` without which its CLI refuses every
+command in a non-interactive shell. Those live per arm in
+`benchmarks/agent-env/arms.py`; pass the same values with `--ae`/`--agent-env`,
+which is what the agent's own commands read.
 
 Notes:
 - Exclude `describe-cfn-stack-resources` from the run — it is not in the valid set.
@@ -198,6 +246,8 @@ Notes:
 - Set `CLAUDE_CODE_OAUTH_TOKEN` in the environment instead if you would rather not
   use `~/.anthropic`; it takes precedence. Do not put it in a file under the repo.
 - Point the CDK arm at port 4567 if you deployed it on the second Floci instance.
+- Re-run `prepare.py --export` after changing an arm's dependencies; the exported
+  workspace is what trials get, not the directory under `benchmarks/arms`.
 
 ## 3. Tally
 
