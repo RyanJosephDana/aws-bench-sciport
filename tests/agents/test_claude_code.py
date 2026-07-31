@@ -284,3 +284,34 @@ async def test_missing_mount_is_fatal(arm_agent: ClaudeCode):
 
     setup = next(c for c in _commands(environment) if "AWS_BENCH_ARM_SRC" in c)
     assert "is not mounted" in setup and "exit 1" in setup
+
+
+def test_arm_setup_script_renders_and_is_valid_shell():
+    """The setup template must format, and the result must be a runnable script.
+
+    It is a `.format()` template full of shell, so every literal brace has to be
+    doubled. A single one turns into a placeholder and `.format()` raises at
+    trial start — which surfaces as `RuntimeError: Agent install failed`, one per
+    trial, and reads as the arm scoring zero rather than as its agents never
+    having started. A whole 24-trial run was lost to one undoubled `{`.
+    """
+    import re
+    import subprocess
+    from pathlib import Path
+
+    src = Path(__file__).resolve().parents[2] / "aws_bench" / "agents" / "claude_code.py"
+    template = re.search(
+        r'_ARM_SETUP_SCRIPT\s*=\s*(?:r?"""|r?\'\'\')(.*?)(?:"""|\'\'\')',
+        src.read_text(),
+        re.S,
+    )
+    assert template, "could not find _ARM_SETUP_SCRIPT"
+    body = template.group(1)
+
+    names = sorted(set(re.findall(r"\{(\w+)\}", body)))
+    rendered = body.format(**{n: f"/fake/{n}" for n in names})
+
+    # `sh -n` parses without executing: catches an unbalanced brace or quote that
+    # only a real trial would otherwise find.
+    check = subprocess.run(["sh", "-n"], input=rendered, text=True, capture_output=True)
+    assert check.returncode == 0, f"rendered setup script is not valid shell:\n{check.stderr}"

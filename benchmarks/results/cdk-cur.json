@@ -2,10 +2,10 @@
   "schema": 1,
   "bench": "aws-bench",
   "scenario": "ec2-multiregion",
-  "arm": "pulumi",
+  "arm": "cdk",
   "run": {
-    "id": "pulumi-cur",
-    "finished_at": "2026-07-31T15:07:22.821693",
+    "id": "cdk-cur",
+    "finished_at": "2026-07-31T15:11:27.561969",
     "harness_commit": "835d46a"
   },
   "agent": {
@@ -39,8 +39,8 @@
     "wall_seconds": null
   },
   "briefing": {
-    "path": "benchmarks/arms/briefing-pulumi.md",
-    "sha256": "483cca6296aa"
+    "path": "benchmarks/arms/briefing-cdk.md",
+    "sha256": "0214c5b545ad"
   },
-  "reproduce": "benchmarks/arms/pulumi-ec2-multiregion/REPRODUCE.md"
+  "reproduce": "benchmarks/arms/cdk_app/REPRODUCE.md"
 }

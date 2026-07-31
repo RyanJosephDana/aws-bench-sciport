@@ -85,13 +85,19 @@ echo "==> [$ARM] deploying the estate"
   cd "$ARMS/$SRC"
   case "$BASE_ARM" in
     chant)     ./deploy.sh ;;
-    # Same init the arm's own contract uses (arms.py). Without -plugin-dir this
-    # fetches from the registry and the download does not match the checksum
-    # recorded in .terraform.lock.hcl, so the deploy dies before the estate
-    # exists — the arm was vendoring a provider that only the agent's setup
-    # actually used.
-    terraform) terraform init -input=false -plugin-dir=.terraform/providers >/dev/null \
-               && terraform apply -auto-approve ;;
+    # Deployed inside the arm's own image, which is where its vendored provider
+    # works. The provider is linux_arm64 and the host is darwin_arm64, so on the
+    # host both routes fail for opposite reasons: a bare `init` fetches a darwin
+    # build whose checksum is not in .terraform.lock.hcl, and `-plugin-dir`
+    # finds no darwin package at all. In-container the deploy uses exactly the
+    # terraform the agent will use, which is what the run is meant to measure.
+    terraform) docker run --rm \
+                 -e AWS_ENDPOINT_URL=http://host.docker.internal:4566 \
+                 -e AWS_ACCESS_KEY_ID=test -e AWS_SECRET_ACCESS_KEY=test \
+                 -e AWS_DEFAULT_REGION=us-east-1 -e AWS_REGION=us-east-1 \
+                 -v "$PWD:/w" -w /w awsbench-arm-terraform:latest sh -c '
+                   terraform init -input=false -plugin-dir=.terraform/providers >/dev/null &&
+                   terraform apply -auto-approve' ;;
     pulumi)    export PULUMI_CONFIG_PASSPHRASE=floci PULUMI_BACKEND_URL="file://$PWD"
                pulumi up --yes ;;
     cdk)       # The three regions bootstrap independently; serially they are

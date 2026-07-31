@@ -74,7 +74,7 @@ if ! command -v git >/dev/null 2>&1; then
     # showing, so nothing in here is allowed to abort first.
     for attempt in 1 2 3; do
         if command -v apt-get >/dev/null 2>&1; then
-            { apt-get update >/dev/null 2>&1 && apt-get install -y git >/dev/null 2>&1; } || true
+            {{ apt-get update >/dev/null 2>&1 && apt-get install -y git >/dev/null 2>&1; }} || true
         elif command -v apk >/dev/null 2>&1; then
             apk add --no-cache git >/dev/null 2>&1 || true
         elif command -v yum >/dev/null 2>&1; then
