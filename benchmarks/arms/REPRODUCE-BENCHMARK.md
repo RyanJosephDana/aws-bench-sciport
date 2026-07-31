@@ -73,9 +73,16 @@ The report runs one Floci at a time and **wipes between arms** so no estate blee
 into the next:
 
 ```sh
-cd benchmarks/floci
-docker compose down -v && docker compose up -d   # fresh estate, port 4566
+./benchmarks/floci/reset.sh <arm>   # emulator + that arm's IaC state, from nothing
 ```
+
+Use the script rather than `docker compose down -v` on its own. That does not remove
+the `floci-ec2-*` containers — Floci creates them as siblings through the Docker socket,
+outside the compose project — so they survive holding host ports 2200-2299 and 30000+,
+and the next arm's instances fail to launch with "port is already allocated" and go
+straight to `terminated`. The script also clears the arm's own IaC state, which
+otherwise tries to reconcile against resources the wipe removed. Retry a failed deploy
+by running it again, not by re-deploying onto the leftovers.
 
 That compose file carries the emulator-fidelity settings the run depends on —
 faithful private IP, AWS-shaped public DNS, and the region allow-list standing in
