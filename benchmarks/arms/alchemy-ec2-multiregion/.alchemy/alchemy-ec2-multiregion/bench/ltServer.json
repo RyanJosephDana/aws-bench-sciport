@@ -1,0 +1,59 @@
+{
+  "kind": "AWS::EC2::Instance",
+  "id": "ltServer",
+  "fqn": "alchemy-ec2-multiregion/bench/ltServer",
+  "seq": 43,
+  "data": {},
+  "status": "created",
+  "output": {
+    "Symbol(alchemy::ResourceKind)": "AWS::EC2::Instance",
+    "Symbol(alchemy::ResourceID)": "ltServer",
+    "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/ltServer",
+    "Symbol(alchemy::ResourceScope)": {
+      "@scope": null
+    },
+    "Symbol(alchemy::ResourceSeq)": 43,
+    "typeName": "AWS::EC2::Instance",
+    "desiredState": {
+      "SubnetId": "subnet-469dbc4e",
+      "LaunchTemplate": {
+        "LaunchTemplateId": "lt-1e1ad9b5c74efb93c",
+        "Version": "1"
+      },
+      "Tags": [
+        {
+          "Key": "Name",
+          "Value": "LaunchTemplateInstance"
+        }
+      ]
+    },
+    "region": "us-east-1",
+    "id": "i-01b85ebac3c2d0137",
+    "createdAt": 1785536933059,
+    "InstanceId": "i-01b85ebac3c2d0137",
+    "ImageId": "ami-0f3f13f145e66a0a3",
+    "InstanceType": "t3.micro",
+    "SubnetId": "subnet-469dbc4e",
+    "VpcId": "vpc-6c997df6",
+    "PrivateIp": "10.0.0.11",
+    "AvailabilityZone": "us-east-1a",
+    "State": "pending",
+    "SecurityGroupIds": [
+      "sg-default"
+    ]
+  },
+  "props": {
+    "region": "us-east-1",
+    "SubnetId": "subnet-469dbc4e",
+    "LaunchTemplate": {
+      "LaunchTemplateId": "lt-1e1ad9b5c74efb93c",
+      "Version": "1"
+    },
+    "Tags": [
+      {
+        "Key": "Name",
+        "Value": "LaunchTemplateInstance"
+      }
+    ]
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "kind": "aws::Subnet",
+  "id": "usw1-public",
+  "fqn": "alchemy-ec2-multiregion/bench/usw1-public",
+  "seq": 1,
+  "data": {},
+  "status": "created",
+  "output": {
+    "Symbol(alchemy::ResourceKind)": "aws::Subnet",
+    "Symbol(alchemy::ResourceID)": "usw1-public",
+    "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/usw1-public",
+    "Symbol(alchemy::ResourceScope)": {
+      "@scope": null
+    },
+    "Symbol(alchemy::ResourceSeq)": 1,
+    "subnetId": "subnet-bb90a7d1",
+    "vpcId": "vpc-366e23fa",
+    "state": "available",
+    "availableIpAddressCount": 251,
+    "defaultForAz": false,
+    "region": "us-west-1",
+    "vpc": "vpc-366e23fa",
+    "cidrBlock": "10.0.0.0/24",
+    "availabilityZone": "us-west-1a",
+    "mapPublicIpOnLaunch": true,
+    "tags": {
+      "Name": "Public"
+    }
+  },
+  "props": {
+    "region": "us-west-1",
+    "vpc": {
+      "Symbol(alchemy::ResourceKind)": "aws::Vpc",
+      "Symbol(alchemy::ResourceID)": "usw1-vpc",
+      "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/usw1-vpc",
+      "Symbol(alchemy::ResourceScope)": {
+        "@scope": null
+      },
+      "Symbol(alchemy::ResourceSeq)": 0,
+      "vpcId": "vpc-366e23fa",
+      "state": "available",
+      "isDefault": false,
+      "dhcpOptionsId": "dopt-default",
+      "region": "us-west-1",
+      "cidrBlock": "10.0.0.0/16",
+      "enableDnsSupport": true,
+      "enableDnsHostnames": true,
+      "tags": {
+        "Name": "ResourcesVpc"
+      }
+    },
+    "cidrBlock": "10.0.0.0/24",
+    "availabilityZone": "us-west-1a",
+    "mapPublicIpOnLaunch": true,
+    "tags": {
+      "Name": "Public"
+    }
+  }
+}

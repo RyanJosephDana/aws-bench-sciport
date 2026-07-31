@@ -1,0 +1,25 @@
+{
+  "kind": "ssm::RegionalParameter",
+  "id": "exp-AMIName",
+  "fqn": "alchemy-ec2-multiregion/bench/exp-AMIName",
+  "seq": 56,
+  "data": {},
+  "status": "created",
+  "output": {
+    "Symbol(alchemy::ResourceKind)": "ssm::RegionalParameter",
+    "Symbol(alchemy::ResourceID)": "exp-AMIName",
+    "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/exp-AMIName",
+    "Symbol(alchemy::ResourceScope)": {
+      "@scope": null
+    },
+    "Symbol(alchemy::ResourceSeq)": 56,
+    "region": "us-east-1",
+    "name": "/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-AMIName",
+    "value": "ami-000000000000-us-east-1"
+  },
+  "props": {
+    "region": "us-east-1",
+    "name": "/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-AMIName",
+    "value": "ami-000000000000-us-east-1"
+  }
+}

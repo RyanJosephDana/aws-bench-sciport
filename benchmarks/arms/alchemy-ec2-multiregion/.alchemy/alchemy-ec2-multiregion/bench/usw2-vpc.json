@@ -1,0 +1,37 @@
+{
+  "kind": "aws::Vpc",
+  "id": "usw2-vpc",
+  "fqn": "alchemy-ec2-multiregion/bench/usw2-vpc",
+  "seq": 13,
+  "data": {},
+  "status": "created",
+  "output": {
+    "Symbol(alchemy::ResourceKind)": "aws::Vpc",
+    "Symbol(alchemy::ResourceID)": "usw2-vpc",
+    "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/usw2-vpc",
+    "Symbol(alchemy::ResourceScope)": {
+      "@scope": null
+    },
+    "Symbol(alchemy::ResourceSeq)": 13,
+    "vpcId": "vpc-8077669b",
+    "state": "available",
+    "isDefault": false,
+    "dhcpOptionsId": "dopt-default",
+    "region": "us-west-2",
+    "cidrBlock": "10.0.0.0/16",
+    "enableDnsSupport": true,
+    "enableDnsHostnames": true,
+    "tags": {
+      "Name": "ResourcesVpc"
+    }
+  },
+  "props": {
+    "region": "us-west-2",
+    "cidrBlock": "10.0.0.0/16",
+    "enableDnsSupport": true,
+    "enableDnsHostnames": true,
+    "tags": {
+      "Name": "ResourcesVpc"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "kind": "ssm::RegionalParameter",
+  "id": "usw1-exp-PrivateIPOfInstance",
+  "fqn": "alchemy-ec2-multiregion/bench/usw1-exp-PrivateIPOfInstance",
+  "seq": 12,
+  "data": {},
+  "status": "created",
+  "output": {
+    "Symbol(alchemy::ResourceKind)": "ssm::RegionalParameter",
+    "Symbol(alchemy::ResourceID)": "usw1-exp-PrivateIPOfInstance",
+    "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/usw1-exp-PrivateIPOfInstance",
+    "Symbol(alchemy::ResourceScope)": {
+      "@scope": null
+    },
+    "Symbol(alchemy::ResourceSeq)": 12,
+    "region": "us-west-1",
+    "name": "/exports/ec2-multiregion-EC2-ls9fuhb522-us-west-1-PrivateIPOfInstance",
+    "value": "10.0.0.10"
+  },
+  "props": {
+    "region": "us-west-1",
+    "name": "/exports/ec2-multiregion-EC2-ls9fuhb522-us-west-1-PrivateIPOfInstance",
+    "value": "10.0.0.10"
+  }
+}

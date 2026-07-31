@@ -1,0 +1,57 @@
+{
+  "kind": "iam::Role",
+  "id": "qaAdmin",
+  "fqn": "alchemy-ec2-multiregion/bench/qaAdmin",
+  "seq": 75,
+  "data": {},
+  "status": "created",
+  "output": {
+    "Symbol(alchemy::ResourceKind)": "iam::Role",
+    "Symbol(alchemy::ResourceID)": "qaAdmin",
+    "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/qaAdmin",
+    "Symbol(alchemy::ResourceScope)": {
+      "@scope": null
+    },
+    "Symbol(alchemy::ResourceSeq)": 75,
+    "roleName": "QALocalInvocationApplicationAdmin",
+    "assumeRolePolicy": {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Principal": {
+            "AWS": "arn:aws:iam::000000000000:root"
+          },
+          "Action": "sts:AssumeRole"
+        }
+      ]
+    },
+    "managedPolicyArns": [
+      "arn:aws:iam::aws:policy/AdministratorAccess"
+    ],
+    "arn": "arn:aws:iam::000000000000:role/QALocalInvocationApplicationAdmin",
+    "uniqueId": "AROAP5OMJYFUQGQA511K",
+    "roleId": "AROAP5OMJYFUQGQA511K",
+    "createDate": {
+      "@date": "2026-07-31T22:28:53.278Z"
+    }
+  },
+  "props": {
+    "roleName": "QALocalInvocationApplicationAdmin",
+    "assumeRolePolicy": {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Principal": {
+            "AWS": "arn:aws:iam::000000000000:root"
+          },
+          "Action": "sts:AssumeRole"
+        }
+      ]
+    },
+    "managedPolicyArns": [
+      "arn:aws:iam::aws:policy/AdministratorAccess"
+    ]
+  }
+}

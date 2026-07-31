@@ -229,6 +229,13 @@ def emit(job_name: str) -> dict:
             "turns": mean(turns),
             "wall_seconds": mean(wall),
         },
+        # Where the evidence for this run lives, so a published number can link
+        # to what produced it rather than asking to be believed.
+        "logs": {
+            "run": f"jobs/{job_name}/run-arm.log" if (job / "run-arm.log").exists() else None,
+            "job": f"jobs/{job_name}/job.log" if (job / "job.log").exists() else None,
+            "trials": f"jobs/{job_name}/<task>__<id>/agent/",
+        },
         "briefing": {
             "path": f"benchmarks/arms/{ARMS[arm].briefing}",
             "sha256": hashlib.sha256(briefing.read_bytes()).hexdigest()[:12]

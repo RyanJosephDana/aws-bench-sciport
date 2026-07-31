@@ -1,0 +1,55 @@
+{
+  "kind": "AWS::EC2::Instance",
+  "id": "usw1-server",
+  "fqn": "alchemy-ec2-multiregion/bench/usw1-server",
+  "seq": 7,
+  "data": {},
+  "status": "created",
+  "output": {
+    "Symbol(alchemy::ResourceKind)": "AWS::EC2::Instance",
+    "Symbol(alchemy::ResourceID)": "usw1-server",
+    "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/usw1-server",
+    "Symbol(alchemy::ResourceScope)": {
+      "@scope": null
+    },
+    "Symbol(alchemy::ResourceSeq)": 7,
+    "typeName": "AWS::EC2::Instance",
+    "desiredState": {
+      "ImageId": "ami-0f3f13f145e66a0a3",
+      "InstanceType": "t3.micro",
+      "SubnetId": "subnet-bb90a7d1",
+      "Tags": [
+        {
+          "Key": "Name",
+          "Value": "WebServerInstance"
+        }
+      ]
+    },
+    "region": "us-west-1",
+    "id": "i-6eb3568e1bf841f15",
+    "createdAt": 1785536927729,
+    "InstanceId": "i-6eb3568e1bf841f15",
+    "ImageId": "ami-0f3f13f145e66a0a3",
+    "InstanceType": "t3.micro",
+    "SubnetId": "subnet-bb90a7d1",
+    "VpcId": "vpc-366e23fa",
+    "PrivateIp": "10.0.0.10",
+    "AvailabilityZone": "us-west-1a",
+    "State": "pending",
+    "SecurityGroupIds": [
+      "sg-default"
+    ]
+  },
+  "props": {
+    "region": "us-west-1",
+    "ImageId": "ami-0f3f13f145e66a0a3",
+    "InstanceType": "t3.micro",
+    "SubnetId": "subnet-bb90a7d1",
+    "Tags": [
+      {
+        "Key": "Name",
+        "Value": "WebServerInstance"
+      }
+    ]
+  }
+}

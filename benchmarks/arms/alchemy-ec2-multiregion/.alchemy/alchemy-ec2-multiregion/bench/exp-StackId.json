@@ -1,0 +1,25 @@
+{
+  "kind": "ssm::RegionalParameter",
+  "id": "exp-StackId",
+  "fqn": "alchemy-ec2-multiregion/bench/exp-StackId",
+  "seq": 65,
+  "data": {},
+  "status": "created",
+  "output": {
+    "Symbol(alchemy::ResourceKind)": "ssm::RegionalParameter",
+    "Symbol(alchemy::ResourceID)": "exp-StackId",
+    "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/exp-StackId",
+    "Symbol(alchemy::ResourceScope)": {
+      "@scope": null
+    },
+    "Symbol(alchemy::ResourceSeq)": 65,
+    "region": "us-east-1",
+    "name": "/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-StackId",
+    "value": "ec2-multiregion-EC2-ks84v1fh12-us-east-1"
+  },
+  "props": {
+    "region": "us-east-1",
+    "name": "/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-StackId",
+    "value": "ec2-multiregion-EC2-ks84v1fh12-us-east-1"
+  }
+}

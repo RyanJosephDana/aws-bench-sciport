@@ -1,0 +1,25 @@
+{
+  "kind": "ssm::RegionalParameter",
+  "id": "exp-OpenHTTPsPort",
+  "fqn": "alchemy-ec2-multiregion/bench/exp-OpenHTTPsPort",
+  "seq": 63,
+  "data": {},
+  "status": "created",
+  "output": {
+    "Symbol(alchemy::ResourceKind)": "ssm::RegionalParameter",
+    "Symbol(alchemy::ResourceID)": "exp-OpenHTTPsPort",
+    "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/exp-OpenHTTPsPort",
+    "Symbol(alchemy::ResourceScope)": {
+      "@scope": null
+    },
+    "Symbol(alchemy::ResourceSeq)": 63,
+    "region": "us-east-1",
+    "name": "/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-OpenHTTPsPort",
+    "value": "443"
+  },
+  "props": {
+    "region": "us-east-1",
+    "name": "/exports/ec2-multiregion-EC2-ks84v1fh12-us-east-1-OpenHTTPsPort",
+    "value": "443"
+  }
+}

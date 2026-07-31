@@ -37,6 +37,21 @@ case "$ARM" in
   *)   N_CONCURRENT="${N_CONCURRENT:-8}" ;;
 esac
 
+# Everything this script prints — wipe, deploy, export, preflight, k=3, audit —
+# is captured and filed with the job at the end. `job.log` covers only the
+# scored run, so the two gates that decide whether a run counts at all left no
+# record beside the result. A published number should link to the evidence that
+# it was allowed to stand.
+RUN_LOG="$(mktemp -t run-arm)"
+exec > >(tee -a "$RUN_LOG") 2>&1
+park_run_log() {
+  if [ -d "jobs/${JOB}" ]; then
+    cp "$RUN_LOG" "jobs/${JOB}/run-arm.log" 2>/dev/null || true
+  fi
+  rm -f "$RUN_LOG" 2>/dev/null || true
+}
+trap park_run_log EXIT
+
 REPO="$(cd "$(dirname "$0")/../.." && pwd)"
 ARMS="$REPO/benchmarks/arms"
 EXPORTS="$HOME/.aws-bench/agent-env"
