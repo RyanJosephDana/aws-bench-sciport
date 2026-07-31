@@ -85,7 +85,13 @@ echo "==> [$ARM] deploying the estate"
   cd "$ARMS/$SRC"
   case "$BASE_ARM" in
     chant)     ./deploy.sh ;;
-    terraform) terraform init -input=false >/dev/null && terraform apply -auto-approve ;;
+    # Same init the arm's own contract uses (arms.py). Without -plugin-dir this
+    # fetches from the registry and the download does not match the checksum
+    # recorded in .terraform.lock.hcl, so the deploy dies before the estate
+    # exists — the arm was vendoring a provider that only the agent's setup
+    # actually used.
+    terraform) terraform init -input=false -plugin-dir=.terraform/providers >/dev/null \
+               && terraform apply -auto-approve ;;
     pulumi)    export PULUMI_CONFIG_PASSPHRASE=floci PULUMI_BACKEND_URL="file://$PWD"
                pulumi up --yes ;;
     cdk)       # The three regions bootstrap independently; serially they are
