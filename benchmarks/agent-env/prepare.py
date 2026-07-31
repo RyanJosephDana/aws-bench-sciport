@@ -147,11 +147,20 @@ def export(arm: Arm, dest_root: Path) -> tuple[str, bool, str]:
     return arm.name, True, str(workspace)
 
 
-def ensure_tools_image(context: Path) -> None:
-    """Build the shared toolchain image if it is not already present."""
-    if subprocess.run(["docker", "image", "inspect", TOOLS_IMAGE], capture_output=True).returncode:
-        print(f"building {TOOLS_IMAGE} ...", flush=True)
-        subprocess.run(["docker", "build", "-t", TOOLS_IMAGE, str(context)], check=True)
+def ensure_tools_image(context: Path, rebuild: bool = False) -> None:
+    """Build the shared toolchain image if it is missing, or if asked to rebuild.
+
+    It used to build only when absent, so an edit to the Dockerfile never took
+    effect: `prepare.py --rebuild` rebuilt each arm on top of a toolchain image
+    that was whatever had been built first. Adding `column` to the image and
+    watching it still not exist is the cheap version of that; the expensive
+    version is a pinned tool version that silently is not the pinned version.
+    """
+    present = subprocess.run(["docker", "image", "inspect", TOOLS_IMAGE], capture_output=True).returncode == 0
+    if present and not rebuild:
+        return
+    print(f"building {TOOLS_IMAGE} ...", flush=True)
+    subprocess.run(["docker", "build", "-t", TOOLS_IMAGE, str(context)], check=True)
 
 
 def main() -> int:
@@ -172,7 +181,7 @@ def main() -> int:
     if unknown:
         parser.error(f"unknown arm(s): {', '.join(unknown)}. known: {', '.join(ARMS)}")
 
-    ensure_tools_image(Path(__file__).parent)
+    ensure_tools_image(Path(__file__).parent, rebuild=args.rebuild)
 
     print(f"preparing {len(names)} arm(s) ...", flush=True)
     with ThreadPoolExecutor(max_workers=args.jobs) as pool:
