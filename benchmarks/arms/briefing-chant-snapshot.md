@@ -52,11 +52,8 @@ Query grammar (space-separated terms, all must match):
 - `attr:<name>=<val>` — an attribute equals/contains a value
 - `tag:<key>=<val>` — a tag with that key and value
 - `!<term>` — prefix any term to require its ABSENCE. `!<-kind:X` selects nodes
-  no X points at, which is how you ask whether something is attached to
-  anything. `!<-` on its own is the broader "nothing points at it at all", and
-  counts every reference in the project — a stack output that merely publishes a
-  resource's id points at it too. Those give different answers; ask the one you
-  mean.
+  nothing of kind X points at, which is how you ask what is unattached. An edge
+  term needs a target: say what would have referenced it.
 - `->attr:n=v` / `->kind:X` — this resource has an edge TO one matching the
   right side; `<-` reverses it. This performs the join across the relationship,
   so `kind:EC2::Instance ->attr:MapPublicIpOnLaunch=true` selects instances by a
