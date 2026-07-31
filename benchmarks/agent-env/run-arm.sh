@@ -21,7 +21,21 @@ JOB="${2:-${ARM}-s2-fixed}"
 # 24 trials at -n 4 is three quarters of an hour of waiting across five arms, and
 # concurrency does not change scores — each trial gets its own container. 8 puts
 # an arm in the 5-10 minute range. Override with N_CONCURRENT for a smaller box.
-N_CONCURRENT="${N_CONCURRENT:-8}"
+# Per-arm default, overridable with N_CONCURRENT.
+#
+# Trial containers have no memory limit of their own (`docker inspect` reports
+# 0) — they share the Docker VM, so concurrency decides how much each can take.
+# CDK's `cdk ls` runs `ts-node lib/app.ts` and peaks near 1.4GB; six of those at
+# once overflow an 8GB VM and the kernel kills them (`exit 137`). The agent then
+# falls back to reading cdk.out templates directly and still scores, so the arm
+# looks fine while never running CDK — four trials scored 1.0 that way.
+#
+# This changes scheduling only. Each trial gets its own container either way, so
+# a trial sees the same environment whatever else is running beside it.
+case "$ARM" in
+  cdk) N_CONCURRENT="${N_CONCURRENT:-3}" ;;
+  *)   N_CONCURRENT="${N_CONCURRENT:-8}" ;;
+esac
 
 REPO="$(cd "$(dirname "$0")/../.." && pwd)"
 ARMS="$REPO/benchmarks/arms"
