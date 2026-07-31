@@ -40,6 +40,14 @@ MISSING = re.compile(r"command not found|No such file or directory|executable fi
 # chant not being installed — and it read as the arm being broken for four runs.
 MISSING_NAME = re.compile(r"(?:^|:\s*)([\w./-]+): (?:command not found|not found)", re.M)
 
+# The tool was killed rather than having failed on its own terms. 137 is
+# SIGKILL, which on a shared Docker VM means the kernel reclaimed memory: `cdk
+# ls` runs a synth that peaks near 1.4GB and six concurrent trials overflowed an
+# 8GB VM. Worth separating from an ordinary nonzero exit, because the tool was
+# working and the box was too small — and because the agent then answered from
+# files the deploy had left behind and still scored, so the run looked clean.
+KILLED = re.compile(r"Exit code 137|\bKilled\b|OOMKilled|out of memory", re.I)
+
 # A command that reads the AWS account as it answers, rather than reading state
 # the arm already holds. Every briefing permits this as a last resort for
 # runtime values, so it is not a failure — but it is the thing the comparison is
@@ -63,6 +71,8 @@ class TrialAudit:
     """Commands using the tool that ran but exited nonzero."""
     live_reads: int
     """Commands that read the AWS account directly rather than the arm's state."""
+    tool_killed: int
+    """Tool calls the kernel killed — the box was too small, not the tool."""
 
     @property
     def used_tool(self) -> bool:
@@ -128,7 +138,7 @@ def audit_trial(trial: Path, pattern: re.Pattern[str], tool_names: set[str]) -> 
     reward_file = trial / "verifier" / "reward.txt"
     reward = reward_file.read_text().strip() if reward_file.exists() else "-"
 
-    ok = missing = failed = 0
+    ok = missing = failed = killed = 0
     live = 0
     for command, output, is_error in bash_calls(log):
         if LIVE_READ.search(command):
@@ -144,11 +154,14 @@ def audit_trial(trial: Path, pattern: re.Pattern[str], tool_names: set[str]) -> 
             failed += 1
         elif MISSING.search(head):
             missing += 1
+        elif KILLED.search(head):
+            killed += 1
+            failed += 1
         elif is_error or re.match(r"\s*Exit code [1-9]", head):
             failed += 1
         else:
             ok += 1
-    return TrialAudit(trial.name, reward, ok, missing, failed, live)
+    return TrialAudit(trial.name, reward, ok, missing, failed, live, killed)
 
 
 def audit_job(job: Path) -> tuple[bool, list[str]]:
@@ -204,6 +217,40 @@ def audit_job(job: Path) -> tuple[bool, list[str]]:
             f" — the run is not a measurement of this arm"
         )
 
+    # How healthy the arm's own tooling was across the whole run, not just
+    # whether each trial got one call through. A trial that ran the tool five
+    # times, had three die, and answered anyway passed every check above — so
+    # did four CDK trials whose only `cdk ls` was OOM-killed and which then
+    # answered from files the deploy had left behind. A tool failing a third of
+    # the time is not a tool being measured.
+    calls_ok = sum(a.tool_ok for a in audits)
+    calls_failed = sum(a.tool_failed for a in audits)
+    calls_killed = sum(a.tool_killed for a in audits)
+    total_calls = calls_ok + calls_failed + sum(a.tool_missing for a in audits)
+    if total_calls:
+        rate = calls_failed / total_calls
+        lines.append(
+            f"    {name} invocations: {calls_ok} ok, {calls_failed} failed"
+            + (f" ({calls_killed} killed)" if calls_killed else "")
+            + f" — {rate:.0%} failure rate"
+        )
+
+    # Killed at all is a hard stop: the tool was working and the machine was
+    # not, so nothing in the run describes the tool.
+    unhealthy = calls_killed > 0
+    if unhealthy:
+        lines.append(
+            f"    {calls_killed} {name} call(s) were killed by the kernel — the environment"
+            f" starved the tool, so this run does not measure it"
+        )
+    # A high failure rate is the same conclusion reached more slowly.
+    elif total_calls >= 10 and calls_failed / total_calls > 0.25:
+        unhealthy = True
+        lines.append(
+            f"    {name} failed {calls_failed} of {total_calls} invocations —"
+            f" too unhealthy for the run to describe the tool"
+        )
+
     # Not a gate: every briefing allows a raw account read for runtime values.
     # Reported because it is the whole point of the comparison — an arm that
     # never needs it answered from its own state.
@@ -221,7 +268,7 @@ def audit_job(job: Path) -> tuple[bool, list[str]]:
     if crashed:
         lines.append(f"    {len(crashed)} trial(s) ended in an agent exception: {', '.join(crashed[:3])}")
 
-    return not (unused or broken or crashed), lines
+    return not (unused or broken or crashed or unhealthy), lines
 
 
 def crashed_trials(job: Path) -> list[str]:
