@@ -51,9 +51,12 @@ Query grammar (space-separated terms, all must match):
 - `kind:<substr>` — resource kind, e.g. `kind:EC2::Instance`
 - `attr:<name>=<val>` — an attribute equals/contains a value
 - `tag:<key>=<val>` — a tag with that key and value
-- `!<term>` — prefix any term to require its ABSENCE. `!<-` on its own selects
-  nodes nothing points at at all; `!<-kind:X` narrows that to "nothing of kind X
-  points at it". Those are different questions — ask the one you mean.
+- `!<term>` — prefix any term to require its ABSENCE. `!<-kind:X` selects nodes
+  no X points at, which is how you ask whether something is attached to
+  anything. `!<-` on its own is the broader "nothing points at it at all", and
+  counts every reference in the project — a stack output that merely publishes a
+  resource's id points at it too. Those give different answers; ask the one you
+  mean.
 - `->attr:n=v` / `->kind:X` — this resource has an edge TO one matching the
   right side; `<-` reverses it. This performs the join across the relationship,
   so `kind:EC2::Instance ->attr:MapPublicIpOnLaunch=true` selects instances by a
