@@ -95,6 +95,7 @@ echo "==> [$ARM] deploying the estate"
                  -e AWS_ENDPOINT_URL=http://host.docker.internal:4566 \
                  -e AWS_ACCESS_KEY_ID=test -e AWS_SECRET_ACCESS_KEY=test \
                  -e AWS_DEFAULT_REGION=us-east-1 -e AWS_REGION=us-east-1 \
+                 -e TF_VAR_floci_endpoint=http://host.docker.internal:4566 \
                  -v "$PWD:/w" -w /w awsbench-arm-terraform:latest sh -c '
                    terraform init -input=false -plugin-dir=.terraform/providers >/dev/null &&
                    terraform apply -auto-approve' ;;

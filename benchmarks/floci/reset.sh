@@ -37,6 +37,15 @@ for _ in $(seq 1 30); do
   sleep 2
 done
 echo "    emulator: ${status:-unknown}"
+# Stop here rather than deploying into an emulator that never came up. It
+# printed "unhealthy" and carried on, so every arm downstream failed against a
+# dead endpoint and reported it as the tool's problem — the emulator had died on
+# a full Docker disk and nothing said so.
+if [ "${status:-unknown}" != healthy ]; then
+  echo "    the emulator is not healthy; refusing to continue" >&2
+  docker logs floci-floci-1 --tail 20 2>&1 | sed 's/^/      /' >&2 || true
+  exit 1
+fi
 
 case "$ARM" in
   "") ;;

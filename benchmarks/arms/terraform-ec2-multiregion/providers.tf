@@ -1,8 +1,18 @@
 # Three regional providers, all pointed at the local Floci emulator. The estate
 # spans us-east-1 (primary, full topology), us-west-1 and us-west-2 (one public
 # server each). Credentials are throwaway; Floci does not verify signatures.
+# Overridable so the estate can be deployed from inside a container, where the
+# emulator is reachable as host.docker.internal rather than localhost. The
+# default is unchanged, so reading or running this from the host behaves exactly
+# as before.
+variable "floci_endpoint" {
+  type        = string
+  description = "Base URL of the Floci emulator."
+  default     = "http://localhost:4566"
+}
+
 locals {
-  floci_endpoint = "http://localhost:4566"
+  floci_endpoint = var.floci_endpoint
 }
 
 provider "aws" {
