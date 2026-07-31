@@ -1,44 +1,63 @@
 {
-  "kind": "aws::Instance",
+  "kind": "AWS::EC2::Instance",
   "id": "webServer",
   "fqn": "alchemy-ec2-multiregion/bench/webServer",
   "seq": 41,
   "data": {},
   "status": "created",
   "output": {
-    "Symbol(alchemy::ResourceKind)": "aws::Instance",
+    "Symbol(alchemy::ResourceKind)": "AWS::EC2::Instance",
     "Symbol(alchemy::ResourceID)": "webServer",
     "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/webServer",
     "Symbol(alchemy::ResourceScope)": {
       "@scope": null
     },
     "Symbol(alchemy::ResourceSeq)": 41,
-    "region": "us-east-1",
-    "imageId": "ami-0f3f13f145e66a0a3",
-    "instanceType": "t3.micro",
-    "subnetId": "subnet-616eb8f6",
-    "securityGroupIds": [
-      "sg-031180c81eb0ff57e"
-    ],
-    "iamInstanceProfile": "instanceprofile-000000000000-us-east-1",
-    "tags": {
-      "Name": "WebServerInstance"
+    "typeName": "AWS::EC2::Instance",
+    "desiredState": {
+      "ImageId": "ami-0f3f13f145e66a0a3",
+      "InstanceType": "t3.micro",
+      "SubnetId": "subnet-40f33e18",
+      "SecurityGroupIds": [
+        "sg-5b90f995108ef3c1a"
+      ],
+      "IamInstanceProfile": "instanceprofile-000000000000-us-east-1",
+      "Tags": [
+        {
+          "Key": "Name",
+          "Value": "WebServerInstance"
+        }
+      ]
     },
-    "instanceId": "i-9fd0c7353fdd4d745",
-    "privateIp": "172.17.0.6",
-    "publicIp": "127.0.0.1"
+    "region": "us-east-1",
+    "id": "i-844b2021a30cb07db",
+    "createdAt": 1785460596649,
+    "InstanceId": "i-844b2021a30cb07db",
+    "ImageId": "ami-0f3f13f145e66a0a3",
+    "InstanceType": "t3.micro",
+    "SubnetId": "subnet-40f33e18",
+    "VpcId": "vpc-cf57ad04",
+    "PrivateIp": "10.0.0.10",
+    "AvailabilityZone": "us-east-1a",
+    "State": "pending",
+    "SecurityGroupIds": [
+      "sg-5b90f995108ef3c1a"
+    ]
   },
   "props": {
     "region": "us-east-1",
-    "imageId": "ami-0f3f13f145e66a0a3",
-    "instanceType": "t3.micro",
-    "subnetId": "subnet-616eb8f6",
-    "securityGroupIds": [
-      "sg-031180c81eb0ff57e"
+    "ImageId": "ami-0f3f13f145e66a0a3",
+    "InstanceType": "t3.micro",
+    "SubnetId": "subnet-40f33e18",
+    "SecurityGroupIds": [
+      "sg-5b90f995108ef3c1a"
     ],
-    "iamInstanceProfile": "instanceprofile-000000000000-us-east-1",
-    "tags": {
-      "Name": "WebServerInstance"
-    }
+    "IamInstanceProfile": "instanceprofile-000000000000-us-east-1",
+    "Tags": [
+      {
+        "Key": "Name",
+        "Value": "WebServerInstance"
+      }
+    ]
   }
 }

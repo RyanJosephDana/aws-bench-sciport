@@ -69,7 +69,6 @@ Two gates run around every scored run, and both stop it:
   scores with no `cdk` or `alchemy` command ever executed.
 
 ---
-
 ## This arm in particular
 
 Like Terraform, Pulumi's applied state carries every attribute, but the

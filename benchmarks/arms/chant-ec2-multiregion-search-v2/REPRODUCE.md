@@ -69,7 +69,6 @@ Two gates run around every scored run, and both stop it:
   scores with no `cdk` or `alchemy` command ever executed.
 
 ---
-
 ## This arm in particular
 
 Recreates the discriminating result from the aws-bench `ec2-multiregion` scenario.

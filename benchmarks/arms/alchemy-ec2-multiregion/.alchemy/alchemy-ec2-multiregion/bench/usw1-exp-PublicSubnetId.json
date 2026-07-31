@@ -15,11 +15,11 @@
     "Symbol(alchemy::ResourceSeq)": 10,
     "region": "us-west-1",
     "name": "/exports/ec2-multiregion-EC2-ls9fuhb522-us-west-1-PublicSubnetId",
-    "value": "subnet-bac26b20"
+    "value": "subnet-979e434f"
   },
   "props": {
     "region": "us-west-1",
     "name": "/exports/ec2-multiregion-EC2-ls9fuhb522-us-west-1-PublicSubnetId",
-    "value": "subnet-bac26b20"
+    "value": "subnet-979e434f"
   }
 }

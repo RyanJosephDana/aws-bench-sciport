@@ -15,11 +15,11 @@
     "Symbol(alchemy::ResourceSeq)": 25,
     "region": "us-west-2",
     "name": "/exports/ec2-multiregion-EC2-ls9fuhb522-us-west-2-PrivateIPOfInstance",
-    "value": "172.17.0.7"
+    "value": "10.0.0.10"
   },
   "props": {
     "region": "us-west-2",
     "name": "/exports/ec2-multiregion-EC2-ls9fuhb522-us-west-2-PrivateIPOfInstance",
-    "value": "172.17.0.7"
+    "value": "10.0.0.10"
   }
 }

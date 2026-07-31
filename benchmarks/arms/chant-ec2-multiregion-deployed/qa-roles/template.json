@@ -1,0 +1,112 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Resources": {
+    "adminRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:root"
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/AdministratorAccess"
+        ],
+        "RoleName": "QALocalInvocationApplicationAdmin"
+      },
+      "Type": "AWS::IAM::Role"
+    },
+    "judgeRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:root"
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/AmazonBedrockFullAccess",
+          "arn:aws:iam::aws:policy/ReadOnlyAccess"
+        ],
+        "RoleName": "LLMJudgeFullBedrockAccessRole"
+      },
+      "Type": "AWS::IAM::Role"
+    },
+    "readonlyRole": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:root"
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/ReadOnlyAccess",
+          "arn:aws:iam::aws:policy/AmazonBedrockFullAccess",
+          {
+            "Fn::GetAtt": [
+              "s3VectorsReadOnly",
+              "PolicyArn"
+            ]
+          }
+        ],
+        "RoleName": "QALocalInvocationApplicationRole"
+      },
+      "Type": "AWS::IAM::Role"
+    },
+    "s3VectorsReadOnly": {
+      "Properties": {
+        "Description": "Read-only access to S3 Vectors operations",
+        "ManagedPolicyName": {
+          "Fn::Sub": "S3VectorsReadOnlyAccess-${AWS::AccountId}-${AWS::Region}"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3vectors:ListVectors",
+                "s3vectors:GetVectors",
+                "s3vectors:GetIndex",
+                "s3vectors:GetVectorBucket",
+                "s3vectors:GetVectorBucketPolicy",
+                "s3vectors:ListIndexes",
+                "s3vectors:ListTagsForResource",
+                "s3vectors:ListVectorBuckets",
+                "s3vectors:QueryVectors"
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+              "Sid": "AllowS3VectorsReadOnlyAccess"
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Type": "AWS::IAM::ManagedPolicy"
+    }
+  }
+}

@@ -1,49 +1,57 @@
 {
-  "kind": "aws::LaunchTemplate",
+  "kind": "AWS::EC2::LaunchTemplate",
   "id": "lt",
   "fqn": "alchemy-ec2-multiregion/bench/lt",
   "seq": 42,
   "data": {},
   "status": "created",
   "output": {
-    "Symbol(alchemy::ResourceKind)": "aws::LaunchTemplate",
+    "Symbol(alchemy::ResourceKind)": "AWS::EC2::LaunchTemplate",
     "Symbol(alchemy::ResourceID)": "lt",
     "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/lt",
     "Symbol(alchemy::ResourceScope)": {
       "@scope": null
     },
     "Symbol(alchemy::ResourceSeq)": 42,
-    "region": "us-east-1",
-    "launchTemplateName": "lt-000000000000-us-east-1",
-    "launchTemplateData": {
-      "ImageId": "ami-0f3f13f145e66a0a3",
-      "InstanceType": "t3.micro",
-      "SecurityGroupIds": [
-        "sg-031180c81eb0ff57e"
-      ],
-      "BlockDeviceMappings": [
-        {
-          "DeviceName": "/dev/xvda",
-          "Ebs": {
-            "VolumeSize": 8,
-            "VolumeType": "gp3"
+    "typeName": "AWS::EC2::LaunchTemplate",
+    "desiredState": {
+      "LaunchTemplateName": "lt-000000000000-us-east-1",
+      "LaunchTemplateData": {
+        "ImageId": "ami-0f3f13f145e66a0a3",
+        "InstanceType": "t3.micro",
+        "SecurityGroupIds": [
+          "sg-5b90f995108ef3c1a"
+        ],
+        "BlockDeviceMappings": [
+          {
+            "DeviceName": "/dev/xvda",
+            "Ebs": {
+              "VolumeSize": 8,
+              "VolumeType": "gp3"
+            }
           }
+        ],
+        "MetadataOptions": {
+          "HttpTokens": "required"
         }
-      ],
-      "MetadataOptions": {
-        "HttpTokens": "required"
       }
     },
-    "launchTemplateId": "lt-676aeb12618875f92"
+    "region": "us-east-1",
+    "id": "lt-9587335aeb5f60798",
+    "createdAt": 1785460596656,
+    "LaunchTemplateId": "lt-9587335aeb5f60798",
+    "LaunchTemplateName": "lt-000000000000-us-east-1",
+    "LatestVersionNumber": "1",
+    "DefaultVersionNumber": "1"
   },
   "props": {
     "region": "us-east-1",
-    "launchTemplateName": "lt-000000000000-us-east-1",
-    "launchTemplateData": {
+    "LaunchTemplateName": "lt-000000000000-us-east-1",
+    "LaunchTemplateData": {
       "ImageId": "ami-0f3f13f145e66a0a3",
       "InstanceType": "t3.micro",
       "SecurityGroupIds": [
-        "sg-031180c81eb0ff57e"
+        "sg-5b90f995108ef3c1a"
       ],
       "BlockDeviceMappings": [
         {

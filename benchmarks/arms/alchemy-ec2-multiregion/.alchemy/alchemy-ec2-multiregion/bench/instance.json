@@ -48,10 +48,10 @@
       }
     ],
     "arn": "arn:aws:iam::000000000000:role/role-000000000000-us-east-1",
-    "uniqueId": "AROA10B8Z6MZE27ZR2TP",
-    "roleId": "AROA10B8Z6MZE27ZR2TP",
+    "uniqueId": "AROARBR6RLEPTHRY6FTU",
+    "roleId": "AROARBR6RLEPTHRY6FTU",
     "createDate": {
-      "@date": "2026-07-30T05:39:46.135Z"
+      "@date": "2026-07-31T01:16:36.625Z"
     }
   },
   "props": {

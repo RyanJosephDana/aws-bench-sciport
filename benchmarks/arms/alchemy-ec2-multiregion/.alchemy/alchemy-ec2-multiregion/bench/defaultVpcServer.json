@@ -1,36 +1,55 @@
 {
-  "kind": "aws::Instance",
+  "kind": "AWS::EC2::Instance",
   "id": "defaultVpcServer",
   "fqn": "alchemy-ec2-multiregion/bench/defaultVpcServer",
   "seq": 45,
   "data": {},
   "status": "created",
   "output": {
-    "Symbol(alchemy::ResourceKind)": "aws::Instance",
+    "Symbol(alchemy::ResourceKind)": "AWS::EC2::Instance",
     "Symbol(alchemy::ResourceID)": "defaultVpcServer",
     "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/defaultVpcServer",
     "Symbol(alchemy::ResourceScope)": {
       "@scope": null
     },
     "Symbol(alchemy::ResourceSeq)": 45,
-    "region": "us-east-1",
-    "imageId": "ami-0f3f13f145e66a0a3",
-    "instanceType": "t3.micro",
-    "subnetId": "subnet-default-c",
-    "tags": {
-      "Name": "MyEC2Instance"
+    "typeName": "AWS::EC2::Instance",
+    "desiredState": {
+      "ImageId": "ami-0f3f13f145e66a0a3",
+      "InstanceType": "t3.micro",
+      "SubnetId": "subnet-default-c",
+      "Tags": [
+        {
+          "Key": "Name",
+          "Value": "MyEC2Instance"
+        }
+      ]
     },
-    "instanceId": "i-ef3aa76f2849269fe",
-    "privateIp": "172.17.0.13",
-    "publicIp": "127.0.0.1"
+    "region": "us-east-1",
+    "id": "i-e259b7fbce775f29e",
+    "createdAt": 1785460596684,
+    "InstanceId": "i-e259b7fbce775f29e",
+    "ImageId": "ami-0f3f13f145e66a0a3",
+    "InstanceType": "t3.micro",
+    "SubnetId": "subnet-default-c",
+    "VpcId": "vpc-default",
+    "PrivateIp": "172.31.32.10",
+    "AvailabilityZone": "us-east-1c",
+    "State": "pending",
+    "SecurityGroupIds": [
+      "sg-default"
+    ]
   },
   "props": {
     "region": "us-east-1",
-    "imageId": "ami-0f3f13f145e66a0a3",
-    "instanceType": "t3.micro",
-    "subnetId": "subnet-default-c",
-    "tags": {
-      "Name": "MyEC2Instance"
-    }
+    "ImageId": "ami-0f3f13f145e66a0a3",
+    "InstanceType": "t3.micro",
+    "SubnetId": "subnet-default-c",
+    "Tags": [
+      {
+        "Key": "Name",
+        "Value": "MyEC2Instance"
+      }
+    ]
   }
 }

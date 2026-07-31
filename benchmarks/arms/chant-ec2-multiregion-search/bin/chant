@@ -1,0 +1,8 @@
+#!/bin/sh
+# Self-contained chant launcher for the benchmark container (no system Node).
+# Puts the workspace-vendored linux-arm64 Node/npx on PATH, then runs the real
+# chant bin (which does `npx tsx main.ts`) so it works in an image with no node.
+HERE="$(cd "$(dirname "$0")/.." && pwd)"
+export PATH="$HERE/.runtime/bin:$PATH"
+export NO_UPDATE_NOTIFIER=1 NPM_CONFIG_UPDATE_NOTIFIER=false NPM_CONFIG_FUND=false
+exec "$HERE/node_modules/@intentius/chant/bin/chant" "$@"

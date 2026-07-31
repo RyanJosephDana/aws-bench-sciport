@@ -69,7 +69,6 @@ Two gates run around every scored run, and both stop it:
   scores with no `cdk` or `alchemy` command ever executed.
 
 ---
-
 ## This arm in particular
 
 This is the line James Ward praised as "Alchemy Effect." It is a different

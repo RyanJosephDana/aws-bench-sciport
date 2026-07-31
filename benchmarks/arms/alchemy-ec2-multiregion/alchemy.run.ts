@@ -27,12 +27,14 @@ import {
   DescribeVpcsCommand,
   EC2Client,
 } from "@aws-sdk/client-ec2";
-import {
-  Ec2Instance,
-  Ec2LaunchTemplate,
-  ExportParameter,
-  IamInstanceProfile,
-} from "./src/aws-extra.ts";
+import AWS from "alchemy/aws/control";
+import { ExportParameter } from "./src/aws-extra.ts";
+
+// EC2 instances, launch templates and instance profiles are not in the published
+// provider's typed surface — its Cloud Control proxy is the supported path for them,
+// so the estate uses that rather than hand-written custom resources.
+const tags = (t: Record<string, string>) =>
+  Object.entries(t).map(([Key, Value]) => ({ Key, Value }));
 
 const AMI = "ami-0f3f13f145e66a0a3";
 
@@ -80,18 +82,18 @@ async function publicRegion(alias: string, region: string, stack: string) {
     target: { internetGateway: igw },
   });
   await RouteTableAssociation(`${alias}-assoc`, { routeTable: rt, subnet });
-  const server = await Ec2Instance(`${alias}-server`, {
+  const server = await AWS.EC2.Instance(`${alias}-server`, {
     region,
-    imageId: AMI,
-    instanceType: "t3.micro",
-    subnetId: subnet.subnetId,
-    tags: { Name: "WebServerInstance" },
+    ImageId: AMI,
+    InstanceType: "t3.micro",
+    SubnetId: subnet.subnetId,
+    Tags: tags({ Name: "WebServerInstance" }),
   });
   await exp(`${alias}-exp-VpcId`, region, `${stack}-VpcId`, vpc.vpcId);
-  await exp(`${alias}-exp-InstanceId`, region, `${stack}-InstanceId`, server.instanceId);
+  await exp(`${alias}-exp-InstanceId`, region, `${stack}-InstanceId`, server.InstanceId);
   await exp(`${alias}-exp-PublicSubnetId`, region, `${stack}-PublicSubnetId`, subnet.subnetId);
   await exp(`${alias}-exp-NUMEC2Running`, region, `${stack}-NUMEC2Running`, "1");
-  await exp(`${alias}-exp-PrivateIPOfInstance`, region, `${stack}-PrivateIPOfInstance`, server.privateIp);
+  await exp(`${alias}-exp-PrivateIPOfInstance`, region, `${stack}-PrivateIPOfInstance`, server.PrivateIp);
 }
 
 await publicRegion("usw1", "us-west-1", "ec2-multiregion-EC2-ls9fuhb522-us-west-1");
@@ -229,25 +231,26 @@ const role = await Role("instance", {
     },
   ],
 });
-const profile = await IamInstanceProfile("profile", {
-  instanceProfileName: `instanceprofile-${account}-us-east-1`,
-  roles: [role.roleName],
+const profile = await AWS.IAM.InstanceProfile("profile", {
+  region: REGION,
+  InstanceProfileName: `instanceprofile-${account}-us-east-1`,
+  Roles: [role.roleName],
 });
 
-const webServer = await Ec2Instance("webServer", {
+const webServer = await AWS.EC2.Instance("webServer", {
   region: REGION,
-  imageId: AMI,
-  instanceType: "t3.micro",
-  subnetId: publicSubnet.subnetId,
-  securityGroupIds: [webSg.groupId],
-  iamInstanceProfile: profile.instanceProfileName,
-  tags: { Name: "WebServerInstance" },
+  ImageId: AMI,
+  InstanceType: "t3.micro",
+  SubnetId: publicSubnet.subnetId,
+  SecurityGroupIds: [webSg.groupId],
+  IamInstanceProfile: profile.InstanceProfileName,
+  Tags: tags({ Name: "WebServerInstance" }),
 });
 
-const lt = await Ec2LaunchTemplate("lt", {
+const lt = await AWS.EC2.LaunchTemplate("lt", {
   region: REGION,
-  launchTemplateName: `lt-${account}-us-east-1`,
-  launchTemplateData: {
+  LaunchTemplateName: `lt-${account}-us-east-1`,
+  LaunchTemplateData: {
     ImageId: AMI,
     InstanceType: "t3.micro",
     SecurityGroupIds: [webSg.groupId],
@@ -259,32 +262,32 @@ const lt = await Ec2LaunchTemplate("lt", {
 });
 // Reachable ONLY through the launch template's security group — the hop a raw
 // CLI sweep misses.
-const ltServer = await Ec2Instance("ltServer", {
+const ltServer = await AWS.EC2.Instance("ltServer", {
   region: REGION,
-  subnetId: publicSubnet.subnetId,
-  launchTemplate: { launchTemplateId: lt.launchTemplateId, version: "1" },
-  tags: { Name: "LaunchTemplateInstance" },
+  SubnetId: publicSubnet.subnetId,
+  LaunchTemplate: { LaunchTemplateId: lt.LaunchTemplateId, Version: "1" },
+  Tags: tags({ Name: "LaunchTemplateInstance" }),
 });
-const privateServer = await Ec2Instance("privateServer", {
+const privateServer = await AWS.EC2.Instance("privateServer", {
   region: REGION,
-  imageId: AMI,
-  instanceType: "t3.micro",
-  subnetId: privateSubnet.subnetId,
-  tags: { Name: "PrivateInstance" },
+  ImageId: AMI,
+  InstanceType: "t3.micro",
+  SubnetId: privateSubnet.subnetId,
+  Tags: tags({ Name: "PrivateInstance" }),
 });
-const defaultVpcServer = await Ec2Instance("defaultVpcServer", {
+const defaultVpcServer = await AWS.EC2.Instance("defaultVpcServer", {
   region: REGION,
-  imageId: AMI,
-  instanceType: "t3.micro",
-  subnetId: defSubnetIds[0],
-  tags: { Name: "MyEC2Instance" },
+  ImageId: AMI,
+  InstanceType: "t3.micro",
+  SubnetId: defSubnetIds[0],
+  Tags: tags({ Name: "MyEC2Instance" }),
 });
 
 // ── us-east-1 export contract (27) ──────────────────────────────────────────
 const e = (id: string, name: string, value: string) =>
   exp(id, REGION, `${STACK}-${name}`, value);
-await e("exp-PrivateInstanceId", "PrivateInstanceId", privateServer.instanceId);
-await e("exp-PrivateInstancePrivateIp", "PrivateInstancePrivateIp", privateServer.privateIp);
+await e("exp-PrivateInstanceId", "PrivateInstanceId", privateServer.InstanceId);
+await e("exp-PrivateInstancePrivateIp", "PrivateInstancePrivateIp", privateServer.PrivateIp);
 await e("exp-RoleName", "RoleName", role.roleName);
 await e("exp-VpcId", "VpcId", vpc.vpcId);
 await e("exp-RestrictedActionModifyInstanceAttribute", "RestrictedActionModifyInstanceAttribute", "ec2:ModifyInstanceAttribute");
@@ -292,10 +295,10 @@ await e("exp-RestrictedActionModifyInstanceMetadataOptions", "RestrictedActionMo
 await e("exp-SecurityGroupId", "SecurityGroupId", webSg.groupId);
 await e("exp-UnusedSecurityGroupId", "UnusedSecurityGroupId", unusedSg.groupId);
 await e("exp-PublicSubnetId", "PublicSubnetId", publicSubnet.subnetId);
-await e("exp-InstanceProfileName", "InstanceProfileName", profile.instanceProfileName);
+await e("exp-InstanceProfileName", "InstanceProfileName", profile.InstanceProfileName);
 await e("exp-AMIName", "AMIName", `ami-${account}-us-east-1`);
-await e("exp-InstanceId", "InstanceId", webServer.instanceId);
-await e("exp-LaunchTemplateInstanceId", "LaunchTemplateInstanceId", ltServer.instanceId);
+await e("exp-InstanceId", "InstanceId", webServer.InstanceId);
+await e("exp-LaunchTemplateInstanceId", "LaunchTemplateInstanceId", ltServer.InstanceId);
 await e("exp-NUMEC2Running", "NUMEC2Running", "4");
 await e("exp-NUMSubnets", "NUMSubnets", "1");
 await e("exp-OpenSSHPort", "OpenSSHPort", "22");
@@ -303,13 +306,13 @@ await e("exp-OpenHTTPPort", "OpenHTTPPort", "80");
 await e("exp-OpenHTTPsPort", "OpenHTTPsPort", "443");
 await e("exp-StackName", "StackName", STACK);
 await e("exp-StackId", "StackId", STACK);
-await e("exp-PrivateIPOfInstanceWithoutLaunchTemplate", "PrivateIPOfInstanceWithoutLaunchTemplate", webServer.privateIp);
-await e("exp-PrivateIPOfInstanceWithLaunchTemplate", "PrivateIPOfInstanceWithLaunchTemplate", ltServer.privateIp);
+await e("exp-PrivateIPOfInstanceWithoutLaunchTemplate", "PrivateIPOfInstanceWithoutLaunchTemplate", webServer.PrivateIp);
+await e("exp-PrivateIPOfInstanceWithLaunchTemplate", "PrivateIPOfInstanceWithLaunchTemplate", ltServer.PrivateIp);
 await e("exp-DefaultVpcId", "DefaultVpcId", defVpcId);
 await e("exp-DefaultPublicSubnetId1", "DefaultPublicSubnetId1", defSubnetIds[0]);
 await e("exp-DefaultPublicSubnetId2", "DefaultPublicSubnetId2", defSubnetIds[1] ?? defSubnetIds[0]);
-await e("exp-DefaultVPCInstanceId", "DefaultVPCInstanceId", defaultVpcServer.instanceId);
-await e("exp-PrivateIPOfInstanceWithDefaultVpc", "PrivateIPOfInstanceWithDefaultVpc", defaultVpcServer.privateIp);
+await e("exp-DefaultVPCInstanceId", "DefaultVPCInstanceId", defaultVpcServer.InstanceId);
+await e("exp-PrivateIPOfInstanceWithDefaultVpc", "PrivateIPOfInstanceWithDefaultVpc", defaultVpcServer.PrivateIp);
 
 // ── QA roles (ec2-multiregion-QARoles-us-east-1) — no exports ────────────────
 // NOTE: the CDK original also attaches arn:aws:iam::aws:policy/AmazonBedrockFullAccess
@@ -372,10 +375,10 @@ console.log("DEPLOYED", {
   account,
   regions: ["us-east-1", "us-west-1", "us-west-2"],
   instances: {
-    webServer: webServer.instanceId,
-    ltServer: ltServer.instanceId,
-    privateServer: privateServer.instanceId,
-    defaultVpcServer: defaultVpcServer.instanceId,
+    webServer: webServer.InstanceId,
+    ltServer: ltServer.InstanceId,
+    privateServer: privateServer.InstanceId,
+    defaultVpcServer: defaultVpcServer.InstanceId,
   },
 });
 

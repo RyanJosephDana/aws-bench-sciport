@@ -1,27 +1,36 @@
 {
-  "kind": "iam::InstanceProfile",
+  "kind": "AWS::IAM::InstanceProfile",
   "id": "profile",
   "fqn": "alchemy-ec2-multiregion/bench/profile",
   "seq": 40,
   "data": {},
   "status": "created",
   "output": {
-    "Symbol(alchemy::ResourceKind)": "iam::InstanceProfile",
+    "Symbol(alchemy::ResourceKind)": "AWS::IAM::InstanceProfile",
     "Symbol(alchemy::ResourceID)": "profile",
     "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/profile",
     "Symbol(alchemy::ResourceScope)": {
       "@scope": null
     },
     "Symbol(alchemy::ResourceSeq)": 40,
-    "instanceProfileName": "instanceprofile-000000000000-us-east-1",
-    "roles": [
-      "role-000000000000-us-east-1"
-    ],
-    "arn": "arn:aws:iam::000000000000:instance-profile/instanceprofile-000000000000-us-east-1"
+    "typeName": "AWS::IAM::InstanceProfile",
+    "desiredState": {
+      "InstanceProfileName": "instanceprofile-000000000000-us-east-1",
+      "Roles": [
+        "role-000000000000-us-east-1"
+      ]
+    },
+    "region": "us-east-1",
+    "id": "instanceprofile-000000000000-us-east-1",
+    "createdAt": 1785460596644,
+    "InstanceProfileName": "instanceprofile-000000000000-us-east-1",
+    "Arn": "arn:aws:iam::000000000000:instance-profile/instanceprofile-000000000000-us-east-1",
+    "Path": "/"
   },
   "props": {
-    "instanceProfileName": "instanceprofile-000000000000-us-east-1",
-    "roles": [
+    "region": "us-east-1",
+    "InstanceProfileName": "instanceprofile-000000000000-us-east-1",
+    "Roles": [
       "role-000000000000-us-east-1"
     ]
   }

@@ -13,12 +13,12 @@
       "@scope": null
     },
     "Symbol(alchemy::ResourceSeq)": 38,
-    "groupId": "sg-b4e88068dfe1f1aef",
+    "groupId": "sg-238e0e96f85da2dea",
     "groupName": "unused-ec2-multiregion-EC2-ks84v1fh12-us-east-1",
-    "vpcId": "vpc-9e5a4b5a",
+    "vpcId": "vpc-cf57ad04",
     "ownerId": 0,
     "region": "us-east-1",
-    "vpc": "vpc-9e5a4b5a",
+    "vpc": "vpc-cf57ad04",
     "description": "Unused security group"
   },
   "props": {
@@ -31,7 +31,7 @@
         "@scope": null
       },
       "Symbol(alchemy::ResourceSeq)": 26,
-      "vpcId": "vpc-9e5a4b5a",
+      "vpcId": "vpc-cf57ad04",
       "state": "available",
       "isDefault": false,
       "dhcpOptionsId": "dopt-default",

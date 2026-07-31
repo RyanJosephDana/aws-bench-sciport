@@ -13,7 +13,7 @@
       "@scope": null
     },
     "Symbol(alchemy::ResourceSeq)": 0,
-    "vpcId": "vpc-555b1e5b",
+    "vpcId": "vpc-036d7d58",
     "state": "available",
     "isDefault": false,
     "dhcpOptionsId": "dopt-default",

@@ -30,10 +30,10 @@
       "arn:aws:iam::aws:policy/AdministratorAccess"
     ],
     "arn": "arn:aws:iam::000000000000:role/QALocalInvocationApplicationAdmin",
-    "uniqueId": "AROAL7K5LO0PWMBFRQ0Z",
-    "roleId": "AROAL7K5LO0PWMBFRQ0Z",
+    "uniqueId": "AROAVPHT0FY99T0IYZHL",
+    "roleId": "AROAVPHT0FY99T0IYZHL",
     "createDate": {
-      "@date": "2026-07-30T05:40:24.499Z"
+      "@date": "2026-07-31T01:16:36.894Z"
     }
   },
   "props": {

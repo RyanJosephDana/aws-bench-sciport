@@ -1,36 +1,55 @@
 {
-  "kind": "aws::Instance",
+  "kind": "AWS::EC2::Instance",
   "id": "usw2-server",
   "fqn": "alchemy-ec2-multiregion/bench/usw2-server",
   "seq": 20,
   "data": {},
   "status": "created",
   "output": {
-    "Symbol(alchemy::ResourceKind)": "aws::Instance",
+    "Symbol(alchemy::ResourceKind)": "AWS::EC2::Instance",
     "Symbol(alchemy::ResourceID)": "usw2-server",
     "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/usw2-server",
     "Symbol(alchemy::ResourceScope)": {
       "@scope": null
     },
     "Symbol(alchemy::ResourceSeq)": 20,
-    "region": "us-west-2",
-    "imageId": "ami-0f3f13f145e66a0a3",
-    "instanceType": "t3.micro",
-    "subnetId": "subnet-31f5c954",
-    "tags": {
-      "Name": "WebServerInstance"
+    "typeName": "AWS::EC2::Instance",
+    "desiredState": {
+      "ImageId": "ami-0f3f13f145e66a0a3",
+      "InstanceType": "t3.micro",
+      "SubnetId": "subnet-8eb0591b",
+      "Tags": [
+        {
+          "Key": "Name",
+          "Value": "WebServerInstance"
+        }
+      ]
     },
-    "instanceId": "i-d468fa8b4965413d3",
-    "privateIp": "172.17.0.7",
-    "publicIp": "127.0.0.1"
+    "region": "us-west-2",
+    "id": "i-c6ad561fed57c30ed",
+    "createdAt": 1785460594493,
+    "InstanceId": "i-c6ad561fed57c30ed",
+    "ImageId": "ami-0f3f13f145e66a0a3",
+    "InstanceType": "t3.micro",
+    "SubnetId": "subnet-8eb0591b",
+    "VpcId": "vpc-3687a00f",
+    "PrivateIp": "10.0.0.10",
+    "AvailabilityZone": "us-west-2a",
+    "State": "pending",
+    "SecurityGroupIds": [
+      "sg-default"
+    ]
   },
   "props": {
     "region": "us-west-2",
-    "imageId": "ami-0f3f13f145e66a0a3",
-    "instanceType": "t3.micro",
-    "subnetId": "subnet-31f5c954",
-    "tags": {
-      "Name": "WebServerInstance"
-    }
+    "ImageId": "ami-0f3f13f145e66a0a3",
+    "InstanceType": "t3.micro",
+    "SubnetId": "subnet-8eb0591b",
+    "Tags": [
+      {
+        "Key": "Name",
+        "Value": "WebServerInstance"
+      }
+    ]
   }
 }

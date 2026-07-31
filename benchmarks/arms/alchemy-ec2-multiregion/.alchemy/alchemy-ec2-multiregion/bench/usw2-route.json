@@ -13,11 +13,11 @@
       "@scope": null
     },
     "Symbol(alchemy::ResourceSeq)": 18,
-    "routeTableId": "rtb-5937fc39",
+    "routeTableId": "rtb-01113ccf",
     "state": "active",
     "origin": "CreateRoute",
     "region": "us-west-2",
-    "routeTable": "rtb-5937fc39",
+    "routeTable": "rtb-01113ccf",
     "destinationCidrBlock": "0.0.0.0/0",
     "target": {
       "internetGateway": {
@@ -28,7 +28,7 @@
           "@scope": null
         },
         "Symbol(alchemy::ResourceSeq)": 15,
-        "internetGatewayId": "igw-ea246fc5",
+        "internetGatewayId": "igw-5bea31a9",
         "state": "available",
         "attachments": [],
         "ownerId": 0,
@@ -46,10 +46,10 @@
         "@scope": null
       },
       "Symbol(alchemy::ResourceSeq)": 17,
-      "routeTableId": "rtb-5937fc39",
-      "vpcId": "vpc-f320d749",
+      "routeTableId": "rtb-01113ccf",
+      "vpcId": "vpc-3687a00f",
       "region": "us-west-2",
-      "vpc": "vpc-f320d749"
+      "vpc": "vpc-3687a00f"
     },
     "destinationCidrBlock": "0.0.0.0/0",
     "target": {
@@ -61,7 +61,7 @@
           "@scope": null
         },
         "Symbol(alchemy::ResourceSeq)": 15,
-        "internetGatewayId": "igw-ea246fc5",
+        "internetGatewayId": "igw-5bea31a9",
         "state": "available",
         "attachments": [],
         "ownerId": 0,

@@ -6,7 +6,7 @@
     "build": "chant build"
   },
   "dependencies": {
-    "@intentius/chant": "^0.33.0",
-    "@intentius/chant-lexicon-aws": "^0.33.0"
+    "@intentius/chant": "file:vendor-local/intentius-chant-0.33.1.tgz",
+    "@intentius/chant-lexicon-aws": "file:vendor-local/intentius-chant-lexicon-aws-0.33.1.tgz"
   }
 }

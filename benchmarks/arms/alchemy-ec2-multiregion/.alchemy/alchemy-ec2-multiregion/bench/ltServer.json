@@ -1,40 +1,59 @@
 {
-  "kind": "aws::Instance",
+  "kind": "AWS::EC2::Instance",
   "id": "ltServer",
   "fqn": "alchemy-ec2-multiregion/bench/ltServer",
   "seq": 43,
   "data": {},
   "status": "created",
   "output": {
-    "Symbol(alchemy::ResourceKind)": "aws::Instance",
+    "Symbol(alchemy::ResourceKind)": "AWS::EC2::Instance",
     "Symbol(alchemy::ResourceID)": "ltServer",
     "Symbol(alchemy::ResourceFQN)": "alchemy-ec2-multiregion/bench/ltServer",
     "Symbol(alchemy::ResourceScope)": {
       "@scope": null
     },
     "Symbol(alchemy::ResourceSeq)": 43,
+    "typeName": "AWS::EC2::Instance",
+    "desiredState": {
+      "SubnetId": "subnet-40f33e18",
+      "LaunchTemplate": {
+        "LaunchTemplateId": "lt-9587335aeb5f60798",
+        "Version": "1"
+      },
+      "Tags": [
+        {
+          "Key": "Name",
+          "Value": "LaunchTemplateInstance"
+        }
+      ]
+    },
     "region": "us-east-1",
-    "subnetId": "subnet-616eb8f6",
-    "launchTemplate": {
-      "launchTemplateId": "lt-676aeb12618875f92",
-      "version": "1"
-    },
-    "tags": {
-      "Name": "LaunchTemplateInstance"
-    },
-    "instanceId": "i-c73092d9b39ba2068",
-    "privateIp": "172.17.0.10",
-    "publicIp": "127.0.0.1"
+    "id": "i-02d08b0c77bd0a369",
+    "createdAt": 1785460596664,
+    "InstanceId": "i-02d08b0c77bd0a369",
+    "ImageId": "ami-0f3f13f145e66a0a3",
+    "InstanceType": "t3.micro",
+    "SubnetId": "subnet-40f33e18",
+    "VpcId": "vpc-cf57ad04",
+    "PrivateIp": "10.0.0.11",
+    "AvailabilityZone": "us-east-1a",
+    "State": "pending",
+    "SecurityGroupIds": [
+      "sg-default"
+    ]
   },
   "props": {
     "region": "us-east-1",
-    "subnetId": "subnet-616eb8f6",
-    "launchTemplate": {
-      "launchTemplateId": "lt-676aeb12618875f92",
-      "version": "1"
+    "SubnetId": "subnet-40f33e18",
+    "LaunchTemplate": {
+      "LaunchTemplateId": "lt-9587335aeb5f60798",
+      "Version": "1"
     },
-    "tags": {
-      "Name": "LaunchTemplateInstance"
-    }
+    "Tags": [
+      {
+        "Key": "Name",
+        "Value": "LaunchTemplateInstance"
+      }
+    ]
   }
 }

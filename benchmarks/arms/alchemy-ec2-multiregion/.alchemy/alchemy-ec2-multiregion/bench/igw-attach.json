@@ -13,8 +13,8 @@
       "@scope": null
     },
     "Symbol(alchemy::ResourceSeq)": 30,
-    "internetGatewayId": "igw-52f105aa",
-    "vpcId": "vpc-9e5a4b5a",
+    "internetGatewayId": "igw-813436fe",
+    "vpcId": "vpc-cf57ad04",
     "state": "attached",
     "region": "us-east-1",
     "internetGateway": {
@@ -25,7 +25,7 @@
         "@scope": null
       },
       "Symbol(alchemy::ResourceSeq)": 29,
-      "internetGatewayId": "igw-52f105aa",
+      "internetGatewayId": "igw-813436fe",
       "state": "available",
       "attachments": [],
       "ownerId": 0,
@@ -39,7 +39,7 @@
         "@scope": null
       },
       "Symbol(alchemy::ResourceSeq)": 26,
-      "vpcId": "vpc-9e5a4b5a",
+      "vpcId": "vpc-cf57ad04",
       "state": "available",
       "isDefault": false,
       "dhcpOptionsId": "dopt-default",
@@ -62,7 +62,7 @@
         "@scope": null
       },
       "Symbol(alchemy::ResourceSeq)": 29,
-      "internetGatewayId": "igw-52f105aa",
+      "internetGatewayId": "igw-813436fe",
       "state": "available",
       "attachments": [],
       "ownerId": 0,
@@ -76,7 +76,7 @@
         "@scope": null
       },
       "Symbol(alchemy::ResourceSeq)": 26,
-      "vpcId": "vpc-9e5a4b5a",
+      "vpcId": "vpc-cf57ad04",
       "state": "available",
       "isDefault": false,
       "dhcpOptionsId": "dopt-default",
