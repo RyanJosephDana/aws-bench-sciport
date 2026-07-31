@@ -201,3 +201,33 @@ def test_chain_assume_role_short_circuits():
         finally:
             CredentialProvider.reset()
     assert creds == emulator.static_credentials()
+
+
+def test_bake_trial_prerequisites_appends_once(tmp_path):
+    """git is baked into the staged image, not installed per trial.
+
+    Per-trial installation meant every trial in every arm shelled out to a
+    package manager at startup, and six containers racing a rate-limited network
+    failed together — whole runs came back 0.000 for arms whose tooling had just
+    passed preflight.
+    """
+    from aws_bench.emulator import bake_trial_prerequisites
+
+    dockerfile = tmp_path / "Dockerfile"
+    dockerfile.write_text("FROM python:3.13-slim\nRUN echo hi\n")
+
+    bake_trial_prerequisites(dockerfile)
+    once = dockerfile.read_text()
+    assert "FROM python:3.13-slim" in once, "the original image must be preserved"
+    assert "install -y --no-install-recommends git" in once
+
+    # Staging re-runs; the layer must not accumulate.
+    bake_trial_prerequisites(dockerfile)
+    assert dockerfile.read_text() == once
+
+
+def test_bake_trial_prerequisites_tolerates_a_missing_dockerfile(tmp_path):
+    """A task without an environment Dockerfile is not an error."""
+    from aws_bench.emulator import bake_trial_prerequisites
+
+    bake_trial_prerequisites(tmp_path / "nope" / "Dockerfile")

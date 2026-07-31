@@ -297,7 +297,47 @@ def stage_task_for_emulator(task_dir: Path, staging_root: Path) -> Path:
     judge_toml = tests / "judge.toml"
     if judge_toml.is_file():
         judge_toml.write_text(rewrite_judge_model(judge_toml.read_text()))
+    bake_trial_prerequisites(staged / "environment" / "Dockerfile")
     return staged
+
+
+#: Packages a trial needs that the dataset's image does not ship. Baked into the
+#: staged image rather than installed per trial.
+_TRIAL_PACKAGES = ("git",)
+
+
+def bake_trial_prerequisites(dockerfile: Path) -> None:
+    """Add what a trial needs to the staged image, once, at build time.
+
+    None of the arms' tooling comes from a package manager — node, bun,
+    terraform and pulumi are baked into the toolchain image and mounted, and an
+    arm's own CLI comes from its workspace. The single exception was git, which
+    chant needs to read a lifecycle snapshot off an orphan branch, and which the
+    dataset's image does not carry.
+
+    Installing it per trial meant every trial in every arm shelled out to a
+    package manager at startup. In isolation that works; with six containers
+    starting at once against a rate-limited network it does not, and the failure
+    is total — `set -e` kills the trial before the agent exists. Whole 24-trial
+    runs came back as 0.000 for arms whose tooling preflight had just verified,
+    which reads as the tool being bad rather than as its agents never having
+    started.
+
+    Baked into the image it is one layer, built once, cached by Docker across
+    every trial and every arm, and needs no network at trial time.
+    """
+    if not dockerfile.is_file():
+        return
+    body = dockerfile.read_text()
+    marker = "# aws-bench: trial prerequisites"
+    if marker in body:
+        return
+    packages = " ".join(_TRIAL_PACKAGES)
+    dockerfile.write_text(
+        f"{body.rstrip()}\n\n{marker}\n"
+        f"RUN apt-get update && apt-get install -y --no-install-recommends {packages} \\\n"
+        f"    && rm -rf /var/lib/apt/lists/*\n"
+    )
 
 
 def rewrite_judge_model(judge_toml_body: str) -> str:

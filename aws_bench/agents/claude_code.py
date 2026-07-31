@@ -35,6 +35,7 @@ _PATH_RESTORE = 'export PATH="$HOME/.local/bin:$PATH"'
 _TOOLCHAIN_MOUNT = "AWS_BENCH_TOOLCHAIN"
 _ARM_SOURCE_MOUNT = "AWS_BENCH_ARM_SRC"
 _ARM_WORKDIR = "AWS_BENCH_ARM_WORKDIR"
+_ARM_NEEDS_GIT = "AWS_BENCH_ARM_NEEDS_GIT"
 
 # Runs as root before the task. Names are substituted, values are read in the
 # container. A missing mount exits nonzero: a half-built arm is how a tool ends
@@ -72,7 +73,7 @@ if ! command -v git >/dev/null 2>&1; then
     # `set -e`, which read as those tools scoring badly rather than as their
     # agents never having started. The explicit check below is the error worth
     # showing, so nothing in here is allowed to abort first.
-    for attempt in 1 2 3; do
+    for attempt in 5 15 30; do
         if command -v apt-get >/dev/null 2>&1; then
             {{ apt-get update >/dev/null 2>&1 && apt-get install -y git >/dev/null 2>&1; }} || true
         elif command -v apk >/dev/null 2>&1; then
@@ -86,10 +87,15 @@ if ! command -v git >/dev/null 2>&1; then
         sleep "$attempt"
     done
 fi
-command -v git >/dev/null 2>&1 || {{
-    echo "aws-bench: git is unavailable and could not be installed; a tool that keeps state in git cannot read it" >&2
-    exit 1
-}}
+if [ -n "${{{needs_git}:-}}" ]; then
+    command -v git >/dev/null 2>&1 || {{
+        echo "aws-bench: git is unavailable and could not be installed; this arm keeps state in git and cannot read it" >&2
+        exit 1
+    }}
+else
+    command -v git >/dev/null 2>&1 || \
+        echo "aws-bench: git is unavailable; this arm did not ask for it, continuing" >&2
+fi
 
 rm -rf "${{{workdir}}}"
 mkdir -p "$(dirname "${{{workdir}}}")"
@@ -132,6 +138,7 @@ class ClaudeCode(_HarborClaudeCode):
         arm_src: str | None = None,
         arm_workdir: str | None = None,
         toolchain: str | None = None,
+        needs_git: str | None = None,
         *args,
         **kwargs,
     ):
@@ -166,6 +173,11 @@ class ClaudeCode(_HarborClaudeCode):
         self._arm_src = arm_src
         self._arm_workdir = arm_workdir
         self._toolchain = toolchain
+        # Only an arm that keeps state in git is broken by git being absent.
+        # chant records a lifecycle snapshot on an orphan branch; terraform,
+        # pulumi, cdk and alchemy do not, and failing their trials over a
+        # dependency they never use measured the network, not the tool.
+        self._needs_git = needs_git
         super().__init__(logs_dir, *args, **kwargs)
 
     async def install(self, environment: BaseEnvironment) -> None:
@@ -233,10 +245,13 @@ class ClaudeCode(_HarborClaudeCode):
         env = {_ARM_WORKDIR: self._arm_workdir, _ARM_SOURCE_MOUNT: self._arm_src}
         if self._toolchain:
             env[_TOOLCHAIN_MOUNT] = self._toolchain
+        if self._needs_git:
+            env[_ARM_NEEDS_GIT] = str(self._needs_git)
 
         command = _ARM_SETUP_SCRIPT.format(
             workdir=_ARM_WORKDIR,
             source=_ARM_SOURCE_MOUNT,
+            needs_git=_ARM_NEEDS_GIT,
             toolchain=_TOOLCHAIN_MOUNT,
         )
         await self.exec_as_root(environment, command=command, env=env)
