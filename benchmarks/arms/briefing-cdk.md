@@ -16,11 +16,15 @@ inventory and tells you the denominator.
 Run from the project root:
 
 - `cd /workspace/cdk_app && npx cdk ls` — every stack the app defines.
-- `cd /workspace/cdk_app && npx cdk synth <stack>` — the synthesized
+- `cd /workspace/cdk_app && npx cdk synth <stack> --json` — the synthesized
   CloudFormation template: all resources with their properties, logical ids, and
   the `Ref`/`Fn::GetAtt` edges between them. `jq` over this answers relationship
-  questions without hand-joining CLI output. Templates are also written to
-  `cdk.out/`.
+  questions without hand-joining CLI output.
+
+    `synth` prints **YAML** unless you pass `--json`, so piping it straight into
+    `jq` fails with `Invalid numeric literal`. Warnings go to stderr, so redirect
+    with `2>/dev/null`, not `2>&1`. The same templates are written as JSON to
+    `cdk.out/*.template.json` if you would rather read them from there.
 - `aws cloudformation describe-stack-resources --stack-name <stack> --region <region>`
   — the deployed logical id → physical id mapping for that stack.
 - `aws cloudformation describe-stacks --stack-name <stack> --region <region>` —
@@ -28,7 +32,7 @@ Run from the project root:
 
 Path to estate facts, in order:
 
-1. `npx cdk synth` (or the templates in `cdk.out/`) for the declared shape and
+1. `npx cdk synth --json` (or the templates in `cdk.out/`) for the declared shape and
    the relationships, joined to `describe-stack-resources` for the physical ids
    — the default, for every question. The app spans several stacks and regions;
    cover each.
