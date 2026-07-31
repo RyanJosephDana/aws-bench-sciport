@@ -96,8 +96,22 @@ def container_script(arm: Arm) -> str:
     read-only mount the scored runs used, Terraform's .terraform/, CDK's
     cdk.out/ and npm's node_modules all had nowhere to write, and all three
     failed.
+
+    When the exported workspace is mounted, it replaces the image's copy first.
+    The image is built before the estate is deployed, so its workspace has no
+    deployed state in it: no terraform.tfstate, no Pulumi checkpoint, and — for
+    chant — no `chant/lifecycle` orphan branch holding the recorded snapshot.
+    Trials mount the export, so a gate reading the image was vetting something
+    no trial ever receives, and could pass while what shipped was broken.
     """
-    lines = [f"cd {shlex.quote(arm.workdir)}"]
+    lines = [
+        # The export is host-owned and this container is root, so git calls it
+        # dubiously owned and reports that as "not in a git directory".
+        'git config --global --add safe.directory "*" >/dev/null 2>&1 || true',
+        f"if [ -d /opt/awsbench-arm ]; then rm -rf {shlex.quote(arm.workdir)} && "
+        f"cp -a /opt/awsbench-arm {shlex.quote(arm.workdir)}; fi",
+        f"cd {shlex.quote(arm.workdir)}",
+    ]
     for i, smoke in enumerate(arm.smoke):
         lines.append(f"echo '::smoke-begin::{i}'")
         lines.append(f"{smoke.cmd} 2>&1 || echo '::exit-nonzero::'")
@@ -124,6 +138,10 @@ def run_arm(arm: Arm, endpoint: str, keep_going: bool) -> tuple[bool, list[str]]
     cmd = ["docker", "run", "--rm"]
     for key, value in env.items():
         cmd += ["-e", f"{key}={value}"]
+    # Vet exactly what a trial gets, when there is one to vet.
+    export = Path.home() / ".aws-bench" / "agent-env" / "workspaces" / arm.name
+    if export.is_dir():
+        cmd += ["-v", f"{export}:/opt/awsbench-arm:ro"]
     cmd += [image, "sh", "-c", container_script(arm)]
 
     proc = subprocess.run(cmd, capture_output=True, text=True)
