@@ -1,0 +1,29 @@
+# The prepared chant arm, plus Claude Code, for the fast diagnostic loop.
+#
+# A full aws-bench run is 24 trials and ~10 minutes to learn something a single
+# trajectory usually shows. Every theory about why a task fails — a tool not on
+# PATH, a warning breaking JSON parsing, a grammar term the agent guesses wrong —
+# was diagnosable from one trial. This image is for asking one question and
+# reading the answer in seconds.
+#
+# It is NOT a benchmark. There is no verifier and no judge, so nothing it prints
+# is a score. It answers "what did the agent do, and did it get the fact right",
+# which is what iterating on a briefing or a grammar actually needs.
+#
+#   docker build -t awsbench-probe:latest -f Dockerfile.probe .
+ARG ARM_IMAGE=awsbench-arm-chant:latest
+FROM ${ARM_IMAGE}
+
+RUN npm install -g --no-fund --no-audit @anthropic-ai/claude-code
+
+# Claude Code refuses bypassPermissions as root, so the probe runs as a normal
+# user — which also matches a trial, where the agent is not root either.
+RUN useradd -m -u 1000 probe && mkdir -p /workspace && chown probe /workspace
+USER probe
+
+# Same posture a trial has: the workspace is writable and the estate is reachable
+# over the host's published emulator port.
+ENV AWS_ACCESS_KEY_ID=test \
+    AWS_SECRET_ACCESS_KEY=test \
+    AWS_DEFAULT_REGION=us-east-1 \
+    AWS_ENDPOINT_URL=http://host.docker.internal:4566

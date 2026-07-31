@@ -60,9 +60,52 @@ if [ -n "${{{toolchain}:-}}" ]; then
     done
 fi
 
+# git, because a tool may keep its state in one. chant records a lifecycle
+# snapshot on an orphan branch and reads it back with `git ls-tree`; the
+# dataset's task image has no git, so that read returned nothing and
+# `chant search --at latest` reported "No snapshots found" — a tool answering
+# from recorded state looking exactly like a tool with no recorded state.
+if ! command -v git >/dev/null 2>&1; then
+    if command -v apt-get >/dev/null 2>&1; then
+        apt-get update >/dev/null 2>&1 && apt-get install -y git >/dev/null 2>&1
+    elif command -v apk >/dev/null 2>&1; then
+        apk add --no-cache git >/dev/null 2>&1
+    elif command -v yum >/dev/null 2>&1; then
+        yum install -y git >/dev/null 2>&1
+    fi
+fi
+command -v git >/dev/null 2>&1 || {{
+    echo "aws-bench: git is unavailable and could not be installed; a tool that keeps state in git cannot read it" >&2
+    exit 1
+}}
+
 rm -rf "${{{workdir}}}"
 mkdir -p "$(dirname "${{{workdir}}}")"
 cp -a "${{{source}}}" "${{{workdir}}}"
+# The copy is made as root and the agent runs as someone else. Without both of
+# these the workspace is readable and useless: git refuses a repo it considers
+# dubiously owned, and a tool that writes (terraform's .terraform, cdk's
+# cdk.out) fails on a directory it cannot write.
+git config --system --add safe.directory '*' >/dev/null 2>&1 || true
+chmod -R a+rwX "${{{workdir}}}" 2>/dev/null || true
+# An arm's own launchers go on PATH. Without this the agent types the tool's
+# name, gets "command not found", and spends two or three turns finding the
+# binary before any work starts — 27 failed invocations and 22 hunting turns
+# across one 24-trial run. Every other arm's tool is already on PATH, so this
+# was a tax on exactly one of them.
+if [ -d "${{{workdir}}}/bin" ]; then
+    for exe in "${{{workdir}}}"/bin/*; do
+        [ -x "$exe" ] || continue
+        # A wrapper, not a symlink. These launchers locate their own package
+        # with `dirname $0`, so a symlink on PATH resolves the root to
+        # /usr/local and the tool dies with "exec: …/node_modules/…: not found"
+        # — worse than absent, because the agent gets a confusing error instead
+        # of a clean "command not found".
+        name=$(basename "$exe")
+        printf '#!/bin/sh\nexec "%s" "$@"\n' "$exe" > "/usr/local/bin/$name" 2>/dev/null || continue
+        chmod +x "/usr/local/bin/$name" 2>/dev/null || true
+    done
+fi
 """
 
 

@@ -96,6 +96,12 @@ show
 echo "==> re-preparing and exporting the chant arm"
 python3 "$REPO/benchmarks/agent-env/prepare.py" chant --export
 
+# An export wipes the workspace, taking the recorded snapshot with it. Without
+# this, `search --at latest` fails on the very next run and the failure looks
+# like a bad answer rather than a missing prerequisite.
+"$REPO/benchmarks/agent-env/record-snapshot.sh" floci || {
+  echo "snapshot not recorded — --at queries will fail" >&2; exit 1; }
+
 echo "==> installed in the image:"
 docker run --rm awsbench-arm-chant:latest sh -c \
   'cd /workspace/chant && node -e "console.log(\"  chant\", require(\"./node_modules/@intentius/chant/package.json\").version, \"| lexicon-aws\", require(\"./node_modules/@intentius/chant-lexicon-aws/package.json\").version)"'
