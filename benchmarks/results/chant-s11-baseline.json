@@ -6,7 +6,7 @@
   "run": {
     "id": "chant-s11-baseline",
     "finished_at": "2026-07-31T09:19:46.823995",
-    "harness_commit": "5aca6c8"
+    "harness_commit": "0d7178c"
   },
   "agent": {
     "name": "claude-code",
@@ -65,6 +65,7 @@
     "audit": true,
     "tool_missing": false,
     "exceptions": {},
+    "errored_trials": 0,
     "complete": true
   },
   "independence": {
