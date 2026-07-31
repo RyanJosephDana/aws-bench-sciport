@@ -60,7 +60,7 @@ ARMS: dict[str, Arm] = {
         name="chant",
         source="chant-ec2-multiregion-search-v2",
         workdir="/workspace/chant",
-        briefing="briefing-chant-search-v2.md",
+        briefing="briefing-chant-snapshot.md",
         setup=[_NPM_INSTALL],
         smoke=[
             Smoke(
@@ -82,8 +82,21 @@ ARMS: dict[str, Arm] = {
                 why="the derived attribute and the --explain denominator the arm's "
                 "multi-hop answers depend on",
             ),
+            Smoke(
+                cmd=(
+                    './node_modules/.bin/chant search "kind:EC2::Instance"'
+                    " --at latest --env floci"
+                ),
+                must_match=r"observed from snapshot",
+                why="the recorded snapshot replays — the arm's primary route, and the "
+                "one a re-export silently invalidates",
+            ),
         ],
-        tool_pattern=r"\bchant\s+search\b",
+        # Every verb the briefing teaches, not just `search`. Terraform's pattern
+        # already covers show|state|output; matching one chant verb meant a
+        # trial that answered entirely through `graph` audited as not having
+        # used its own tooling.
+        tool_pattern=r"\bchant\s+(search|graph|lifecycle)\b",
     ),
     "terraform": Arm(
         name="terraform",
@@ -197,6 +210,14 @@ ARMS: dict[str, Arm] = {
                 must_match=r"bench",
                 why="the stack/stage tree; the v2 arm's whole reported failure mode "
                 "is a state census, so the census has to be readable",
+            ),
+            Smoke(
+                cmd="./node_modules/.bin/alchemy state tree us-west-1.run.ts --local",
+                must_match=r"bench",
+                why="a second region. Every task here asks across three, and this arm "
+                "stores one state per region behind its own entrypoint — so a read "
+                "that only ever resolves us-east-1 looks like a working tool and "
+                "answers two thirds of the estate as absent",
             ),
         ],
         tool_pattern=r"\balchemy\s+state\b",

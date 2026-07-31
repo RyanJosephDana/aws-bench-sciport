@@ -23,14 +23,15 @@ denominator before you filter.
 filter and join over that inventory. The main tool for any question narrower
 than "list everything".
 
-**`chant graph --format ir --live --env floci`** — the whole graph as JSON on
-stdout. `nodes` carry `id`, `kind`, `physicalId` and `attrs`; `edges` carry
+**`chant graph --format ir --at latest --env floci`** — the whole graph as JSON
+on stdout. `nodes` carry `id`, `kind`, `physicalId` and `attrs`; `edges` carry
 `from`, `to` and `viaAttr` (the attribute the reference travels through). For a
 question about how resources relate rather than about one resource's properties.
 
 Warnings go to stderr, so stdout is already valid JSON — redirect with
 `2>/dev/null`, not `2>&1`, or the warnings land in the JSON and break the parse.
-`graph` reads the estate now; it has no `--at`.
+Both `search` and `graph` take `--at latest` for the recording and `--live` for
+the estate as it is now.
 
 Add `--ambient` to any `search` to include resources of a kind this estate
 manages that exist in the account without being declared or referenced — a
@@ -85,13 +86,14 @@ each instance and exposes the result as an attribute:
 
 1. `chant search "<query>" --at latest --env floci --explain` — the default, for
    every question. Add `->`/`<-` when the answer depends on a relationship.
-2. `chant search "<query>" --live --env floci` — the same query against the
-   estate as it is right now, for a value that may have changed since the
-   snapshot was taken.
-3. `chant lifecycle show floci` — when the question is "list all of my X" and a
+2. `chant lifecycle show floci` — when the question is "list all of my X" and a
    census answers it more directly than a filter.
-4. `chant graph --format ir --live --env floci` — when the question is about
-   relationships between resources.
+3. `chant graph --format ir --at latest --env floci` — when the question is about
+   relationships between resources and you want the raw graph to work over.
+4. `chant search "<query>" --live --env floci` — the same query against the
+   estate as it is right now, for a value that may have changed since the
+   snapshot was taken. The estate is not always reachable; if a read comes back
+   with nothing bound, the snapshot is the answer, not a reason to retry.
 5. The typed source under `/workspace/chant/*/src/` — for intent the grammar
    doesn't cover.
 6. `aws ec2 …` — for runtime values none of the above carries.
