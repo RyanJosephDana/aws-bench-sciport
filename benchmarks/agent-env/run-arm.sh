@@ -48,7 +48,10 @@ case "$ARM" in
   *) echo "unknown arm: $ARM" >&2; exit 2 ;;
 esac
 
-# Per-arm agent environment. Without CI=1 the Alchemy v2 CLI refuses every
+# Per-arm agent environment. Expanded below as ${AGENT_ENV[@]+...}: bash 3.2 —
+# still what macOS ships — treats an empty array as unset under `set -u`, and
+# chant is the only arm that needs no extra env, so it was the only one that
+# died, after a full wipe, deploy and preflight had already succeeded. Without CI=1 the Alchemy v2 CLI refuses every
 # command in a non-interactive shell, which an agent container always is.
 AGENT_ENV=()
 case "$ARM" in
@@ -121,7 +124,7 @@ uv run aws-bench run --env-name awsbench -d ec2-multiregion \
   --ak toolchain=/opt/awsbench-toolchain \
   --ak arm_src=/opt/awsbench-arm \
   --ak "arm_workdir=$TARGET" \
-  "${AGENT_ENV[@]}" \
+  ${AGENT_ENV[@]+"${AGENT_ENV[@]}"} \
   --no-verify-env --yes
 
 echo "==> [$ARM] audit: did every trial use the tool?"
