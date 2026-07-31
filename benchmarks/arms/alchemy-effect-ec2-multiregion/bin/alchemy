@@ -1,0 +1,10 @@
+#!/bin/sh
+# Put `alchemy` on PATH for the benchmark container.
+#
+# The briefing teaches `alchemy state tree`, but the binary only exists at
+# node_modules/.bin/alchemy, and the agent adapter exposes an arm's `bin/`
+# directory rather than its node_modules. Without this every trial types the
+# command the briefing taught and gets "command not found" — which is what
+# happened to the v1 alchemy arm before it got the same launcher.
+HERE="$(cd "$(dirname "$0")/.." && pwd)"
+exec "$HERE/node_modules/.bin/alchemy" "$@"
