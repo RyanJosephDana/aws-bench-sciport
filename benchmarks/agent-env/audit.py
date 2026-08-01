@@ -152,8 +152,15 @@ def audit_trial(trial: Path, pattern: re.Pattern[str], tool_names: set[str]) -> 
         # different fact and belongs in the failed bucket.
         if named and not (named & tool_names):
             failed += 1
-        elif MISSING.search(head):
+        elif MISSING.search(head) and any(n in head for n in tool_names):
             missing += 1
+        elif MISSING.search(head):
+            # The shell could not find something, but not this arm's tooling.
+            # `cat: '': No such file or directory` is an agent expanding an empty
+            # variable, and it invalidated a whole bare run as "tooling not
+            # found" — bare has no binary to be missing, its tool is the CLI.
+            # A fumbled command is a failed call, which is a different fact.
+            failed += 1
         elif KILLED.search(head):
             killed += 1
             failed += 1
@@ -173,7 +180,15 @@ def audit_job(job: Path) -> tuple[bool, list[str]]:
     pattern = re.compile(ARMS[name].tool_pattern)
     # The binaries that ARE this arm's tooling, taken from the pattern itself so
     # the two cannot drift apart.
-    tool_names = set(re.findall(r"\w+", ARMS[name].tool_pattern)) | {name}
+    # The names of the binaries this arm is supposed to use, read out of its
+    # tool_pattern. Escapes have to go first: `\w+` over `\baws\s+(ec2|iam)\b`
+    # returns {'b', 'baws', 's', ...} — the tool name glued to the `\b` in front
+    # of it, plus single letters from the escapes. So `aws` was never in the set,
+    # and `b` and `s` are substrings of nearly any text. Both missing-tool checks
+    # were reading that set: one could never match the real binary, and the other
+    # matched everything.
+    literal = re.sub(r"\\[a-zA-Z]", " ", ARMS[name].tool_pattern)
+    tool_names = {w for w in re.findall(r"[A-Za-z][\w.-]+", literal)} | {name}
     audits = [
         a for t in sorted(job.iterdir()) if t.is_dir() and (a := audit_trial(t, pattern, tool_names))
     ]

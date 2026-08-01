@@ -39,6 +39,8 @@ ARMS_DIR = Path(__file__).resolve().parents[1] / "arms"
 
 # The container reaches the emulator on the host's published port.
 DEFAULT_ENDPOINT = "http://host.docker.internal:4566"
+#: Seconds a smoke command gets before it counts as a failure.
+SMOKE_TIMEOUT = 180
 
 
 def build_image(context: Path) -> None:
@@ -144,8 +146,22 @@ def run_arm(arm: Arm, endpoint: str, keep_going: bool) -> tuple[bool, list[str]]
         cmd += ["-v", f"{export}:/opt/awsbench-arm:ro"]
     cmd += [image, "sh", "-c", container_script(arm)]
 
-    proc = subprocess.run(cmd, capture_output=True, text=True)
-    out = proc.stdout + proc.stderr
+    # A tool that never returns is a failed preflight, not a reason to wait
+    # forever. alchemy v2's `state tree` loads its entrypoint, which builds an
+    # Effect runtime that never shuts down, so the container sat up for 45
+    # minutes with the whole queue behind it and nothing on stdout to say why.
+    # Whatever the next tool does, it gets three minutes.
+    try:
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=SMOKE_TIMEOUT)
+        out = proc.stdout + proc.stderr
+    except subprocess.TimeoutExpired as exc:
+        partial = (exc.stdout or b"") + (exc.stderr or b"")
+        if isinstance(partial, bytes):
+            partial = partial.decode("utf-8", "replace")
+        return False, [
+            f"  TIMED OUT after {SMOKE_TIMEOUT}s — the arm's tooling did not return",
+            _indent(partial.strip()[-600:] or "(no output)"),
+        ]
 
     ok = True
     report: list[str] = []
