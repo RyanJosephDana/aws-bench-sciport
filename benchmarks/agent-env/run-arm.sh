@@ -62,6 +62,12 @@ export AWS_DEFAULT_REGION=us-east-1 AWS_REGION=us-east-1
 case "$ARM" in
   chant)          SRC=chant-ec2-multiregion-search-v2; TARGET=/workspace/chant
                   BRIEFING=briefing-chant-snapshot.md ;;
+  # The control: an agent, the AWS CLI, and the account. Its workspace is empty
+  # by design, so the estate is deployed by another arm's tooling — the estate
+  # is the scenario's, not any one tool's, and nothing about who applied it
+  # reaches the agent.
+  bare)           SRC=bare; TARGET=/workspace/bare
+                  BRIEFING=briefing-bare.md ;;
   # Same source, same briefing, same recorded snapshot — the agent's AWS
   # endpoint points at a closed port, so the estate is unreachable to it. Every
   # other arm keeps live access. The question is whether an answer built from a
@@ -148,6 +154,10 @@ echo "==> [$ARM] deploying the estate"
   cd "$ARMS/$SRC"
   case "$BASE_ARM" in
     chant)     ./deploy.sh ;;
+    # Deployed from the chant arm's directory: the estate is defined by the
+    # scenario and is identical whoever applies it, and the bare agent never
+    # sees the project that did.
+    bare)      (cd "$ARMS/chant-ec2-multiregion-search-v2" && ./deploy.sh) ;;
     # Deployed inside the arm's own image, which is where its vendored provider
     # works. The provider is linux_arm64 and the host is darwin_arm64, so on the
     # host both routes fail for opposite reasons: a bare `init` fetches a darwin

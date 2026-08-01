@@ -78,6 +78,9 @@ case "$ARM" in
     # chant's state is the emulator's CloudFormation stacks — wiped above.
     echo "==> chant keeps no local state"
     ;;
+  bare)
+    echo "==> bare keeps no local state (it has no toolchain)"
+    ;;
   alchemy|alchemy-effect)
     echo "==> clearing alchemy state"
     rm -rf "$ARMS_DIR/${ARM}-ec2-multiregion/.alchemy"
