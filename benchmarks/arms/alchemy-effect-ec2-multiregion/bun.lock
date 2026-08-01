@@ -6,6 +6,7 @@
       "name": "alchemy-effect-ec2-multiregion",
       "dependencies": {
         "@aws-sdk/client-ec2": "^3.1098.0",
+        "@effect/platform-bun": "4.0.0-beta.102",
         "@effect/platform-node": "4.0.0-beta.102",
         "alchemy": "2.0.0-beta.65",
         "effect": "4.0.0-beta.102",
@@ -94,6 +95,8 @@
     "@distilled.cloud/neon": ["@distilled.cloud/neon@0.30.2", "", { "dependencies": { "@distilled.cloud/core": "0.30.2" }, "peerDependencies": { "effect": ">=4.0.0-beta.100 || >=4.0.0" } }, "sha512-mFNmN4sUGIa7WukCSmU1KQSDZKmByjGY5Neh05IiM4b38UaJ80zYws0ZKLVsM3NNpypwnwcibYv3RwXxfG4f/Q=="],
 
     "@distilled.cloud/planetscale": ["@distilled.cloud/planetscale@0.30.2", "", { "dependencies": { "@distilled.cloud/core": "0.30.2" }, "peerDependencies": { "effect": ">=4.0.0-beta.100 || >=4.0.0" } }, "sha512-Ph4lY6Ds8xC0l8ZDaEsX4E5oPCHqnDHb3RYKbOPeO8fjaXdZHWxn24gxCWpzSU+fVnkmdKy9ntflqxK2l+12rQ=="],
+
+    "@effect/platform-bun": ["@effect/platform-bun@4.0.0-beta.102", "", { "dependencies": { "@effect/platform-node-shared": "^4.0.0-beta.102" }, "peerDependencies": { "effect": "^4.0.0-beta.102" } }, "sha512-hTIb0jjTfXhNgnDq2OX5wrigc0OSvTT0VWWb1PLpMM395RJPu8rCIbTlGhy0NS7kZOd8FfgNi9e0sDhgyu+5Ag=="],
 
     "@effect/platform-node": ["@effect/platform-node@4.0.0-beta.102", "", { "dependencies": { "@effect/platform-node-shared": "^4.0.0-beta.102", "mime": "^4.1.0", "undici": "^8.7.0" }, "peerDependencies": { "effect": "^4.0.0-beta.102", "ioredis": "^5.7.0" } }, "sha512-wYVAU9jAePT+gouMr/EVz1CaW6yDLjPAgXYeEFLz7wugT5iZhFRag6mqajV/wwN3bzWP2fzZHokLuPmqD/rqeA=="],
 
