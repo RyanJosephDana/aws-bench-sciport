@@ -303,19 +303,46 @@ def main() -> int:
     parser.add_argument("--out", type=Path, help="directory to write <job>.json into")
     args = parser.parse_args()
 
+    refused = 0
     for job_name in args.jobs:
         record = emit(job_name)
-        if args.out:
-            args.out.mkdir(parents=True, exist_ok=True)
-            path = args.out / f"{job_name}.json"
-            path.write_text(json.dumps(record, indent=2) + "\n")
-            valid = all(
-                v for k, v in record["gates"].items() if isinstance(v, bool) and k != "tool_missing"
-            ) and not record["gates"]["tool_missing"]
-            print(f"  {'ok  ' if valid else 'INVALID'}  {path}")
-        else:
+        g = record["gates"]
+        valid = bool(g.get("audit")) and bool(g.get("complete")) and not g.get("tool_missing")
+
+        if not args.out:
             print(json.dumps(record, indent=2))
-    return 0
+            continue
+
+        # An invalid run is not a data point. It is a run that has to happen
+        # again, and writing a file for it only creates something downstream has
+        # to remember to discount. terraform-m1 is the whole argument: it was
+        # written, badged invalid, and still ended up quoted as a score.
+        #
+        # So nothing is written and the exit is non-zero. The job directory is
+        # untouched, so the evidence is still on disk for whoever wants to know
+        # what went wrong.
+        if not valid:
+            why = []
+            if not g.get("complete"):
+                why.append(
+                    f"{record['score']['errored']} of {record['score']['trials']} trials errored"
+                )
+            if not g.get("audit"):
+                why.append("postflight audit failed")
+            if g.get("tool_missing"):
+                why.append("the arm's tooling was not found")
+            print(f"  REFUSED  {job_name}: {'; '.join(why)} — re-run it", file=sys.stderr)
+            refused += 1
+            continue
+
+        args.out.mkdir(parents=True, exist_ok=True)
+        path = args.out / f"{job_name}.json"
+        path.write_text(json.dumps(record, indent=2) + "\n")
+        print(f"  ok    {path}")
+
+    if refused:
+        print(f"\n{refused} run(s) refused; nothing was published for them", file=sys.stderr)
+    return 1 if refused else 0
 
 
 if __name__ == "__main__":

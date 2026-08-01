@@ -107,6 +107,42 @@ BASE_ARM="${ARM%-offline}"
 echo "==> [$ARM] wiping the emulator and this arm's state"
 ./benchmarks/floci/reset.sh "$BASE_ARM"
 
+# Can Docker actually give this run the networks it needs? Every trial brings up
+# its own compose project, so N_CONCURRENT networks exist at once on top of the
+# emulator's.
+#
+# When the address pool is exhausted, compose fails in the trial's _prepare —
+# before the agent starts — and the harness records a RuntimeError and moves on
+# to the next trial, which fails the same way. terraform-m1, chant-m1 and
+# pulumi-m1 each lost 22 of 24 trials to this and each still produced a
+# result.json. An hour per arm, three arms, and what came out looked like scores.
+#
+# So find out in two seconds instead. This creates what the run needs and
+# removes it again; if the pool is full it is full now, not forty minutes in.
+echo "==> [$ARM] checking docker can allocate $N_CONCURRENT trial networks"
+probe_nets=()
+probe_failed=""
+for i in $(seq 1 "$N_CONCURRENT"); do
+  if net=$(docker network create "awsbench-probe-$$-$i" 2>&1); then
+    probe_nets+=("awsbench-probe-$$-$i")
+  else
+    probe_failed="$net"
+    break
+  fi
+done
+[ ${#probe_nets[@]} -gt 0 ] && docker network rm "${probe_nets[@]}" >/dev/null 2>&1
+if [ -n "$probe_failed" ]; then
+  echo "" >&2
+  echo "docker cannot create $N_CONCURRENT networks — only ${#probe_nets[@]} available:" >&2
+  echo "  $probe_failed" >&2
+  echo "" >&2
+  echo "Every trial would fail in setup and the run would still emit a result." >&2
+  echo "Reclaim them first:  docker network prune -f" >&2
+  echo "Or run with fewer at once:  N_CONCURRENT=4 $0 $ARM" >&2
+  exit 1
+fi
+echo "    $N_CONCURRENT networks available"
+
 echo "==> [$ARM] deploying the estate"
 (
   cd "$ARMS/$SRC"
