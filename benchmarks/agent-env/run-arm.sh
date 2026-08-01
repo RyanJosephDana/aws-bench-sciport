@@ -143,9 +143,22 @@ echo "==> [$ARM] deploying the estate"
                rm -rf cdk.out.bootstrap.*
                CDK_DEFAULT_ACCOUNT=000000000000 npx cdk deploy --all \
                  --require-approval never --concurrency 4 ;;
-    alchemy|alchemy-effect)
-               AWS_ACCOUNT_ID=000000000000 ALCHEMY_TELEMETRY_DISABLED=1 \
+    alchemy)   AWS_ACCOUNT_ID=000000000000 ALCHEMY_TELEMETRY_DISABLED=1 \
                  bun alchemy.run.ts ;;
+    # v2's AWSEnvironment carries a single region, so this arm is three
+    # independent per-region entrypoints rather than one — the same shape as
+    # the CDK arm. Deployed as its REPRODUCE.md documents it.
+    alchemy-effect)
+               # Idempotent, and nothing else applies it: the patch lives in
+               # node_modules, so a fresh `npm install` or a rebuilt arm image
+               # silently loses it and the deploy goes to real AWS URLs.
+               ./apply-endpoint-patch.sh >/dev/null
+               export CI=true AWS_ACCOUNT_ID=000000000000 ALCHEMY_TELEMETRY_DISABLED=1
+               for r in us-west-1 us-west-2; do
+                 AWS_REGION=$r bunx alchemy deploy "$r.run.ts" --stage bench --yes &
+               done
+               wait
+               AWS_REGION=us-east-1 bunx alchemy deploy us-east-1.run.ts --stage bench --yes ;;
   esac
 )
 

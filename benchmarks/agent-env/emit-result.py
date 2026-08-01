@@ -74,11 +74,21 @@ def bash_commands(log: Path):
                 yield " ".join(str(item.get("input", {}).get("command", "")).split())
 
 
-def result_event(log: Path) -> tuple[int | None, int | None]:
-    """The agent's own turn count and duration, from its final result event."""
-    turns = duration = None
+def result_event(log: Path) -> tuple[int | None, int | None, int | None, int | None]:
+    """Turns, duration, and tokens, from the agent's own final result event.
+
+    Tokens are the thing that actually costs money, so they belong beside the
+    score: an arm that answers in a third of the tokens is a third of the bill
+    every time the question is asked. Input includes cache reads and creation,
+    because those are billed too — quoting only fresh input would flatter
+    whichever arm re-reads the most context.
+    """
+    turns = duration = tok_in = tok_out = None
     if not log.exists():
-        return turns, duration
+        # A trial that died before the agent wrote anything. That is precisely
+        # when a result most needs emitting, so return the shape callers unpack
+        # rather than raising.
+        return turns, duration, tok_in, tok_out
     for line in log.open():
         if '"type":"result"' in line:
             try:
@@ -87,7 +97,15 @@ def result_event(log: Path) -> tuple[int | None, int | None]:
                 continue
             turns = event.get("num_turns", turns)
             duration = event.get("duration_ms", duration)
-    return turns, duration
+            usage = event.get("usage") or {}
+            if usage:
+                tok_in = (
+                    usage.get("input_tokens", 0)
+                    + usage.get("cache_read_input_tokens", 0)
+                    + usage.get("cache_creation_input_tokens", 0)
+                ) or tok_in
+                tok_out = usage.get("output_tokens", tok_out)
+    return turns, duration, tok_in, tok_out
 
 
 def reward_of(trial: Path) -> float | None:
@@ -156,6 +174,8 @@ def emit(job_name: str) -> dict:
     tool_calls: list[int] = []
     turns: list[int] = []
     wall: list[float] = []
+    tokens_in: list[int] = []
+    tokens_out: list[int] = []
     passed = trials = 0
 
     for trial in sorted(job.iterdir()):
@@ -170,11 +190,15 @@ def emit(job_name: str) -> dict:
         commands = list(bash_commands(trial / "agent" / "claude-code.txt"))
         tool_calls.append(len(commands))
         live_reads += sum(1 for c in commands if LIVE_READ.search(c))
-        turn_count, duration = result_event(trial / "agent" / "claude-code.txt")
+        turn_count, duration, tin, tout = result_event(trial / "agent" / "claude-code.txt")
         if turn_count is not None:
             turns.append(turn_count)
         if duration is not None:
             wall.append(duration / 1000)
+        if tin is not None:
+            tokens_in.append(tin)
+        if tout is not None:
+            tokens_out.append(tout)
 
     # The gate is the audit's own verdict, not a re-implementation of it.
     audit = subprocess.run(
@@ -224,10 +248,15 @@ def emit(job_name: str) -> dict:
             "account_reads": live_reads,
             "answered_from_own_state": live_reads == 0,
         },
+        # What a question costs to answer with this tool, per trial. The
+        # comparison is about whether a tool makes the work cheaper, so these
+        # are the headline rather than a footnote.
         "effort": {
             "tool_calls": mean(tool_calls),
             "turns": mean(turns),
             "wall_seconds": mean(wall),
+            "tokens_in": mean(tokens_in),
+            "tokens_out": mean(tokens_out),
         },
         # Where the evidence for this run lives, so a published number can link
         # to what produced it rather than asking to be believed.

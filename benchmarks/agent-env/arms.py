@@ -98,6 +98,31 @@ ARMS: dict[str, Arm] = {
         # used its own tooling.
         tool_pattern=r"\bchant\s+(search|graph|lifecycle)\b",
     ),
+    # The control. No toolchain at all — an agent, the AWS CLI, and the account.
+    # Every other arm's number has to be read against this one: a tool that does
+    # not beat working straight from the API is not earning its place, whatever
+    # its absolute score looks like.
+    "bare": Arm(
+        name="bare",
+        source="bare",
+        workdir="/workspace/bare",
+        briefing="briefing-bare.md",
+        smoke=[
+            Smoke(
+                cmd=(
+                    "aws ec2 describe-instances --region us-east-1 --output json"
+                    " | jq -r '.Reservations[].Instances[].InstanceId'"
+                ),
+                must_match=r"\bi-[0-9a-f]{8,}",
+                why="a real instance id from the account — the only surface this arm has, "
+                "so if the API is unreachable there is nothing left to measure",
+            ),
+        ],
+        # Its tool *is* the CLI, so the audit looks for that rather than for a
+        # toolchain binary. The account-reads metric will read high by
+        # construction; that is the point of a control, not a mark against it.
+        tool_pattern=r"\baws\s+(ec2|iam|cloudformation)\b",
+    ),
     "terraform": Arm(
         name="terraform",
         source="terraform-ec2-multiregion",
