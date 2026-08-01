@@ -11,6 +11,12 @@ raw `aws ec2` sweep returns per-resource facts with no relationships; the state
 already holds each resource's resolved attributes and the ids it references, and
 `state resources` is the complete set per stack, so you know the denominator.
 
+A security group can reach an instance indirectly: a launch template can carry
+security-group ids that the instance's own record never lists. Anything you
+conclude about what reaches an instance has to account for both the groups
+attached to it directly and any it picks up from a template it was launched
+from.
+
 Run from the project root, naming the entrypoint for the region you are asking
 about and adding `--local` to read the on-disk store under `.alchemy/state`:
 

@@ -10,6 +10,12 @@ raw `aws ec2` sweep returns per-resource facts with no relationships; the state
 export already holds the graph, and it is the complete set of managed resources,
 so you know the denominator.
 
+A security group can reach an instance indirectly: a launch template can carry
+security-group ids that the instance's own record never lists. Anything you
+conclude about what reaches an instance has to account for both the groups
+attached to it directly and any it picks up from a template it was launched
+from.
+
 Run from the project root:
 
 - `cd /workspace/pulumi && ./pulumi-export` — the whole applied state as JSON.

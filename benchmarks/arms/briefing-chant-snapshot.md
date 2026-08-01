@@ -11,6 +11,12 @@ resource.** A raw `aws ec2` sweep returns per-resource facts with no
 relationships; the snapshot already holds the topology, and `--explain` reports
 the universe it matched against, so you know the denominator.
 
+A security group can reach an instance indirectly: a launch template can carry
+security-group ids that the instance's own record never lists. Anything you
+conclude about what reaches an instance has to account for both the groups
+attached to it directly and any it picks up from a template it was launched
+from.
+
 Run from the project root. Three read commands, each answering a different
 shape of question:
 
@@ -66,7 +72,7 @@ Terms compose:
 
 Each result row is `<logicalId>  <kind>  <physicalId>  <shown attrs>`. `--show`
 takes the resource's own property names as the account reports them.
-`--explain` adds a footer with the universe count ("4 of 6 Instances matched")
+`--explain` adds a footer with the universe count ("N of M Instances matched")
 and, for each non-match, the term it failed.
 
 ## Derived attributes

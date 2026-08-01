@@ -11,6 +11,12 @@ already holds each resource's resolved outputs and the ids it references, and
 `state list` is the complete set of managed resources, so you know the
 denominator.
 
+A security group can reach an instance indirectly: a launch template can carry
+security-group ids that the instance's own record never lists. Anything you
+conclude about what reaches an instance has to account for both the groups
+attached to it directly and any it picks up from a template it was launched
+from.
+
 Run from the project root:
 
 - `cd /workspace/alchemy && alchemy state tree` — every stack and stage with the
@@ -23,7 +29,7 @@ Run from the project root:
   and security-group ids it references. Following those ids into other records
   answers questions that span resources.
 
-Fully-qualified names look like `alchemy-ec2-multiregion/bench/webServer`, so
+Fully-qualified names look like `<app>/<stage>/<resource-id>`, so
 `alchemy state list` then `alchemy state get` over the names walks the estate.
 The same records are on disk under
 `/workspace/alchemy/.alchemy/alchemy-ec2-multiregion/bench/*.json` if you would

@@ -13,6 +13,12 @@ its `Ref`/`Fn::GetAtt` references to other resources — including the resources
 L2 constructs generate that the source never names, so it is the complete
 inventory and tells you the denominator.
 
+A security group can reach an instance indirectly: a launch template can carry
+security-group ids that the instance's own record never lists. Anything you
+conclude about what reaches an instance has to account for both the groups
+attached to it directly and any it picks up from a template it was launched
+from.
+
 Run from the project root:
 
 - `cd /workspace/cdk_app && npx cdk ls` — every stack the app defines.

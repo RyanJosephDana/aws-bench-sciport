@@ -10,6 +10,12 @@ raw `aws ec2` sweep returns per-resource facts with no relationships; the state
 already holds how resources reference one another, and `state list` gives you
 the complete set under management, so you know the denominator.
 
+A security group can reach an instance indirectly: a launch template can carry
+security-group ids that the instance's own record never lists. Anything you
+conclude about what reaches an instance has to account for both the groups
+attached to it directly and any it picks up from a template it was launched
+from.
+
 Run from the project root (use the vendored binary, `./terraform`):
 
 - `cd /workspace/terraform && ./terraform state list` — every resource address
