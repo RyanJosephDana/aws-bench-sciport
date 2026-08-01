@@ -98,8 +98,45 @@ else
 fi
 
 rm -rf "${{{workdir}}}"
-mkdir -p "$(dirname "${{{workdir}}}")"
-cp -a "${{{source}}}" "${{{workdir}}}"
+mkdir -p "${{{workdir}}}"
+# Copy what the tool writes, share what it only reads.
+#
+# This used to be a flat `cp -a` of the whole workspace, per trial. Terraform's
+# is 1.3GB, so a 24-trial run copied about 31GB, and filling the Docker disk has
+# taken a run down more than once. The dependency trees are the bulk of it and
+# no tool writes to them: node_modules, vendored packages, chant's bundled
+# runtime, and terraform's provider binaries — 746MB of which is two files.
+#
+# The copy stays for everything else, because it is what makes the workspace
+# writable, and a read-only mount broke terraform's .terraform, cdk's cdk.out
+# and npm all at once.
+_share() {{
+    # $1 source dir, $2 dest dir, rest: child names to symlink instead of copy
+    _src="$1"; _dst="$2"; shift 2
+    mkdir -p "$_dst"
+    for _entry in "$_src"/* "$_src"/.[!.]*; do
+        [ -e "$_entry" ] || continue
+        _name="${{_entry##*/}}"
+        _shared=""
+        for _s in "$@"; do
+            [ "$_name" = "$_s" ] && _shared=1 && break
+        done
+        if [ -n "$_shared" ]; then
+            ln -s "$_entry" "$_dst/$_name"
+        else
+            cp -a "$_entry" "$_dst/"
+        fi
+    done
+}}
+
+_share "${{{source}}}" "${{{workdir}}}" node_modules vendor vendor-local .runtime
+
+# terraform's providers sit one level down, and the rest of .terraform is
+# written to, so it cannot be shared wholesale.
+if [ -d "${{{source}}}/.terraform/providers" ]; then
+    rm -rf "${{{workdir}}}/.terraform"
+    _share "${{{source}}}/.terraform" "${{{workdir}}}/.terraform" providers
+fi
 # The copy is made as root and the agent runs as someone else. Without both of
 # these the workspace is readable and useless: git refuses a repo it considers
 # dubiously owned, and a tool that writes (terraform's .terraform, cdk's

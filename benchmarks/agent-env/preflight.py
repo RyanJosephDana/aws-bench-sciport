@@ -110,8 +110,24 @@ def container_script(arm: Arm) -> str:
         # The export is host-owned and this container is root, so git calls it
         # dubiously owned and reports that as "not in a git directory".
         'git config --global --add safe.directory "*" >/dev/null 2>&1 || true',
+        # Materialised the same way a trial does: copy what the tool writes,
+        # symlink the dependency trees it only reads. If the gate built its
+        # workspace differently from the trials, it would be vetting something
+        # they never receive — which is the failure this gate exists to catch,
+        # one level up.
         f"if [ -d /opt/awsbench-arm ]; then rm -rf {shlex.quote(arm.workdir)} && "
-        f"cp -a /opt/awsbench-arm {shlex.quote(arm.workdir)}; fi",
+        f"mkdir -p {shlex.quote(arm.workdir)} && "
+        "for e in /opt/awsbench-arm/* /opt/awsbench-arm/.[!.]*; do [ -e \"$e\" ] || continue; "
+        "case \"${e##*/}\" in node_modules|vendor|vendor-local|.runtime) "
+        f"ln -s \"$e\" {shlex.quote(arm.workdir)}/\"${{e##*/}}\" ;; "
+        f"*) cp -a \"$e\" {shlex.quote(arm.workdir)}/ ;; esac; done; "
+        "if [ -d /opt/awsbench-arm/.terraform/providers ]; then "
+        f"rm -rf {shlex.quote(arm.workdir)}/.terraform && "
+        f"mkdir -p {shlex.quote(arm.workdir)}/.terraform && "
+        "for e in /opt/awsbench-arm/.terraform/*; do [ -e \"$e\" ] || continue; "
+        "case \"${e##*/}\" in providers) "
+        f"ln -s \"$e\" {shlex.quote(arm.workdir)}/.terraform/providers ;; "
+        f"*) cp -a \"$e\" {shlex.quote(arm.workdir)}/.terraform/ ;; esac; done; fi; fi",
         f"cd {shlex.quote(arm.workdir)}",
     ]
     for i, smoke in enumerate(arm.smoke):

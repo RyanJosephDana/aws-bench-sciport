@@ -23,6 +23,7 @@ the platform binaries get resolved here.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import shlex
 import shutil
 import subprocess
@@ -104,6 +105,31 @@ def prepare(arm: Arm, rebuild: bool) -> tuple[str, bool, str]:
     return arm.name, True, image_for(arm)
 
 
+def workspace_fingerprint(root: Path) -> str:
+    """A short digest of what a workspace contains, by path and size.
+
+    Recorded so a result can say which workspace produced it. The briefing hash
+    and the harness commit already travel with every run; the third thing that
+    decides what an arm could answer is the tree its trials were handed, and
+    that was the one nobody could name.
+
+    Stat only, no file contents: 62k files in about a second, and it still moves
+    when a dependency is added, removed, patched or half-installed. It will not
+    notice an edit that preserves length, which is a real gap and a cheap price
+    for a check that runs on every export.
+
+    Deliberately not a comparison against the image. The export is `cp -a` out of
+    that image, so the two are equal by construction, and the host tree
+    legitimately differs from both — node_modules is dockerignored and is darwin
+    on the host, linux in the image. A diff there is noise.
+    """
+    entries = []
+    for f in sorted(root.rglob("*")):
+        if f.is_file() and not f.is_symlink():
+            entries.append(f"{f.relative_to(root)}:{f.stat().st_size}")
+    return hashlib.sha256("\n".join(entries).encode()).hexdigest()[:12]
+
+
 def export(arm: Arm, dest_root: Path) -> tuple[str, bool, str]:
     """Copy an arm's prepared workspace and the toolchain out to the host.
 
@@ -144,7 +170,13 @@ def export(arm: Arm, dest_root: Path) -> tuple[str, bool, str]:
     )
     if proc.returncode != 0:
         return arm.name, False, (proc.stderr or proc.stdout).strip()[-400:]
-    return arm.name, True, str(workspace)
+
+    # Written beside the workspace rather than inside it: anything in there is
+    # handed to the agent, and the harness has no business putting files in a
+    # tree it is asking a tool to describe.
+    fingerprint = workspace_fingerprint(workspace)
+    (workspace.parent / f"{arm.name}.fingerprint").write_text(fingerprint + "\n")
+    return arm.name, True, f"{workspace}  ({fingerprint})"
 
 
 def ensure_tools_image(context: Path, rebuild: bool = False) -> None:
