@@ -221,7 +221,16 @@ ARMS: dict[str, Arm] = {
         source="alchemy-effect-ec2-multiregion",
         workdir="/workspace/alchemy",
         briefing="briefing-alchemy-effect.md",
-        setup=[_NPM_INSTALL],
+        # The endpoint patch has to run here, in the image, because that is where
+        # node_modules is installed. Applying it on the host patches a tree the
+        # trials never see: prepare.py --export rebuilds the workspace from this
+        # image, and the export is what preflight and every trial mount.
+        #
+        # Unpatched, v2's SDK ignores AWS_ENDPOINT_URL and resolves to real AWS,
+        # so `alchemy state tree` sits retrying against the internet until it is
+        # killed. Three runs died that way at 180s apiece, and the arm read as
+        # broken tooling when the tooling was fine and the wiring was not.
+        setup=[_NPM_INSTALL, "./apply-endpoint-patch.sh"],
         # Without CI=1 the v2 CLI refuses every command in a non-interactive
         # shell: "No credentials configured for 'AWS' in profile 'default' ...
         # set CI=1 to use environment-variable credentials." An agent container

@@ -53,6 +53,22 @@ SCENARIO = "ec2-multiregion"
 #: Commands that read the provider as they answer, rather than state already held.
 LIVE_READ = re.compile(r"\baws\s+(?:ec2|iam|cloudformation|s3api|sts)\b|--live\b")
 
+#: Text that is being written, not run. An agent's answer file explains what it
+#: did, so it quotes the commands it ran — and matching the raw command string
+#: counted `cat > answer.txt <<EOF … aws ec2 …` as another call to AWS. That was
+#: 6% of every read on the board, and it landed hardest on the arms with the
+#: fewest, where one phantom read is the difference between "answered from its
+#: own state" and "did not".
+HEREDOC = re.compile(r"<<-?\s*['\"]?\w+['\"]?.*", re.S)
+ANSWER_FILE = re.compile(r">\s*\S*/logs/\S*")
+
+
+def reads_the_account(command: str) -> bool:
+    """Whether this command actually calls AWS, rather than describing one."""
+    if ANSWER_FILE.search(command):
+        return False
+    return bool(LIVE_READ.search(HEREDOC.sub("", command)))
+
 
 def bash_commands(log: Path):
     """Every Bash command in a trial's agent log."""
@@ -218,7 +234,7 @@ def emit(job_name: str) -> dict:
         by_task[re.sub(r"__\w+$", "", trial.name)].append(int(reward == 1))
         commands = list(bash_commands(trial / "agent" / "claude-code.txt"))
         tool_calls.append(len(commands))
-        live_reads += sum(1 for c in commands if LIVE_READ.search(c))
+        live_reads += sum(1 for c in commands if reads_the_account(c))
         ev = result_event(trial / "agent" / "claude-code.txt")
         if ev["turns"] is not None:
             turns.append(ev["turns"])
