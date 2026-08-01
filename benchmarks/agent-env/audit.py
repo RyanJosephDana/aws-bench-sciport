@@ -212,11 +212,27 @@ def audit_job(job: Path) -> tuple[bool, list[str]]:
             note.append("never ran successfully")
         lines.append(f"    reward={audit.reward:<4} {audit.trial}: {', '.join(note)}")
 
+    # A trial or two out of 24 answering some other way does not stop the run
+    # describing the tool; it is one agent taking one detour. Voiding on any
+    # fallback at all threw away cdk-m2 — twenty-four completed trials — for a
+    # single one, and it would have made alchemy-effect permanently unmeasurable:
+    # its CLI deadlocks on one entrypoint, agents occasionally give up on it, and
+    # a tool broken enough to be abandoned should score badly rather than vanish.
+    #
+    # So the threshold is a share, not a count. Above it the run genuinely is not
+    # a comparison; below it the fallbacks are noted and the run stands.
+    FALLBACK_LIMIT = 0.10
+    mostly_untooled = bool(unused) and len(unused) / len(audits) > FALLBACK_LIMIT
     if unused:
         scored = [a for a in unused if a.reward not in {"-", "0.0"}]
         lines.append(
             f"    {len(unused)} of {len(audits)} trials answered without the tool"
             + (f", {len(scored)} of them scored" if scored else "")
+            + (
+                " — too many for this to be a measurement of the tool"
+                if mostly_untooled
+                else f" ({len(unused) / len(audits):.0%}, within the {FALLBACK_LIMIT:.0%} the gate allows)"
+            )
         )
 
     # A `command not found` for the arm's own CLI fails the job, even when the
@@ -283,7 +299,7 @@ def audit_job(job: Path) -> tuple[bool, list[str]]:
     if crashed:
         lines.append(f"    {len(crashed)} trial(s) ended in an agent exception: {', '.join(crashed[:3])}")
 
-    return not (unused or broken or crashed or unhealthy), lines
+    return not (mostly_untooled or broken or crashed or unhealthy), lines
 
 
 def crashed_trials(job: Path) -> list[str]:
@@ -343,7 +359,11 @@ def main() -> int:
     if failed:
         print(f"TOOLING NOT EXERCISED: {', '.join(failed)} — these are not tool comparisons")
         return 1
-    print("every trial used its arm's tooling")
+    # Not "every trial used its arm's tooling" — that stopped being what a pass
+    # means once the gate started tolerating a few fallbacks, and a summary that
+    # overstates is exactly what this gate exists to prevent. The per-run lines
+    # above carry the actual counts.
+    print("every run is a measurement of its arm")
     return 0
 
 

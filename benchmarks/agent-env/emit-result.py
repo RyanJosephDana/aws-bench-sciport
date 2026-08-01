@@ -180,7 +180,13 @@ def emit(job_name: str) -> dict:
     if not job.is_dir():
         raise SystemExit(f"no such job: {job}")
 
-    arm = next((name for name in ARMS if job_name.startswith(name)), None)
+    # Longest prefix wins. `alchemy-effect-m1` starts with `alchemy` too, and
+    # `alchemy` comes first in ARMS, so every v2 run was published as a v1 one:
+    # Alchemy showed 7/24 at $27.53 — v2's numbers under v1's name — while v2
+    # itself still read "not yet run".
+    arm = max(
+        (name for name in ARMS if job_name.startswith(name)), key=len, default=None
+    )
     if arm is None:
         raise SystemExit(f"cannot tell which arm {job_name} is; name it <arm>-<run>")
 
