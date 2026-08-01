@@ -135,6 +135,15 @@ def result_event(log: Path) -> dict[str, float | int | None]:
     return out
 
 
+def workspace_fingerprint(arm: str) -> str | None:
+    """The digest prepare.py stamped when it exported this arm's workspace."""
+    f = Path.home() / ".aws-bench" / "agent-env" / "workspaces" / f"{arm}.fingerprint"
+    try:
+        return f.read_text().strip() or None
+    except OSError:
+        return None
+
+
 def reward_of(trial: Path) -> float | None:
     """The trial's reward, wherever in its result.json it sits."""
     result = trial / "result.json"
@@ -261,6 +270,14 @@ def emit(job_name: str) -> dict:
     audit_text = audit.stdout + audit.stderr
     tool_missing = "could not find" in audit_text
 
+    # How often the arm's own tooling failed it. Recorded because it is the
+    # signal that would have caught the alchemy v2 mismeasurement three runs
+    # earlier: v2 ran at 15-24% while no other arm exceeded 8%, and the harness
+    # printed that per run without ever comparing arms. An arm fighting its
+    # tooling is not a tool scoring badly, and the two look identical in a rate.
+    health = re.search(r"invocations: (\d+) ok, (\d+) failed", audit_text)
+    tool_ok, tool_failed = (int(health[1]), int(health[2])) if health else (None, None)
+
     briefing = REPO / "benchmarks" / "arms" / ARMS[arm].briefing
     mean = lambda xs: round(st.mean(xs), 2) if xs else None  # noqa: E731
 
@@ -271,6 +288,12 @@ def emit(job_name: str) -> dict:
         "arm": arm,
         "run": {
             "id": job_name,
+            # Which workspace the trials were handed. The briefing hash and the
+            # harness commit already travel with a result; this is the third
+            # thing that decides what an arm could answer, and it was the one
+            # nobody could name. A run whose dependencies were rebuilt is a
+            # different experiment even when the code and the prompt match.
+            "workspace": workspace_fingerprint(arm),
             "finished_at": summary.get("finished_at"),
             "harness_commit": git_commit(REPO),
         },
@@ -302,6 +325,18 @@ def emit(job_name: str) -> dict:
             "exceptions": {k: len(v) for k, v in exceptions.items()},
             "errored_trials": n_errored,
             "complete": trials == summary.get("n_total_trials") and n_errored == 0,
+        },
+        # Whether the arm could use its own tooling, as opposed to whether it
+        # answered. A run can score while the tool is failing a fifth of its
+        # calls, and that run is measuring the agent's patience.
+        "tooling": {
+            "invocations_ok": tool_ok,
+            "invocations_failed": tool_failed,
+            "failure_rate": (
+                round(tool_failed / (tool_ok + tool_failed), 4)
+                if tool_ok is not None and (tool_ok + tool_failed)
+                else None
+            ),
         },
         "independence": {
             "account_reads": live_reads,
