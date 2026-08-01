@@ -17,21 +17,24 @@ conclude about what reaches an instance has to account for both the groups
 attached to it directly and any it picks up from a template it was launched
 from.
 
-Run from the project root, naming the entrypoint for the region you are asking
-about and adding `--local` to read the on-disk store under `.alchemy/state`:
+Run from the project root with `--local`, which reads the on-disk store under
+`.alchemy/state`. That store holds all three regions, and one entrypoint reaches
+every stack in it — `--stack` is what selects the region, not the entrypoint. Use
+`us-west-1.run.ts` as the handle throughout:
 
-- `alchemy state tree <entrypoint> --local` — every stack and stage with the
+- `alchemy state tree us-west-1.run.ts --local` — every stack and stage with the
   resources under it.
-- `alchemy state stacks <entrypoint> --local` and
-  `alchemy state stages <entrypoint> --local` — the stacks and stages present.
-- `alchemy state resources --stack <stack> --stage <stage> <entrypoint> --local`
+- `alchemy state stacks us-west-1.run.ts --local` and
+  `alchemy state stages us-west-1.run.ts --local` — the stacks and stages present.
+- `alchemy state resources --stack <stack> --stage <stage> us-west-1.run.ts --local`
   — the fully-qualified name of every resource there. This is the full
   inventory for that stack.
-- `alchemy state get --stack <stack> --stage <stage> --fqn <fqn> <entrypoint> --local`
+- `alchemy state get --stack <stack> --stage <stage> --fqn <fqn> us-west-1.run.ts --local`
   — one resource with its resolved attributes, including physical ids and the
   subnet and security-group ids it references.
 
-Repeat per entrypoint to cover all three regions. The same records are on disk
+`alchemy state stacks` lists all three region stacks whichever entrypoint you
+name, so one command per question covers the estate. The same records are on disk
 under `/workspace/alchemy/.alchemy/state/*/bench/*.json` — one stack directory
 per region, one JSON file per resource, each with a `resourceType`, a `props`
 object holding the declared configuration and an `attr` object holding the
