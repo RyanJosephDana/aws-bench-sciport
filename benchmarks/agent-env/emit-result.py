@@ -74,38 +74,49 @@ def bash_commands(log: Path):
                 yield " ".join(str(item.get("input", {}).get("command", "")).split())
 
 
-def result_event(log: Path) -> tuple[int | None, int | None, int | None, int | None]:
-    """Turns, duration, and tokens, from the agent's own final result event.
+def result_event(log: Path) -> dict[str, float | int | None]:
+    """Turns, duration, tokens and cost, from the agent's own final result event.
 
     Tokens are the thing that actually costs money, so they belong beside the
     score: an arm that answers in a third of the tokens is a third of the bill
     every time the question is asked. Input includes cache reads and creation,
     because those are billed too — quoting only fresh input would flatter
     whichever arm re-reads the most context.
+
+    The dollar figure is the agent's own `total_cost_usd`, not tokens multiplied
+    by a rate card. Cache reads bill at a tenth of fresh input and cache writes
+    at more than it, so any per-token arithmetic over the sum above would be
+    wrong in whichever direction the arm's caching happened to lean.
+
+    A dict rather than a tuple: this returned four values and its missing-log
+    early return still handed back two, so a trial that died before writing a
+    log crashed the emitter — the one case that most needs a result.
     """
-    turns = duration = tok_in = tok_out = None
+    out: dict[str, float | int | None] = {
+        "turns": None, "duration_ms": None, "tokens_in": None,
+        "tokens_out": None, "cost_usd": None,
+    }
     if not log.exists():
-        # A trial that died before the agent wrote anything. That is precisely
-        # when a result most needs emitting, so return the shape callers unpack
-        # rather than raising.
-        return turns, duration, tok_in, tok_out
+        return out
     for line in log.open():
-        if '"type":"result"' in line:
-            try:
-                event = json.loads(line)
-            except json.JSONDecodeError:
-                continue
-            turns = event.get("num_turns", turns)
-            duration = event.get("duration_ms", duration)
-            usage = event.get("usage") or {}
-            if usage:
-                tok_in = (
-                    usage.get("input_tokens", 0)
-                    + usage.get("cache_read_input_tokens", 0)
-                    + usage.get("cache_creation_input_tokens", 0)
-                ) or tok_in
-                tok_out = usage.get("output_tokens", tok_out)
-    return turns, duration, tok_in, tok_out
+        if '"type":"result"' not in line:
+            continue
+        try:
+            event = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        out["turns"] = event.get("num_turns", out["turns"])
+        out["duration_ms"] = event.get("duration_ms", out["duration_ms"])
+        out["cost_usd"] = event.get("total_cost_usd", out["cost_usd"])
+        usage = event.get("usage") or {}
+        if usage:
+            out["tokens_in"] = (
+                usage.get("input_tokens", 0)
+                + usage.get("cache_read_input_tokens", 0)
+                + usage.get("cache_creation_input_tokens", 0)
+            ) or out["tokens_in"]
+            out["tokens_out"] = usage.get("output_tokens", out["tokens_out"])
+    return out
 
 
 def reward_of(trial: Path) -> float | None:
@@ -176,6 +187,7 @@ def emit(job_name: str) -> dict:
     wall: list[float] = []
     tokens_in: list[int] = []
     tokens_out: list[int] = []
+    cost: list[float] = []
     passed = trials = errored = 0
 
     for trial in sorted(job.iterdir()):
@@ -207,15 +219,17 @@ def emit(job_name: str) -> dict:
         commands = list(bash_commands(trial / "agent" / "claude-code.txt"))
         tool_calls.append(len(commands))
         live_reads += sum(1 for c in commands if LIVE_READ.search(c))
-        turn_count, duration, tin, tout = result_event(trial / "agent" / "claude-code.txt")
-        if turn_count is not None:
-            turns.append(turn_count)
-        if duration is not None:
-            wall.append(duration / 1000)
-        if tin is not None:
-            tokens_in.append(tin)
-        if tout is not None:
-            tokens_out.append(tout)
+        ev = result_event(trial / "agent" / "claude-code.txt")
+        if ev["turns"] is not None:
+            turns.append(ev["turns"])
+        if ev["duration_ms"] is not None:
+            wall.append(ev["duration_ms"] / 1000)
+        if ev["tokens_in"] is not None:
+            tokens_in.append(ev["tokens_in"])
+        if ev["tokens_out"] is not None:
+            tokens_out.append(ev["tokens_out"])
+        if ev["cost_usd"] is not None:
+            cost.append(ev["cost_usd"])
 
     # The gate is the audit's own verdict, not a re-implementation of it.
     audit = subprocess.run(
@@ -280,6 +294,12 @@ def emit(job_name: str) -> dict:
             "wall_seconds": mean(wall),
             "tokens_in": mean(tokens_in),
             "tokens_out": mean(tokens_out),
+            # What one question cost, in dollars, as the agent itself billed it.
+            # This is the number the whole comparison is for: an estate question
+            # asked by a person or by another agent has a price, and the tool
+            # decides most of it. Four decimals because the interesting arms
+            # differ in the third.
+            "cost_usd": round(st.mean(cost), 4) if cost else None,
         },
         # Where the evidence for this run lives, so a published number can link
         # to what produced it rather than asking to be believed.
