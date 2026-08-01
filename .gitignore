@@ -57,3 +57,16 @@ benchmarks/floci/data/
 # the Python that ships inside Node's own share/doc.
 benchmarks/agent-env/toolchain/
 benchmarks/agent-env/workspaces/
+
+# Deployed estate state. Written by a run, rewritten by the next one, and
+# meaningless outside the emulator that produced it — every id in here is
+# floci's, against account 000000000000. It churned on every commit all through
+# the benchmark work and belongs to a run, not to the repo.
+#
+# `proof/` is excluded from the exclusion: it is a fixture, not a run artifact.
+benchmarks/arms/*/.alchemy/
+benchmarks/arms/*/.pulumi/
+benchmarks/arms/*/terraform.tfstate
+benchmarks/arms/*/terraform.tfstate.backup
+benchmarks/arms/*/cdk.out/
+!benchmarks/arms/*/proof/**
