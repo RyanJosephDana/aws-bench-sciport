@@ -176,15 +176,32 @@ def emit(job_name: str) -> dict:
     wall: list[float] = []
     tokens_in: list[int] = []
     tokens_out: list[int] = []
-    passed = trials = 0
+    passed = trials = errored = 0
 
     for trial in sorted(job.iterdir()):
-        if not trial.is_dir():
-            continue
-        reward = reward_of(trial)
-        if reward is None:
+        # Trial directories are `<task>__<id>`. Now that a directory without a
+        # reward counts as a failed trial rather than being skipped, anything
+        # else the harness drops in here would inflate the denominator instead
+        # of being ignored.
+        if not trial.is_dir() or "__" not in trial.name:
             continue
         trials += 1
+        reward = reward_of(trial)
+        if reward is None:
+            # A trial that ran and produced no reward: the harness crashed, the
+            # container was killed, the emulator was gone. It is a trial that
+            # did not pass, and it stays in the denominator.
+            #
+            # It used to be dropped from both sides of the ratio, which is how a
+            # catastrophe read as a triumph: terraform-m1 lost 22 of 24 trials
+            # to Docker exhausting its address pool and published 2 passed / 2
+            # trials = 1.000. The gates recorded `complete: false` and
+            # `errored_trials: 22` correctly, and the number next to them still
+            # said the run was perfect. A consistency check cannot catch that —
+            # 2/2 is exactly 1.000 — because the denominator was already wrong
+            # when it was written down.
+            errored += 1
+            continue
         passed += int(reward == 1)
         by_task[re.sub(r"__\w+$", "", trial.name)].append(int(reward == 1))
         commands = list(bash_commands(trial / "agent" / "claude-code.txt"))
@@ -227,10 +244,16 @@ def emit(job_name: str) -> dict:
             "k": 3,
         },
         "score": {
+            # Every trial that ran, whether or not it produced a reward. A
+            # crashed trial is a trial the arm did not pass, so it belongs here
+            # and in the denominator below.
             "trials": trials,
-            # What was asked for. A crashed trial shrinks `trials` silently, and
-            # the printed rate is then over the survivors.
             "expected_trials": summary.get("n_total_trials"),
+            # Of those, the ones that reached a verdict. `trials - completed` is
+            # the damage, and it is why a rate can be low without the arm being
+            # bad — read `complete` in the gates before reading the rate.
+            "completed": trials - errored,
+            "errored": errored,
             "passed": passed,
             "pass_rate": round(passed / trials, 4) if trials else None,
             "by_task": dict(sorted(by_task.items())),
