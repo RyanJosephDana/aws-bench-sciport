@@ -28,6 +28,16 @@ ARMS_DIR="$(cd ../arms && pwd)"
 echo "==> removing floci-ec2-* containers (compose down does not)"
 docker ps -aq --filter "name=^floci-ec2" | xargs -r docker rm -f >/dev/null 2>&1 || true
 
+# Every trial creates its own docker network and they are not always reaped.
+# Docker's default address pool is finite: after a few hundred trials it is
+# fully subnetted and the next `docker compose up` fails with "all predefined
+# address pools have been fully subnetted". That surfaces as 22 of 24 trials
+# raising RuntimeError, which reads as the arm collapsing rather than as the
+# machine running out of subnets. Only unused networks are removed, so anything
+# running is untouched.
+echo "==> reclaiming unused docker networks"
+docker network prune -f >/dev/null 2>&1 || true
+
 echo "==> recreating the emulator"
 docker compose down -v >/dev/null 2>&1 || true
 docker compose up -d >/dev/null
