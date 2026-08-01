@@ -300,6 +300,10 @@ def emit(job_name: str) -> dict:
             # decides most of it. Four decimals because the interesting arms
             # differ in the third.
             "cost_usd": round(st.mean(cost), 4) if cost else None,
+            # What the whole run cost, so the per-question figure cannot be read
+            # as the total. They are two orders of magnitude apart: a question is
+            # cents, a run is most of a dollar.
+            "cost_usd_run": round(sum(cost), 4) if cost else None,
         },
         # Where the evidence for this run lives, so a published number can link
         # to what produced it rather than asking to be believed.
