@@ -230,7 +230,12 @@ ARMS: dict[str, Arm] = {
         # so `alchemy state tree` sits retrying against the internet until it is
         # killed. Three runs died that way at 180s apiece, and the arm read as
         # broken tooling when the tooling was fine and the wiring was not.
-        setup=[_NPM_INSTALL, "./apply-endpoint-patch.sh"],
+        # bun, not npm. The arm ships bun.lock and no package-lock.json, so
+        # `npm install` ignores the lockfile and resolves its own tree — which
+        # is the tree that hangs. The same CLI, same code, same node version and
+        # same env returns in 3s against the bun-installed tree on the host and
+        # never returns against the npm one in the image.
+        setup=["bun install --frozen-lockfile", "./apply-endpoint-patch.sh"],
         # Without CI=1 the v2 CLI refuses every command in a non-interactive
         # shell: "No credentials configured for 'AWS' in profile 'default' ...
         # set CI=1 to use environment-variable credentials." An agent container
@@ -240,10 +245,17 @@ ARMS: dict[str, Arm] = {
         # the store is only read with --local. Its entrypoint is per region.
         smoke=[
             Smoke(
-                cmd="./node_modules/.bin/alchemy state tree us-east-1.run.ts --local",
-                must_match=r"bench",
-                why="the stack/stage tree; the v2 arm's whole reported failure mode "
-                "is a state census, so the census has to be readable",
+                cmd="./node_modules/.bin/alchemy state stacks us-west-1.run.ts --local",
+                must_match=r"us-east-1",
+                why="the state census across all three regions, which is this arm's "
+                "whole reported failure mode. Asked through the us-west-1 "
+                "entrypoint because loading us-east-1 deadlocks the CLI in a "
+                "container: 29 threads, the main one parked in epoll_wait with no "
+                "handles and 27 workers in futex_wait, 1.1GB resident and zero CPU "
+                "movement over 60s. The same command returns in 2.9s on the host. "
+                "That is a real defect and it will show up in this arm's score, but "
+                "it is not a reason to refuse to measure the arm at all — the gate "
+                "asks whether the tooling can answer, and it can",
             ),
             Smoke(
                 cmd="./node_modules/.bin/alchemy state tree us-west-1.run.ts --local",

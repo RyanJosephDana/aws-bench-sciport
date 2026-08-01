@@ -20,18 +20,30 @@ const STACK = "ec2-multiregion-EC2-ks84v1fh12-us-east-1";
 // the AWS SDK, which honors AWS_ENDPOINT_URL natively.
 const defaultVpcLookup = Effect.promise(async () => {
   const client = new EC2Client({ region: "us-east-1" });
-  const vpcs = await client.send(
-    new DescribeVpcsCommand({
-      Filters: [{ Name: "is-default", Values: ["true"] }],
-    }),
-  );
-  const vpcId = vpcs.Vpcs![0]!.VpcId!;
-  const subnets = await client.send(
-    new DescribeSubnetsCommand({
-      Filters: [{ Name: "vpc-id", Values: [vpcId] }],
-    }),
-  );
-  return { vpcId, subnetIds: (subnets.Subnets ?? []).map((s) => s.SubnetId!) };
+  try {
+    const vpcs = await client.send(
+      new DescribeVpcsCommand({
+        Filters: [{ Name: "is-default", Values: ["true"] }],
+      }),
+    );
+    const vpcId = vpcs.Vpcs![0]!.VpcId!;
+    const subnets = await client.send(
+      new DescribeSubnetsCommand({
+        Filters: [{ Name: "vpc-id", Values: [vpcId] }],
+      }),
+    );
+    return { vpcId, subnetIds: (subnets.Subnets ?? []).map((s) => s.SubnetId!) };
+  } finally {
+    // The client's connection pool holds sockets and keep-alive timers, and
+    // Node will not exit while they are open. Deploying never noticed — that
+    // process is meant to end when the work does. `alchemy state tree` on this
+    // entrypoint did: it finished, then sat there forever, and three scored runs
+    // died at the 180s preflight cap reading as broken tooling.
+    //
+    // us-west-1 and us-west-2 return in a second because neither builds a
+    // client at all.
+    client.destroy();
+  }
 });
 
 export default Alchemy.Stack(
