@@ -21,7 +21,7 @@ WORKSPACE="$EXPORTS/workspaces/chant"
 
 echo "==> recording the $ENVIRONMENT snapshot into the exported workspace"
 docker run --rm \
-  -e AWS_ENDPOINT_URL=http://host.docker.internal:4566 \
+  -e AWS_ENDPOINT_URL="http://host.docker.internal:${FLOCI_PORT:-4566}" \
   -e AWS_ACCESS_KEY_ID=test -e AWS_SECRET_ACCESS_KEY=test -e AWS_DEFAULT_REGION=us-east-1 \
   -v "$WORKSPACE:/w" awsbench-arm-chant:latest sh -c '
 cd /w

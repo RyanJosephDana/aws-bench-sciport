@@ -8,7 +8,12 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 
 const AMI = "ami-0f3f13f145e66a0a3";
-const FLOCI = "http://localhost:4566";
+// The emulator's host port is not always 4566 — another Floci on the machine
+// takes it first — so run-arm.sh exports AWS_ENDPOINT_URL and this follows it.
+// Every other arm picks the endpoint up from the environment already; this one
+// had the number compiled in, so it would have deployed against whatever was
+// on 4566 rather than against the benchmark's emulator.
+const FLOCI = process.env.AWS_ENDPOINT_URL || "http://localhost:4566";
 const endpoints = [{ ec2: FLOCI, sts: FLOCI, iam: FLOCI, ssm: FLOCI }];
 
 function fprovider(alias: string, region: aws.Region): aws.Provider {

@@ -45,6 +45,16 @@ exec > >(tee -a "$RUN_LOG") 2>&1
 park_run_log() {
   if [ -d "jobs/${JOB}" ]; then
     cp "$RUN_LOG" "jobs/${JOB}/run-arm.log" 2>/dev/null || true
+    # The emulator's own log, filed with the run. It is the only account of what
+    # happened to the estate, and it lived nowhere: the emulator that produced a
+    # result gets torn down by the next run's reset, taking its log with it.
+    #
+    # It had already reported the failure that invalidated a run — "Bind for
+    # 0.0.0.0:30000 failed: port is already allocated", at WARN, while an
+    # instance was going to `terminated` — and nobody was reading it. A gate
+    # catches that now, but a gate only catches what it was told to look for,
+    # and this is where anything else will have been written down.
+    docker logs floci-floci-1 > "jobs/${JOB}/emulator.log" 2>&1 || true
   fi
   rm -f "$RUN_LOG" 2>/dev/null || true
 }
@@ -55,7 +65,21 @@ ARMS="$REPO/benchmarks/arms"
 EXPORTS="$HOME/.aws-bench/agent-env"
 cd "$REPO"
 
-export AWS_ENDPOINT_URL=http://localhost:4566
+# 4566 is the port every Floci wants, so a developer already running one for
+# something else has it. Everything downstream — the deploy, the snapshot, the
+# preflight, the endpoints handed to trial containers — is derived from this one
+# value rather than repeating the number, which is how five of them would
+# otherwise have to be found and changed together.
+#
+#   FLOCI_PORT=4577 ./benchmarks/agent-env/run-arm.sh cdk
+#
+# The container side is untouched. Only the host binding moves.
+export FLOCI_PORT="${FLOCI_PORT:-4566}"
+export FLOCI_TLS_PORT="${FLOCI_TLS_PORT:-443}"
+HOST_ENDPOINT="http://localhost:${FLOCI_PORT}"
+CONTAINER_ENDPOINT="http://host.docker.internal:${FLOCI_PORT}"
+
+export AWS_ENDPOINT_URL="$HOST_ENDPOINT"
 export AWS_ACCESS_KEY_ID=test AWS_SECRET_ACCESS_KEY=test
 export AWS_DEFAULT_REGION=us-east-1 AWS_REGION=us-east-1
 
@@ -165,10 +189,10 @@ echo "==> [$ARM] deploying the estate"
     # finds no darwin package at all. In-container the deploy uses exactly the
     # terraform the agent will use, which is what the run is meant to measure.
     terraform) docker run --rm \
-                 -e AWS_ENDPOINT_URL=http://host.docker.internal:4566 \
+                 -e AWS_ENDPOINT_URL="$CONTAINER_ENDPOINT" \
                  -e AWS_ACCESS_KEY_ID=test -e AWS_SECRET_ACCESS_KEY=test \
                  -e AWS_DEFAULT_REGION=us-east-1 -e AWS_REGION=us-east-1 \
-                 -e TF_VAR_floci_endpoint=http://host.docker.internal:4566 \
+                 -e TF_VAR_floci_endpoint="$CONTAINER_ENDPOINT" \
                  -v "$PWD:/w" -w /w awsbench-arm-terraform:latest sh -c '
                    terraform init -input=false -plugin-dir=.terraform/providers >/dev/null &&
                    terraform apply -auto-approve' ;;
@@ -208,6 +232,13 @@ echo "==> [$ARM] deploying the estate"
   esac
 )
 
+# Before anything asks the arm a question, check the estate it will be asked
+# about. Preflight and the audit are both about the tool, and neither can see a
+# deploy that came up short — the tool runs fine and faithfully reports five
+# instances where the scenario defines six.
+echo "==> [$ARM] estate: did the deploy land intact?"
+python3 benchmarks/agent-env/estate-check.py
+
 echo "==> [$ARM] re-exporting the workspace so trials get the deployed state"
 # The estate deploy writes state into the arm directory — terraform.tfstate, the
 # Pulumi stack, .alchemy/. Trials mount the export, not that directory, so an
@@ -232,8 +263,8 @@ echo "==> [$ARM] running k=3"
 if [ "$ARM" = chant-offline ]; then export AWS_BENCH_DENY_AGENT_LIVE=1; fi
 
 AWS_BENCH_EMULATOR=floci \
-AWS_BENCH_EMULATOR_ENDPOINT=http://localhost:4566 \
-AWS_BENCH_EMULATOR_CONTAINER_ENDPOINT=http://host.docker.internal:4566 \
+AWS_BENCH_EMULATOR_ENDPOINT="$HOST_ENDPOINT" \
+AWS_BENCH_EMULATOR_CONTAINER_ENDPOINT="$CONTAINER_ENDPOINT" \
 AWSBENCH_SCAN_METHOD=fastscan \
 uv run aws-bench run --env-name awsbench -d ec2-multiregion \
   -a claude-code -m claude-haiku-4-5-20251001 -k 3 -n "$N_CONCURRENT" \

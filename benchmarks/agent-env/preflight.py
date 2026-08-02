@@ -22,6 +22,7 @@ to jq still produces a reward.
 from __future__ import annotations
 
 import argparse
+import os
 import re
 import shlex
 import subprocess
@@ -37,8 +38,11 @@ from prepare import image_for  # noqa: E402
 
 ARMS_DIR = Path(__file__).resolve().parents[1] / "arms"
 
-# The container reaches the emulator on the host's published port.
-DEFAULT_ENDPOINT = "http://host.docker.internal:4566"
+# The container reaches the emulator on the host's published port, which is not
+# always 4566 — another Floci on the machine takes it first, so run-arm.sh
+# exports FLOCI_PORT and everything downstream reads it from there. Still
+# overridable with --endpoint for a preflight run by hand.
+DEFAULT_ENDPOINT = f"http://host.docker.internal:{os.environ.get('FLOCI_PORT', '4566')}"
 #: Seconds a smoke command gets before it counts as a failure.
 SMOKE_TIMEOUT = 180
 
