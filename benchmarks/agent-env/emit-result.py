@@ -46,7 +46,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from arms import ARMS  # noqa: E402
+from arms import ARMS, arm_of  # noqa: E402
 
 BENCH = "aws-bench"
 SCENARIO = "ec2-multiregion"
@@ -172,13 +172,33 @@ def reward_of(trial: Path) -> float | None:
 
 
 def git_commit(path: Path) -> str | None:
-    """Short HEAD of the worktree at `path`, or None if it is not one."""
+    """Short HEAD of the worktree at `path`, suffixed `-dirty` when it is.
+
+    HEAD alone is not the harness that produced a result, and every record
+    written before this said so. All 45 published results carry `8d3bcb2` and
+    all 45 carry the `tooling` and `workspace` blocks, which only exist as of
+    `67282e8` — a later commit. They were emitted from a tree holding
+    uncommitted work, and the field recorded the last commit instead, so it
+    named a harness that could not have written them.
+
+    That matters because the comparability rule is stated in terms of this
+    field: two runs are the same experiment when they share a harness commit
+    and a briefing SHA. A commit that silently omits the working tree cannot
+    carry that claim. `-dirty` does not say what changed, but it does say the
+    number is not "8d3bcb2" and stops it being read as one.
+    """
     try:
-        out = subprocess.run(
+        head = subprocess.run(
             ["git", "-C", str(path), "rev-parse", "--short", "HEAD"],
             capture_output=True, text=True, timeout=10,
-        )
-        return out.stdout.strip() or None
+        ).stdout.strip()
+        if not head:
+            return None
+        status = subprocess.run(
+            ["git", "-C", str(path), "status", "--porcelain"],
+            capture_output=True, text=True, timeout=10,
+        ).stdout.strip()
+        return f"{head}-dirty" if status else head
     except (OSError, subprocess.SubprocessError):
         return None
 
@@ -189,15 +209,7 @@ def emit(job_name: str) -> dict:
     if not job.is_dir():
         raise SystemExit(f"no such job: {job}")
 
-    # Longest prefix wins. `alchemy-effect-m1` starts with `alchemy` too, and
-    # `alchemy` comes first in ARMS, so every v2 run was published as a v1 one:
-    # Alchemy showed 7/24 at $27.53 — v2's numbers under v1's name — while v2
-    # itself still read "not yet run".
-    arm = max(
-        (name for name in ARMS if job_name.startswith(name)), key=len, default=None
-    )
-    if arm is None:
-        raise SystemExit(f"cannot tell which arm {job_name} is; name it <arm>-<run>")
+    arm = arm_of(job_name)
 
     summary = json.loads((job / "result.json").read_text())
     stats = summary.get("stats", {})

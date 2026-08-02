@@ -269,3 +269,27 @@ ARMS: dict[str, Arm] = {
         tool_pattern=r"\balchemy\s+state\b",
     ),
 }
+
+
+def arm_of(job_name: str) -> str:
+    """Which arm a job belongs to, by longest matching name.
+
+    One rule, in one place, because there used to be two. `emit-result.py`
+    matched the longest `ARMS` prefix and `emit-transcript.py` did
+    `job_name.rsplit("-", 1)[0]`, which agree on `terraform-m1` and disagree on
+    anything with a second suffix segment: `chant-s9-offline` published as arm
+    `chant` in its result and arm `chant-s9` in its transcript. The transcript
+    then rendered nowhere, because `chant-s9` is not an arm anything knows
+    about — the failure was invisible rather than loud, which is the worse half.
+
+    Longest wins because `alchemy-effect-m1` starts with `alchemy` too, and
+    taking the first match published every v2 run under v1's name.
+
+    Raises rather than inventing a name from string surgery. A job nobody can
+    attribute to an arm cannot be published by anything downstream, so guessing
+    only moves the failure somewhere with less context.
+    """
+    match = max((name for name in ARMS if job_name.startswith(name)), key=len, default=None)
+    if match is None:
+        raise SystemExit(f"cannot tell which arm {job_name} is; name it <arm>-<run>")
+    return match

@@ -27,6 +27,9 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from arms import arm_of  # noqa: E402
 
 #: Noise every trial emits that says nothing about how the tool was used.
 BORING = re.compile(r"^\s*(cd\s+\S+\s*&&\s*)?(ls|pwd|cat\s+/etc|echo)\b")
@@ -97,7 +100,7 @@ def emit(job_name: str) -> dict:
     if not job.is_dir():
         raise SystemExit(f"no such job: {job}")
 
-    arm = job_name.rsplit("-", 1)[0]
+    arm = arm_of(job_name)
     by_task: dict[str, dict] = {}
 
     for trial in sorted(job.iterdir()):
