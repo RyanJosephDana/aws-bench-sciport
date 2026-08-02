@@ -70,3 +70,11 @@ benchmarks/arms/*/terraform.tfstate
 benchmarks/arms/*/terraform.tfstate.backup
 benchmarks/arms/*/cdk.out/
 !benchmarks/arms/*/proof/**
+
+# Result sets. Emitted per run, and published from chant-bench, which is where
+# the contract and the validation live. The copies that were tracked here went
+# stale the moment the emitter grew a field: they carried an older harness
+# commit, older briefing SHAs, and no cost or tooling blocks at all, while the
+# published ones for the same run ids carried all three. Two sources of truth
+# for one number, and the wrong one was the one in the repo.
+benchmarks/results/
