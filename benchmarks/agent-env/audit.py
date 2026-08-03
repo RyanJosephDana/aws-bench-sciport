@@ -26,7 +26,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 
-from arms import ARMS  # noqa: E402
+from arms import ARMS, arm_of as arm_by_name  # noqa: E402
 
 # The shell's own report that the tool is not installed. This is the signature
 # the scenario-1 runs were full of: 22 `npx: command not found` in the CDK arm,
@@ -125,9 +125,22 @@ def arm_of(job: Path) -> str | None:
         for mount in mounts:
             source = Path(str(mount.get("source", ""))).name
             for name, arm in ARMS.items():
-                if source == arm.source:
+                # The arm's source directory, or the exported workspace, which
+                # is named for the arm rather than its source. Only the second
+                # is ever mounted, so comparing against `arm.source` alone made
+                # this whole branch dead code — every job fell through to the
+                # name guess below, including the one case the guess gets wrong.
+                if source in (arm.source, name):
                     return name
-    return next((name for name in ARMS if job.name.startswith(name)), None)
+    # Longest match, via the shared helper. `next()` returns the first, and
+    # `alchemy` precedes `alchemy-effect` in ARMS, so every alchemy-effect run
+    # was audited as v1. Harmless so far only because the two arms happen to
+    # share a tool_pattern; the day they do not, the audit would be checking
+    # for the wrong binary and reporting a clean run.
+    try:
+        return arm_by_name(job.name)
+    except SystemExit:
+        return None
 
 
 def audit_trial(trial: Path, pattern: re.Pattern[str], tool_names: set[str]) -> TrialAudit | None:
