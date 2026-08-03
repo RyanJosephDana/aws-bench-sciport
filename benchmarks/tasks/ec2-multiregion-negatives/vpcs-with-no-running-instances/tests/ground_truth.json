@@ -1,0 +1,4 @@
+{
+  "instruction": "Which of my VPCs have no EC2 instances running in them? Check every region you can reach.",
+  "expected_answer": "{{b71ea095-EmptyVpcCount}} of your {{b71ea095-TotalVpcCount}} VPCs have no EC2 instances running in them. The count covers every region the account can reach. An instance in a terminated or shutting-down state does not make a VPC occupied."
+}
