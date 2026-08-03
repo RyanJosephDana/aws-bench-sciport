@@ -85,5 +85,10 @@ uv run aws-bench run --env-name awsbench \
   ${AGENT_ENV[@]+"${AGENT_ENV[@]}"} \
   --no-verify-env --yes
 
+# These are two questions, not eight, so the record has to say which set it is.
+# Emitted under the board's scenario name it would sit beside 24-trial runs with
+# a denominator of 6, and `validate_results.py` rejects the whole group.
+echo ec2-multiregion-negatives > "jobs/$JOB/scenario"
+
 echo "==> [$ARM] audit: did the arm use its own tooling?"
 python3 benchmarks/agent-env/audit.py "jobs/$JOB"

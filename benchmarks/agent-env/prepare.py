@@ -61,6 +61,21 @@ def dockerfile_for(arm: Arm) -> str:
         f"FROM {TOOLS_IMAGE}",
         f"WORKDIR {arm.workdir}",
         f"COPY . {arm.workdir}",
+        # The arm's own CLI, on PATH under the name its briefing teaches.
+        #
+        # chant's briefing says `chant search …` and alchemy's says `alchemy
+        # state list`; neither was on PATH, so the agent's first call died with
+        # `command not found` and it spent turns rediscovering `npx <tool>`.
+        # Every trial of a chant run did this, and the audit — correctly — reads
+        # a missing CLI as "this run did not measure the arm" and invalidates
+        # the whole thing.
+        #
+        # This is not a thumb on the scale for the arms that have a local CLI.
+        # The briefing is part of the experiment, and an environment that does
+        # not provide the command its own instruction names is measuring the
+        # agent's recovery from a broken setup. terraform, pulumi and cdk are
+        # unaffected — theirs are already on PATH or invoked through npx.
+        f'ENV PATH="{arm.workdir}/node_modules/.bin:${{PATH}}"',
     ]
     for key, value in arm.env.items():
         lines.append(f"ENV {key}={value}")

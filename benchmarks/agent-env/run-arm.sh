@@ -281,5 +281,11 @@ uv run aws-bench run --env-name awsbench -d ec2-multiregion \
   ${AGENT_ENV[@]+"${AGENT_ENV[@]}"} \
   --no-verify-env --yes
 
+# Which question set this job scored. The emitter cannot work it out from the
+# job — result.json names the tasks, not the set — and a 6-trial negative run
+# labelled as the 24-trial board is exactly the denominator mixing the negative
+# set exists to avoid.
+echo ec2-multiregion > "jobs/$JOB/scenario"
+
 echo "==> [$ARM] audit: did every trial use the tool?"
 python3 benchmarks/agent-env/audit.py "jobs/$JOB"
