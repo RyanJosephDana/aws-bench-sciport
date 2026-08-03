@@ -64,22 +64,33 @@ taken.
 k=3, one run each, on an estate holding 13 subnets (8 empty) and 6 VPCs (2 empty).
 All three runs passed the audit; every arm used its own tooling throughout.
 
-**chant fails these, and that is the result.** It reported 5 empty subnets of 15,
-and *no* empty VPCs at all — its snapshot carries 4 VPCs where the account has 6.
-The two it cannot see are the two that are empty. A snapshot anchored on things
-that exist has nothing to record for a VPC containing nothing, so the absence
-leaves no trace to find. Terraform arrives at the same blind spot from the other
-direction: it does not record what it did not create.
+**chant failed these too, and the diagnosis splits in two.**
 
-Two designs, one failure. The account-reading baseline answers all six because
-it is the only configuration that looks at what is there rather than at what it
-knows about.
+*The subnet half was a real gap.* Its snapshot held five of the estate's seven
+subnets, and the two it dropped were the two with nothing in them. chant's
+ambient observer (chant #1278) enumerates kinds the project manages that exist
+without being declared — the mechanism built for exactly this question — but its
+`ENUMERABLE` table listed security groups, VPCs and network interfaces and *not*
+subnets. So a subnet was recorded only when something in it was recorded, which
+is backwards for a question about subnets holding nothing. Fixed in chant by
+adding the table entry.
 
-So these questions do not favour chant, and the premise they were written under —
-that the shape which beats state-file tools is a shape chant is good at — is
-wrong as stated. What survives is narrower and more interesting: the shape beats
-*every* model of the estate, including a snapshot, and only a live sweep answers
-it.
+*The VPC half is an emulator artifact, and not chant's.* Floci assigns literally
+identical ids across regions — `vpc-default` and `subnet-default-a/b/c` exist
+under those exact names in all three. Real AWS never does this; VPC and subnet
+ids are globally unique. Ambient observation keys results by physical id, so the
+three distinct default VPCs collapse to one entry and the survivor is the
+occupied us-east-1 one. chant's VPC enumeration is correct and recorded every
+unique id the account exposes.
+
+That makes the VPC question ill-posed on this emulator rather than hard: the
+ground truth counts per region, and no id-keyed store can reconstruct that while
+the ids collide. It needs either region-qualified identity in the question or
+unique ids in floci, and the second is the better fix — id reuse across regions
+will quietly distort anything that counts resources account-wide.
+
+Terraform's failure is neither of these and stands unchanged: it does not record
+what it did not create, and said so itself.
 
 ## The conditions these were written under
 
