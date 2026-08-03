@@ -206,6 +206,21 @@ def git_commit(path: Path) -> str | None:
         return None
 
 
+def job_workspace(job: Path) -> str | None:
+    """The workspace fingerprint this job was handed, as the run recorded it.
+
+    Read from the job rather than from `<arm>.fingerprint`, which the next
+    export overwrites: a run emitted after a later rebuild was stamped with a
+    workspace it never ran against, and nothing about the record showed it.
+    """
+    stamped = job / "workspace"
+    if stamped.is_file():
+        value = stamped.read_text().strip()
+        if value:
+            return value
+    return None
+
+
 def scenario_of(job: Path) -> str:
     """Which question set this job scored.
 
@@ -330,7 +345,9 @@ def emit(job_name: str) -> dict:
             # thing that decides what an arm could answer, and it was the one
             # nobody could name. A run whose dependencies were rebuilt is a
             # different experiment even when the code and the prompt match.
-            "workspace": workspace_fingerprint(arm),
+            # What the run recorded, not what the export says today — the
+            # export moves and the run does not.
+            "workspace": job_workspace(job) or workspace_fingerprint(arm),
             "finished_at": summary.get("finished_at"),
             "harness_commit": git_commit(REPO),
         },

@@ -114,5 +114,15 @@ uv run aws-bench run --env-name awsbench \
 # a denominator of 6, and `validate_results.py` rejects the whole group.
 echo ec2-multiregion-negatives > "jobs/$JOB/scenario"
 
+# Which workspace this run was handed, captured NOW rather than derived later.
+#
+# `emit-result.py` read `<arm>.fingerprint`, which `prepare.py --export`
+# overwrites. Emit a run after the next export and it is stamped with a
+# workspace it never saw — silently, and most easily when several runs are
+# ingested together after the rebuild that follows them. Three runs published
+# that way claimed a build that postdated them, which is the same shape as the
+# `harness_commit` fault in INTENTIUS/chant-bench#26.
+cp "$EXPORTS/workspaces/$ARM.fingerprint" "jobs/$JOB/workspace" 2>/dev/null || true
+
 echo "==> [$ARM] audit: did the arm use its own tooling?"
 python3 benchmarks/agent-env/audit.py "jobs/$JOB"
