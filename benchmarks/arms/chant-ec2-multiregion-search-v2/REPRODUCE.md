@@ -101,7 +101,7 @@ docker run -d -p 4566:4566 -v /var/run/docker.sock:/var/run/docker.sock \
 git clone https://github.com/lex00/aws-bench
 cd aws-bench && git checkout awsbench-integration-v2
 cd benchmarks/arms/chant-ec2-multiregion-search-v2
-npm install                     # pulls released @intentius/chant + lexicon-aws (0.33.0)
+npm install                     # pulls released @intentius/chant + lexicon-aws (0.41.0)
 ```
 
 ## 3. Deploy the estate to Floci
@@ -151,4 +151,4 @@ reproduce the full win-rate or cost figures; those need the aws-bench harness
 the scores across all four arms, see `../REPRODUCE-BENCHMARK.md`.
 
 ---
-Tested with `@intentius/chant@0.33.0` + `@intentius/chant-lexicon-aws@0.33.0`.
+Tested with `@intentius/chant@0.41.0` + `@intentius/chant-lexicon-aws@0.41.0`.
