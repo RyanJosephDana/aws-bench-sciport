@@ -49,7 +49,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from arms import ARMS, arm_of  # noqa: E402
 
 BENCH = "aws-bench"
-SCENARIO = "ec2-multiregion"
+#: The scenario a job scored, when the job did not say. Every job recorded
+#: before `run-arm.sh` started stamping one was the eight-question set, so the
+#: default keeps those emitting exactly as they did.
+DEFAULT_SCENARIO = "ec2-multiregion"
 #: Commands that read the provider as they answer, rather than state already held.
 LIVE_READ = re.compile(r"\baws\s+(?:ec2|iam|cloudformation|s3api|sts)\b|--live\b")
 
@@ -203,6 +206,42 @@ def git_commit(path: Path) -> str | None:
         return None
 
 
+def job_workspace(job: Path) -> str | None:
+    """The workspace fingerprint this job was handed, as the run recorded it.
+
+    Read from the job rather than from `<arm>.fingerprint`, which the next
+    export overwrites: a run emitted after a later rebuild was stamped with a
+    workspace it never ran against, and nothing about the record showed it.
+    """
+    stamped = job / "workspace"
+    if stamped.is_file():
+        value = stamped.read_text().strip()
+        if value:
+            return value
+    return None
+
+
+def scenario_of(job: Path) -> str:
+    """Which question set this job scored.
+
+    Written by the script that ran it, because the job itself cannot be asked:
+    `result.json` names the tasks but not the set they came from, and deriving a
+    set from its members would make a partial run look like a different
+    scenario.
+
+    This matters more than it looks. The eight-question board is over 24 trials
+    and the negative set is over 6; a record that mislabels which one it is
+    lands a 6-trial run beside 24-trial runs, and `validate_results.py` rejects
+    the whole group rather than the one bad record.
+    """
+    stamped = job / "scenario"
+    if stamped.is_file():
+        name = stamped.read_text().strip()
+        if name:
+            return name
+    return DEFAULT_SCENARIO
+
+
 def emit(job_name: str) -> dict:
     """Build the result set for one scored job."""
     job = REPO / "jobs" / job_name
@@ -210,6 +249,7 @@ def emit(job_name: str) -> dict:
         raise SystemExit(f"no such job: {job}")
 
     arm = arm_of(job_name)
+    scenario = scenario_of(job)
 
     summary = json.loads((job / "result.json").read_text())
     stats = summary.get("stats", {})
@@ -296,7 +336,7 @@ def emit(job_name: str) -> dict:
     return {
         "schema": 1,
         "bench": BENCH,
-        "scenario": SCENARIO,
+        "scenario": scenario,
         "arm": arm,
         "run": {
             "id": job_name,
@@ -305,7 +345,9 @@ def emit(job_name: str) -> dict:
             # thing that decides what an arm could answer, and it was the one
             # nobody could name. A run whose dependencies were rebuilt is a
             # different experiment even when the code and the prompt match.
-            "workspace": workspace_fingerprint(arm),
+            # What the run recorded, not what the export says today — the
+            # export moves and the run does not.
+            "workspace": job_workspace(job) or workspace_fingerprint(arm),
             "finished_at": summary.get("finished_at"),
             "harness_commit": git_commit(REPO),
         },

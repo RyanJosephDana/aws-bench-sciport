@@ -130,6 +130,30 @@ case "$ARM" in
   chant-offline)  AGENT_ENV=() ;;
 esac
 
+# The arm's own CLI, on PATH under the name its briefing uses.
+#
+# chant's briefing says `chant search …` and alchemy's says `alchemy state list`.
+# Neither is on PATH in the trial container, so the agent's first call dies with
+# `command not found` and it spends turns rediscovering `npx <tool>`. The audit
+# — correctly — reads a missing CLI as "this run did not measure the arm" and
+# voids the whole run.
+#
+# Whether that happens is a coin flip on what the agent types first. Three
+# g-series chant runs never typed the bare form and published; the next two both
+# did, and both were voided at 21/24 and 5/24 with the tooling otherwise healthy
+# (72 invocations, 1% failure). A gate that fires on the model's phrasing rather
+# than on the environment is not measuring the environment.
+#
+# It goes here rather than in the arm image because the arm image is not what a
+# trial runs — prepare.py exports the workspace and the harness bind-mounts it
+# into a container built from the dataset's own image, so an ENV baked into
+# awsbench-arm-* never reaches a trial.
+#
+# The base is read from the tools image rather than written down, so this cannot
+# drift from the Dockerfile that sets it.
+BASE_PATH="$(docker run --rm awsbench-agent-tools:latest sh -c 'printf %s "$PATH"')"
+AGENT_ENV+=(--ae "PATH=$TARGET/node_modules/.bin:$BASE_PATH")
+
 # Everything below — reset, deploy, export, snapshot, audit — is chant's; only
 # the agent's environment differs.
 BASE_ARM="${ARM%-offline}"
@@ -280,6 +304,22 @@ uv run aws-bench run --env-name awsbench -d ec2-multiregion \
   --ak "arm_workdir=$TARGET" \
   ${AGENT_ENV[@]+"${AGENT_ENV[@]}"} \
   --no-verify-env --yes
+
+# Which question set this job scored. The emitter cannot work it out from the
+# job — result.json names the tasks, not the set — and a 6-trial negative run
+# labelled as the 24-trial board is exactly the denominator mixing the negative
+# set exists to avoid.
+echo ec2-multiregion > "jobs/$JOB/scenario"
+
+# Which workspace this run was handed, captured NOW rather than derived later.
+#
+# `emit-result.py` read `<arm>.fingerprint`, which `prepare.py --export`
+# overwrites. Emit a run after the next export and it is stamped with a
+# workspace it never saw — silently, and most easily when several runs are
+# ingested together after the rebuild that follows them. Three runs published
+# that way claimed a build that postdated them, which is the same shape as the
+# `harness_commit` fault in INTENTIUS/chant-bench#26.
+cp "$EXPORTS/workspaces/$ARM.fingerprint" "jobs/$JOB/workspace" 2>/dev/null || true
 
 echo "==> [$ARM] audit: did every trial use the tool?"
 python3 benchmarks/agent-env/audit.py "jobs/$JOB"

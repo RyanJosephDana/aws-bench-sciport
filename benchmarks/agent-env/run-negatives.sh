@@ -58,6 +58,30 @@ case "$ARM" in
   alchemy-effect) AGENT_ENV=(--ae DO_NOT_TRACK=1 --ae CI=1) ;;
 esac
 
+# The arm's own CLI, on PATH under the name its briefing uses.
+#
+# chant's briefing says `chant search …` and alchemy's says `alchemy state list`.
+# Neither is on PATH in the trial container, so the agent's first call dies with
+# `command not found` and it spends turns rediscovering `npx <tool>`. The audit
+# — correctly — reads a missing CLI as "this run did not measure the arm" and
+# voids the whole run.
+#
+# Whether that happens is a coin flip on what the agent types first. Three
+# g-series chant runs never typed the bare form and published; the next two both
+# did, and both were voided at 21/24 and 5/24 with the tooling otherwise healthy
+# (72 invocations, 1% failure). A gate that fires on the model's phrasing rather
+# than on the environment is not measuring the environment.
+#
+# It goes here rather than in the arm image because the arm image is not what a
+# trial runs — prepare.py exports the workspace and the harness bind-mounts it
+# into a container built from the dataset's own image, so an ENV baked into
+# awsbench-arm-* never reaches a trial.
+#
+# The base is read from the tools image rather than written down, so this cannot
+# drift from the Dockerfile that sets it.
+BASE_PATH="$(docker run --rm awsbench-agent-tools:latest sh -c 'printf %s "$PATH"')"
+AGENT_ENV+=(--ae "PATH=$TARGET/node_modules/.bin:$BASE_PATH")
+
 # No deploy and no wipe. This scores an estate that is already up, which is what
 # makes the run cheap enough to be worth doing — but it means the estate has to
 # be the one this arm deployed, so the gate that decides that runs first.
@@ -84,6 +108,21 @@ uv run aws-bench run --env-name awsbench \
   --ak "arm_workdir=$TARGET" \
   ${AGENT_ENV[@]+"${AGENT_ENV[@]}"} \
   --no-verify-env --yes
+
+# These are two questions, not eight, so the record has to say which set it is.
+# Emitted under the board's scenario name it would sit beside 24-trial runs with
+# a denominator of 6, and `validate_results.py` rejects the whole group.
+echo ec2-multiregion-negatives > "jobs/$JOB/scenario"
+
+# Which workspace this run was handed, captured NOW rather than derived later.
+#
+# `emit-result.py` read `<arm>.fingerprint`, which `prepare.py --export`
+# overwrites. Emit a run after the next export and it is stamped with a
+# workspace it never saw — silently, and most easily when several runs are
+# ingested together after the rebuild that follows them. Three runs published
+# that way claimed a build that postdated them, which is the same shape as the
+# `harness_commit` fault in INTENTIUS/chant-bench#26.
+cp "$EXPORTS/workspaces/$ARM.fingerprint" "jobs/$JOB/workspace" 2>/dev/null || true
 
 echo "==> [$ARM] audit: did the arm use its own tooling?"
 python3 benchmarks/agent-env/audit.py "jobs/$JOB"
