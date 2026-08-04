@@ -88,6 +88,20 @@ AGENT_ENV+=(--ae "PATH=$TARGET/node_modules/.bin:$BASE_PATH")
 echo "==> [$ARM] estate: is the deployed estate intact?"
 python3 benchmarks/agent-env/estate-check.py
 
+# Which version of its own tool this arm is about to be measured on, read from
+# the export the trials mount. Same stamp `run-arm.sh` takes, for the same
+# reason: a scenario whose records cannot name the tool is a scenario whose
+# numbers cannot be attributed to one, and these are the runs most likely to be
+# repeated across builds.
+#
+# `if` rather than `[ … ] && …` — under `set -e` a false bare test takes the
+# script with it, and an arm declining to name its version would kill a run it
+# was only annotating.
+TOOL_VERSION="$(python3 benchmarks/agent-env/tool-version.py "$ARM" || true)"
+if [ -n "$TOOL_VERSION" ]; then
+  echo "==> [$ARM] tool under test: $TOOL_VERSION"
+fi
+
 echo "==> [$ARM] scoring the negative questions, k=3"
 AWS_BENCH_EMULATOR=floci \
 AWS_BENCH_EMULATOR_ENDPOINT="http://localhost:${FLOCI_PORT}" \
@@ -123,6 +137,11 @@ echo ec2-multiregion-negatives > "jobs/$JOB/scenario"
 # that way claimed a build that postdated them, which is the same shape as the
 # `harness_commit` fault in INTENTIUS/chant-bench#26.
 cp "$EXPORTS/workspaces/$ARM.fingerprint" "jobs/$JOB/workspace" 2>/dev/null || true
+
+# And which tool the run was measuring, captured before it started.
+if [ -n "$TOOL_VERSION" ]; then
+  printf '%s\n' "$TOOL_VERSION" > "jobs/$JOB/tool_version"
+fi
 
 echo "==> [$ARM] audit: did the arm use its own tooling?"
 python3 benchmarks/agent-env/audit.py "jobs/$JOB"
