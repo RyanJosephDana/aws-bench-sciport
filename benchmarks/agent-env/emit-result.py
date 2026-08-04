@@ -221,6 +221,29 @@ def job_workspace(job: Path) -> str | None:
     return None
 
 
+def job_tool(job: Path) -> dict | None:
+    """The tool under test and its version, as the run recorded them.
+
+    `run-arm.sh` asks the arm before the run and stamps the answer, because by
+    emit time the exported workspace may have been rebuilt on a different
+    version — the same reason `workspace` is stamped rather than derived.
+
+    Absent on every run recorded before this existed, and absent rather than
+    guessed when a tool would not name itself. A missing field reads as unknown;
+    a wrong one reads as fact.
+    """
+    stamped = job / "tool_version"
+    if not stamped.is_file():
+        return None
+    value = stamped.read_text().strip()
+    if not value:
+        return None
+    name, _, version = value.rpartition(" ")
+    if not name or not version:
+        return None
+    return {"name": name, "version": version}
+
+
 def scenario_of(job: Path) -> str:
     """Which question set this job scored.
 
@@ -250,6 +273,7 @@ def emit(job_name: str) -> dict:
 
     arm = arm_of(job_name)
     scenario = scenario_of(job)
+    tool = job_tool(job)
 
     summary = json.loads((job / "result.json").read_text())
     stats = summary.get("stats", {})
@@ -338,6 +362,12 @@ def emit(job_name: str) -> dict:
         "bench": BENCH,
         "scenario": scenario,
         "arm": arm,
+        # What was actually measured. The arm names the entry on the board; this
+        # names the artifact behind it, which moves independently — the chant
+        # arm's published figures crossed four releases without the arm's name
+        # changing once. Omitted rather than guessed when the run did not record
+        # it, which is every run predating the stamp.
+        **({"tool": tool} if tool else {}),
         "run": {
             "id": job_name,
             # Which workspace the trials were handed. The briefing hash and the

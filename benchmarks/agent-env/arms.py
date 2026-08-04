@@ -46,6 +46,24 @@ class Arm:
     smoke: list[Smoke] = field(default_factory=list)
     tool_pattern: str = ""
     """Matches the arm's own CLI in a trial trajectory, for the postflight audit."""
+    tool_name: str = ""
+    """What the tool under test is called where it is distributed.
+
+    The arm name says which arm; this says which artifact. They are not the same
+    fact: `alchemy` and `alchemy-effect` are both npm `alchemy`, two majors
+    apart, and reading the arm name alone would suggest two packages.
+    """
+    version_cmd: str = ""
+    """Prints the version of the tool under test, run in `workdir`.
+
+    A package installed in the workspace is read out of the workspace, because
+    that tree is what a trial mounts. A tool that comes from the tools image is
+    asked directly. Either way the command runs where a trial runs, so what it
+    prints is what the trial had, not what the host happens to have today.
+
+    Only the version goes on stdout. Anything chattier gets recorded verbatim
+    into the published record.
+    """
 
 
 # Installing dependencies inside the container is not belt-and-braces. The arms'
@@ -54,6 +72,12 @@ class Arm:
 # could not be found" under a linux runtime. The lockfile is what travels; the
 # platform binaries have to be resolved where they run.
 _NPM_INSTALL = "npm install --silent --no-fund --no-audit"
+
+#: Version of a package installed in the arm's workspace, printed bare.
+_PKG_VERSION = (
+    "node -p \"JSON.parse(require('fs')"
+    ".readFileSync('node_modules/{pkg}/package.json','utf8')).version\""
+)
 
 ARMS: dict[str, Arm] = {
     "chant": Arm(
@@ -97,6 +121,11 @@ ARMS: dict[str, Arm] = {
         # trial that answered entirely through `graph` audited as not having
         # used its own tooling.
         tool_pattern=r"\bchant\s+(search|graph|lifecycle)\b",
+        tool_name="@intentius/chant",
+        # Read off the installed tree by path rather than through `require`,
+        # which resolves against the package's `exports` map and fails on any
+        # package that does not publish "./package.json" as a subpath.
+        version_cmd=_PKG_VERSION.format(pkg="@intentius/chant"),
     ),
     # The control. No toolchain at all — an agent, the AWS CLI, and the account.
     # Every other arm's number has to be read against this one: a tool that does
@@ -122,6 +151,11 @@ ARMS: dict[str, Arm] = {
         # toolchain binary. The account-reads metric will read high by
         # construction; that is the point of a control, not a mark against it.
         tool_pattern=r"\baws\s+(ec2|iam|cloudformation)\b",
+        tool_name="aws-cli",
+        # From the tools image, not the workspace — this arm has no workspace
+        # worth the name. `aws --version` prints "aws-cli/2.x.y Python/... "
+        # on one line; only the first field is the version.
+        version_cmd="aws --version 2>&1 | awk '{print $1}' | cut -d/ -f2",
     ),
     "terraform": Arm(
         name="terraform",
@@ -146,6 +180,8 @@ ARMS: dict[str, Arm] = {
             ),
         ],
         tool_pattern=r"\bterraform\s+(show|state|output)\b",
+        tool_name="terraform",
+        version_cmd="terraform version -json | jq -r .terraform_version",
     ),
     "pulumi": Arm(
         name="pulumi",
@@ -166,6 +202,8 @@ ARMS: dict[str, Arm] = {
             ),
         ],
         tool_pattern=r"\bpulumi\s+(stack|state|about)\b|pulumi-export",
+        tool_name="pulumi",
+        version_cmd="pulumi version",
     ),
     "cdk": Arm(
         name="cdk",
@@ -192,6 +230,10 @@ ARMS: dict[str, Arm] = {
             ),
         ],
         tool_pattern=r"\bcdk\s+(ls|synth|diff|metadata)\b",
+        # The CLI, not aws-cdk-lib. The agent holds `cdk`; the library is what
+        # the app it synthesizes was written against, and moves separately.
+        tool_name="aws-cdk",
+        version_cmd=_PKG_VERSION.format(pkg="aws-cdk"),
     ),
     "alchemy": Arm(
         name="alchemy",
@@ -215,6 +257,8 @@ ARMS: dict[str, Arm] = {
             ),
         ],
         tool_pattern=r"\balchemy\s+state\b",
+        tool_name="alchemy",
+        version_cmd=_PKG_VERSION.format(pkg="alchemy"),
     ),
     "alchemy-effect": Arm(
         name="alchemy-effect",
@@ -267,6 +311,10 @@ ARMS: dict[str, Arm] = {
             ),
         ],
         tool_pattern=r"\balchemy\s+state\b",
+        # Same package name as the alchemy arm, two majors apart. Recording the
+        # name as well as the version is what keeps those two apart in a record.
+        tool_name="alchemy",
+        version_cmd=_PKG_VERSION.format(pkg="alchemy"),
     ),
 }
 
