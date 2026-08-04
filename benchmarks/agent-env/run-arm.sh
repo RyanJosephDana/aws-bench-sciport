@@ -281,6 +281,22 @@ fi
 echo "==> [$ARM] preflight: can it answer with its own tooling?"
 python3 benchmarks/agent-env/preflight.py "$BASE_ARM" --keep-going
 
+# Which version of its own tool this arm is about to be measured on, read from
+# the export the trials mount. Captured here rather than after the run because
+# `jobs/$JOB` does not exist yet and the export can be rebuilt the moment this
+# returns; the stamp below just writes down what was true at the start line.
+#
+# Not fatal. A run whose tool would not say its version is still a run, and
+# `emit-result.py` omits the field rather than guessing.
+#
+# `if` rather than `[ ... ] && ...`: under `set -e` a bare test that comes back
+# false takes the whole script with it, and an arm that declined to name its
+# version would kill the run it was only annotating.
+TOOL_VERSION="$(python3 benchmarks/agent-env/tool-version.py "$BASE_ARM" || true)"
+if [ -n "$TOOL_VERSION" ]; then
+  echo "==> [$ARM] tool under test: $TOOL_VERSION"
+fi
+
 echo "==> [$ARM] running k=3"
 # The estate is unreachable to the agent, and only to the agent — the verifier
 # still resolves the reference answer's placeholders against it.
@@ -320,6 +336,11 @@ echo ec2-multiregion > "jobs/$JOB/scenario"
 # that way claimed a build that postdated them, which is the same shape as the
 # `harness_commit` fault in INTENTIUS/chant-bench#26.
 cp "$EXPORTS/workspaces/$ARM.fingerprint" "jobs/$JOB/workspace" 2>/dev/null || true
+
+# And which tool the run was measuring, captured before it started.
+if [ -n "$TOOL_VERSION" ]; then
+  printf '%s\n' "$TOOL_VERSION" > "jobs/$JOB/tool_version"
+fi
 
 echo "==> [$ARM] audit: did every trial use the tool?"
 python3 benchmarks/agent-env/audit.py "jobs/$JOB"
