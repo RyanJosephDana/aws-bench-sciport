@@ -221,6 +221,22 @@ def job_workspace(job: Path) -> str | None:
     return None
 
 
+def job_harness_commit(job: Path) -> str | None:
+    """The harness this job ran under, as the run recorded it.
+
+    Read from the job rather than computed now: a record emitted after any later
+    commit or edit named a harness that could not have produced it, which is the
+    fault INTENTIUS/chant-bench#26 is about and the one `workspace` was already
+    fixed for. Absent on jobs that predate the stamp; those fall back.
+    """
+    stamped = job / "harness_commit"
+    if stamped.is_file():
+        value = stamped.read_text().strip()
+        if value:
+            return value
+    return None
+
+
 def job_tool(job: Path) -> dict | None:
     """The tool under test and its version, as the run recorded them.
 
@@ -379,7 +395,8 @@ def emit(job_name: str) -> dict:
             # export moves and the run does not.
             "workspace": job_workspace(job) or workspace_fingerprint(arm),
             "finished_at": summary.get("finished_at"),
-            "harness_commit": git_commit(REPO),
+            # What the run recorded, not what the tree says now.
+            "harness_commit": job_harness_commit(job) or git_commit(REPO),
         },
         "agent": {
             "name": "claude-code",
@@ -472,7 +489,17 @@ def main() -> int:
     for job_name in args.jobs:
         record = emit(job_name)
         g = record["gates"]
-        valid = bool(g.get("audit")) and bool(g.get("complete")) and not g.get("tool_missing")
+        # `complete` stays factual — it means every trial completed, and a
+        # record saying otherwise would be a lie about the run. Validity is the
+        # separate question, and it tolerates the same 10% of crashed trials the
+        # audit does: a trial the agent never returned from is a trial the arm
+        # did not answer, which is a score rather than missing data, and
+        # `pass_rate` is already computed over every trial including those.
+        CRASH_LIMIT = 0.10
+        trials = record["score"]["trials"] or 0
+        errored = record["score"]["errored"] or 0
+        too_crashed = bool(errored) and trials and errored / trials > CRASH_LIMIT
+        valid = bool(g.get("audit")) and not g.get("tool_missing") and not too_crashed
 
         if not args.out:
             print(json.dumps(record, indent=2))

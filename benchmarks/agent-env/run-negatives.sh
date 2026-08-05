@@ -97,6 +97,20 @@ python3 benchmarks/agent-env/estate-check.py
 # `if` rather than `[ … ] && …` — under `set -e` a false bare test takes the
 # script with it, and an arm declining to name its version would kill a run it
 # was only annotating.
+# Which harness produced this run, captured at the start line rather than read
+# at emit time.
+#
+# `emit-result.py` called `git_commit(REPO)` when the record was written, so a
+# job emitted after any later commit or edit was stamped with a harness it never
+# ran under. That is the same fault the `workspace` stamp was added to fix in
+# 09075af, still live on the one field INTENTIUS/chant-bench#26 is actually
+# about. Matches `git_commit`'s semantics: short HEAD, `-dirty` when the tree
+# carries anything uncommitted.
+HARNESS_COMMIT="$(git rev-parse --short HEAD 2>/dev/null || true)"
+if [ -n "$HARNESS_COMMIT" ] && [ -n "$(git status --porcelain 2>/dev/null)" ]; then
+  HARNESS_COMMIT="${HARNESS_COMMIT}-dirty"
+fi
+
 TOOL_VERSION="$(python3 benchmarks/agent-env/tool-version.py "$ARM" || true)"
 if [ -n "$TOOL_VERSION" ]; then
   echo "==> [$ARM] tool under test: $TOOL_VERSION"
@@ -137,6 +151,11 @@ echo ec2-multiregion-negatives > "jobs/$JOB/scenario"
 # that way claimed a build that postdated them, which is the same shape as the
 # `harness_commit` fault in INTENTIUS/chant-bench#26.
 cp "$EXPORTS/workspaces/$ARM.fingerprint" "jobs/$JOB/workspace" 2>/dev/null || true
+
+# And which harness ran it, captured before it started.
+if [ -n "$HARNESS_COMMIT" ]; then
+  printf '%s\n' "$HARNESS_COMMIT" > "jobs/$JOB/harness_commit"
+fi
 
 # And which tool the run was measuring, captured before it started.
 if [ -n "$TOOL_VERSION" ]; then

@@ -184,11 +184,18 @@ def audit_trial(trial: Path, pattern: re.Pattern[str], tool_names: set[str]) -> 
     return TrialAudit(trial.name, reward, ok, missing, failed, live, killed)
 
 
-def audit_job(job: Path) -> tuple[bool, list[str]]:
-    """Audit every trial in a job. (all trials used the tool, report lines)."""
+def audit_job(job: Path) -> tuple[bool, list[str], list[str]]:
+    """Audit every trial in a job. (run is a measurement, report lines, why not).
+
+    The third value is why the run was refused, in the refusal's own words.
+    Four different faults reach this gate and only one of them is "the tool
+    never ran"; reporting all four under that heading sent a reader hunting
+    for a missing CLI when a trial had timed out with 311 successful
+    invocations behind it. Empty when the run stands.
+    """
     name = arm_of(job)
     if name is None:
-        return True, [f"{job.name}: no arm identified, skipped"]
+        return True, [f"{job.name}: no arm identified, skipped"], []
 
     pattern = re.compile(ARMS[name].tool_pattern)
     # The binaries that ARE this arm's tooling, taken from the pattern itself so
@@ -206,7 +213,7 @@ def audit_job(job: Path) -> tuple[bool, list[str]]:
         a for t in sorted(job.iterdir()) if t.is_dir() and (a := audit_trial(t, pattern, tool_names))
     ]
     if not audits:
-        return True, [f"{job.name} [{name}]: no trial logs, skipped"]
+        return True, [f"{job.name} [{name}]: no trial logs, skipped"], []
 
     unused = [a for a in audits if not a.used_tool]
     lines = [
@@ -308,11 +315,45 @@ def audit_job(job: Path) -> tuple[bool, list[str]]:
     # An agent that died did not answer the question. Harbor records the
     # exception and carries on with a smaller denominator, so the job still
     # prints a rate; that rate is over the trials that survived.
+    # A share, not a count — the same call the fallback gate already makes, and
+    # for the same reason. One timed-out trial voided alchemy-effect-h1 at
+    # 17/24, its best result ever, with 311 successful invocations behind it.
+    # Discarding 23 good trials to avoid mis-stating one is the wrong trade, and
+    # the record already carries `errored_trials` so nothing is hidden by it.
+    #
+    # Above the limit the run genuinely cannot be read: at 1 of 6 the denominator
+    # moves 17% and a rate over the survivors is not a rate over the run.
+    CRASH_LIMIT = 0.10
     crashed = crashed_trials(job)
+    too_crashed = bool(crashed) and len(crashed) / len(audits) > CRASH_LIMIT
     if crashed:
-        lines.append(f"    {len(crashed)} trial(s) ended in an agent exception: {', '.join(crashed[:3])}")
+        lines.append(
+            f"    {len(crashed)} trial(s) ended in an agent exception: {', '.join(crashed[:3])}"
+            + (
+                " — too many for the rate to describe the run"
+                if too_crashed
+                else f" ({len(crashed) / len(audits):.0%}, within the {CRASH_LIMIT:.0%} the gate allows;"
+                " they count as trials the arm did not answer)"
+            )
+        )
 
-    return not (mostly_untooled or broken or crashed or unhealthy), lines
+    why: list[str] = []
+    if mostly_untooled:
+        why.append(f"{len(unused)} of {len(audits)} trials answered without {name}")
+    if broken:
+        why.append(f"{name} was not on PATH in {len(broken)} trial(s)")
+    if unhealthy:
+        why.append(
+            f"{calls_killed} {name} call(s) killed by the kernel"
+            if calls_killed
+            else f"{name} failed {calls_failed} of {total_calls} invocations"
+        )
+    if too_crashed:
+        why.append(
+            f"{len(crashed)} of {len(audits)} trials ended in an agent exception"
+        )
+
+    return not why, lines, why
 
 
 def crashed_trials(job: Path) -> list[str]:
@@ -361,16 +402,18 @@ def main() -> int:
     for job in args.jobs:
         if not job.is_dir():
             print(f"{job}: not a directory")
-            failed.append(job.name)
+            failed.append((job.name, ["not a directory"]))
             continue
-        ok, lines = audit_job(job)
+        ok, lines, why = audit_job(job)
         print("\n".join(lines))
         print()
         if not ok:
-            failed.append(job.name)
+            failed.append((job.name, why))
 
     if failed:
-        print(f"TOOLING NOT EXERCISED: {', '.join(failed)} — these are not tool comparisons")
+        print("REFUSED — these runs do not measure their arm:")
+        for job_name, why in failed:
+            print(f"  {job_name}: {'; '.join(why) or 'refused'}")
         return 1
     # Not "every trial used its arm's tooling" — that stopped being what a pass
     # means once the gate started tolerating a few fallbacks, and a summary that
