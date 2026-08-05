@@ -78,3 +78,10 @@ benchmarks/arms/*/cdk.out/
 # published ones for the same run ids carried all three. Two sources of truth
 # for one number, and the wrong one was the one in the repo.
 benchmarks/results/
+
+# Pulumi regenerates this per deploy — it holds only a generated
+# encryptionsalt, so it is run output rather than experiment input. Tracked, it
+# made every run after the first Pulumi one stamp `harness_commit: <sha>-dirty`
+# from identical harness code (18 of 24 records in one matrix), which is exactly
+# the signal INTENTIUS/chant-bench#26 added `-dirty` to make trustworthy.
+benchmarks/arms/pulumi-ec2-multiregion/Pulumi.dev.yaml
