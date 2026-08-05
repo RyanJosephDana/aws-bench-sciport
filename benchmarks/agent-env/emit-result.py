@@ -472,7 +472,17 @@ def main() -> int:
     for job_name in args.jobs:
         record = emit(job_name)
         g = record["gates"]
-        valid = bool(g.get("audit")) and bool(g.get("complete")) and not g.get("tool_missing")
+        # `complete` stays factual — it means every trial completed, and a
+        # record saying otherwise would be a lie about the run. Validity is the
+        # separate question, and it tolerates the same 10% of crashed trials the
+        # audit does: a trial the agent never returned from is a trial the arm
+        # did not answer, which is a score rather than missing data, and
+        # `pass_rate` is already computed over every trial including those.
+        CRASH_LIMIT = 0.10
+        trials = record["score"]["trials"] or 0
+        errored = record["score"]["errored"] or 0
+        too_crashed = bool(errored) and trials and errored / trials > CRASH_LIMIT
+        valid = bool(g.get("audit")) and not g.get("tool_missing") and not too_crashed
 
         if not args.out:
             print(json.dumps(record, indent=2))

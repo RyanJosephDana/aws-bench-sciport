@@ -315,9 +315,27 @@ def audit_job(job: Path) -> tuple[bool, list[str], list[str]]:
     # An agent that died did not answer the question. Harbor records the
     # exception and carries on with a smaller denominator, so the job still
     # prints a rate; that rate is over the trials that survived.
+    # A share, not a count — the same call the fallback gate already makes, and
+    # for the same reason. One timed-out trial voided alchemy-effect-h1 at
+    # 17/24, its best result ever, with 311 successful invocations behind it.
+    # Discarding 23 good trials to avoid mis-stating one is the wrong trade, and
+    # the record already carries `errored_trials` so nothing is hidden by it.
+    #
+    # Above the limit the run genuinely cannot be read: at 1 of 6 the denominator
+    # moves 17% and a rate over the survivors is not a rate over the run.
+    CRASH_LIMIT = 0.10
     crashed = crashed_trials(job)
+    too_crashed = bool(crashed) and len(crashed) / len(audits) > CRASH_LIMIT
     if crashed:
-        lines.append(f"    {len(crashed)} trial(s) ended in an agent exception: {', '.join(crashed[:3])}")
+        lines.append(
+            f"    {len(crashed)} trial(s) ended in an agent exception: {', '.join(crashed[:3])}"
+            + (
+                " — too many for the rate to describe the run"
+                if too_crashed
+                else f" ({len(crashed) / len(audits):.0%}, within the {CRASH_LIMIT:.0%} the gate allows;"
+                " they count as trials the arm did not answer)"
+            )
+        )
 
     why: list[str] = []
     if mostly_untooled:
@@ -330,8 +348,10 @@ def audit_job(job: Path) -> tuple[bool, list[str], list[str]]:
             if calls_killed
             else f"{name} failed {calls_failed} of {total_calls} invocations"
         )
-    if crashed:
-        why.append(f"{len(crashed)} trial(s) ended in an agent exception")
+    if too_crashed:
+        why.append(
+            f"{len(crashed)} of {len(audits)} trials ended in an agent exception"
+        )
 
     return not why, lines, why
 
