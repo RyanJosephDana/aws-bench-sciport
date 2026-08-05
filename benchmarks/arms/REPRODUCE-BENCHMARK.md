@@ -62,7 +62,19 @@ There is no "v3" chant. The effective-SG enrichment the scores rely on is the
 
 ## Prerequisites
 Docker · Node 20+ · uv · git · a real Anthropic credential
-(`CLAUDE_CODE_OAUTH_TOKEN` from `claude setup-token`, or `ANTHROPIC_API_KEY`)
+
+The credential is a **file, not an environment variable**. Run `claude
+setup-token` once; it writes `~/.anthropic`, and in emulator mode
+`aws_bench.emulator.prime_process_env()` reads it and forwards it to the agent
+container. Nothing needs exporting, and a shell with no `CLAUDE_CODE_OAUTH_TOKEN`
+set is the normal case rather than a broken one.
+
+Override with `AWS_BENCH_CLAUDE_TOKEN_FILE` to point at a different file, or set
+`CLAUDE_CODE_OAUTH_TOKEN` to take precedence over the file entirely. Do not put
+either in a file under the repo.
+
+It authenticates against a Claude subscription, so the agent's spend is billed
+there and not to an API key.
 
 ## 1. Deploy each arm's estate
 
@@ -242,8 +254,7 @@ Notes:
 - `--no-verify-env` is required: the estate was deployed by hand, so the harness has
   no POST_SETUP baseline snapshot to verify against.
 - `-n <N>` runs trials concurrently to cut wall-clock; it does not change scores.
-- Set `CLAUDE_CODE_OAUTH_TOKEN` in the environment instead if you would rather not
-  use `~/.anthropic`; it takes precedence. Do not put it in a file under the repo.
+- The agent credential comes from `~/.anthropic` by default — see Prerequisites.
 - Point the CDK arm at port 4567 if you deployed it on the second Floci instance.
 - Re-run `prepare.py --export` after changing an arm's dependencies; the exported
   workspace is what trials get, not the directory under `benchmarks/arms`.
