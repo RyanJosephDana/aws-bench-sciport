@@ -1,6 +1,14 @@
 #!/bin/sh
 # Dump the applied Pulumi state as JSON (the local file backend, read-only).
+#
+# The vendored CLI is preferred when present; a fresh clone does not carry it
+# (vendor/ is gitignored), and the trial environment already puts pulumi on
+# PATH from the toolchain mount. Exec'ing a missing vendored binary cost six
+# of twenty-four trials their first invocation, and the audit refused the run.
 cd "$(dirname "$0")"
 export PULUMI_CONFIG_PASSPHRASE=floci
 export PULUMI_BACKEND_URL="file://$(pwd)"
-exec ./vendor/bin/pulumi stack export --stack dev
+if [ -x ./vendor/bin/pulumi ]; then
+    exec ./vendor/bin/pulumi stack export --stack dev
+fi
+exec pulumi stack export --stack dev
