@@ -398,11 +398,15 @@ class AwsBenchSingleStepTrial(SingleStepTrial):
         async with self._staged_credentials(RoleType.VERIFIER) as cred_env:
             original_env = self.task.config.verifier.env
             if emulator.is_active():
-                # The staged Claude Code judge authenticates with the same
-                # subscription OAuth token as the agent under test.
+                # The staged Claude Code judge authenticates with either the
+                # subscription OAuth token or an API key — whichever the host
+                # has. Harbor's claude-code agent already reads both.
                 token = emulator.claude_oauth_token()
                 if token:
                     cred_env = {**cred_env, "CLAUDE_CODE_OAUTH_TOKEN": token}
+                api_key = os.environ.get("ANTHROPIC_API_KEY")
+                if api_key:
+                    cred_env = {**cred_env, "ANTHROPIC_API_KEY": api_key}
             self.task.config.verifier.env = resolve_env_with_creds(
                 raw_env=original_env, placeholders=self._aws_placeholders, creds=cred_env
             )
