@@ -9,6 +9,7 @@ import boto3
 from botocore.client import BaseClient
 from botocore.exceptions import ClientError
 
+from aws_bench import emulator
 from aws_bench.account_management.constants import ORG_ACCESS_ROLE
 from aws_bench.logging.logger import get_logger, log_context
 from aws_bench.resource_management.ccapi.models import MAX_WORKERS_HEAVY
@@ -293,6 +294,8 @@ class QuotaManager:
         propagating / none) to a ``QuotaStatus`` and a short reason. Used to
         explain why an increase has not yet raised the effective limit.
         """
+        if emulator.is_active():
+            return QuotaStatus.ALREADY_MET, "emulator: no org quota"
         session = self._credential_provider.get_management_session()
         client: BaseClient = build_client(session, "service-quotas", region_name=region)
         return self._diagnose_unmet_quota(client, ORG_QUOTA_SERVICE_CODE, ORG_ACCOUNT_QUOTA_CODE)
@@ -313,6 +316,20 @@ class QuotaManager:
             List of results with ALREADY_MET or the exact status from history.
         """
         self.validate_config(config)
+
+        if emulator.is_active():
+            # Floci doesn't implement service-quotas. Emulator has no real
+            # quotas — return ALREADY_MET for each requested quota so setup
+            # proceeds. Skipping the SQ client call entirely.
+            return [
+                QuotaIncreaseResult(
+                    service_code=req.service_code,
+                    quota_code=req.quota_code,
+                    desired_value=req.desired_value,
+                    status=QuotaStatus.ALREADY_MET,
+                )
+                for req in config.increases
+            ]
 
         with log_context(account_id), log_context(config.region):
             session = self._credential_provider.get_session_for_account(
