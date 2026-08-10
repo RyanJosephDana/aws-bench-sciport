@@ -1,0 +1,12 @@
+{
+  "name": "chant-ec2-multiregion-estate",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "build": "chant build"
+  },
+  "dependencies": {
+    "@intentius/chant": "0.41.0",
+    "@intentius/chant-lexicon-aws": "0.41.0"
+  }
+}

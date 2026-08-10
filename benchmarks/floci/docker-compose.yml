@@ -1,0 +1,55 @@
+# The Floci instance the benchmark runs against.
+#
+# The environment block is not incidental: each toggle exists because the
+# emulator's default diverges from live AWS in a way an agent can read, and an
+# arm that reasons from the live estate is judged on what it reads.
+#
+# The host ports are settable because 4566 is the port every Floci wants, and a
+# developer running one for something else already has it. Set FLOCI_PORT and
+# the whole harness follows — run-arm.sh derives every endpoint it hands to the
+# deploy, the preflight and the trial containers from it. The container side
+# stays 4566: nothing inside is being moved.
+services:
+  floci:
+    image: ghcr.io/lex00/floci:awsbench
+    ports: ["${FLOCI_PORT:-4566}:4566", "${FLOCI_TLS_PORT:-443}:443"]
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./data:/app/data
+    environment:
+      # Report the subnet/CloudFormation private IP instead of the container
+      # bridge IP, so DescribeInstances and the CFN exports agree
+      # (floci-io/floci#1983).
+      FLOCI_SERVICES_EC2_AWS_FAITHFUL_PRIVATE_IP: "true"
+      # Report the AWS-shaped public DNS name. Safe for this scenario: nothing
+      # dials the value, and no ec2-multiregion UserData reads the IMDS
+      # public-hostname.
+      FLOCI_SERVICES_EC2_AWS_FAITHFUL_PUBLIC_DNS: "true"
+      # Region-restriction SCP stand-in. The scenario account deploys to these
+      # three regions and is locked to them; tasks that sweep "all regions"
+      # enumerate every region and skip the ones that come back AccessDenied,
+      # which is what their ground truth counts.
+      FLOCI_ALLOWED_REGIONS: "us-east-1,us-west-1,us-west-2"
+      # Instance host ports, moved off Floci's defaults (2200-2299, 30000+) so
+      # this emulator cannot collide with another one on the same machine.
+      #
+      # It is not a hypothetical. With a second Floci running, its instance held
+      # 30000 and this estate's us-west-2 instance failed to publish its app
+      # ports — "Bind for 0.0.0.0:30000 failed: port is already allocated" — and
+      # went straight to `terminated`. Five instances deployed where the
+      # scenario defines six, and CDK scored 14/24 against 17-19/24 on the same
+      # briefing. Every gate passed it: 24 trials, no exceptions, the audit
+      # clean, `cdk` used in all 24. The tool was fine and the estate was not.
+      #
+      # SSH survived only by luck — that range is scanned for a free port, so it
+      # skipped 2200 and took 2201-2205. The app-port range is not scanned.
+      FLOCI_SERVICES_EC2_SSH_PORT_RANGE_START: "${FLOCI_SSH_PORT_START:-2300}"
+      FLOCI_SERVICES_EC2_SSH_PORT_RANGE_END: "${FLOCI_SSH_PORT_END:-2399}"
+      FLOCI_SERVICES_EC2_APP_PORT_RANGE_START: "${FLOCI_APP_PORT_START:-31000}"
+      # CloudFormation custom resources send their cfn-response callback with bundled
+      # code that hardcodes https:// and ignores the port in the ResponseURL, so the PUT
+      # lands on 443. Floci binds it only when TLS is on; without this a Lambda-backed
+      # custom resource fails with ECONNREFUSED and the stack rolls back.
+      FLOCI_TLS_ENABLED: "true"
+    networks: { floci_default: { aliases: [localhost.floci.io] } }
+networks: { floci_default: { name: floci_default } }

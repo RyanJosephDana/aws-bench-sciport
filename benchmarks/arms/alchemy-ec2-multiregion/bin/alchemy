@@ -1,0 +1,13 @@
+#!/bin/sh
+# Put `alchemy` on PATH for the benchmark container.
+#
+# The arm's briefing teaches `alchemy state list`, but the binary only exists at
+# node_modules/.bin/alchemy, and the agent adapter exposes an arm's `bin/`
+# directory — not its node_modules. So every trial typed the command the
+# briefing taught and got "command not found", and the run audited as never
+# having exercised alchemy at all.
+#
+# Same shape as the chant arm's bin/chant. An arm that wants its CLI on PATH
+# says so by putting a launcher here.
+HERE="$(cd "$(dirname "$0")/.." && pwd)"
+exec "$HERE/node_modules/.bin/alchemy" "$@"

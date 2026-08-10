@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 import typer
 from typer import Typer
 
+from aws_bench import emulator
 from aws_bench.cli.env import env_app
 from aws_bench.cli.jobs import jobs_app, start
 from aws_bench.cli.view import view
@@ -88,6 +89,10 @@ def _root(ctx: typer.Context) -> None:
     """
     signal.signal(signal.SIGTERM, _handle_shutdown)
     signal.signal(signal.SIGINT, _handle_shutdown)
+
+    # Floci emulator mode (AWS_BENCH_EMULATOR=floci): export derived env —
+    # e.g. the Claude Code OAuth token — before any subcommand reads it.
+    emulator.prime_process_env()
 
     argv = list(sys.argv)
     entry = open_entry(_command_label(argv), argv, now=datetime.now(timezone.utc))

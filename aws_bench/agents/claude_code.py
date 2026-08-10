@@ -13,6 +13,9 @@ Marketplaces and plugins are supplied as constructor kwargs, so they flow from
       --ak plugins='["aws-core@claude-plugins-official"]'
 
 With no ``plugins``, no plugin install runs.
+
+It also stands the benchmark arm's tooling up before the task, when the run
+mounts one. See :func:`_arm_setup_command`.
 """
 
 from __future__ import annotations
@@ -27,6 +30,145 @@ from harbor.environments.base import BaseEnvironment
 # exec shell; prepend it so `claude plugin install` resolves.
 _PATH_RESTORE = 'export PATH="$HOME/.local/bin:$PATH"'
 
+# Where a benchmark run bind-mounts the pieces prepared by
+# benchmarks/agent-env/prepare.py --export. Set as environment config on the job.
+_TOOLCHAIN_MOUNT = "AWS_BENCH_TOOLCHAIN"
+_ARM_SOURCE_MOUNT = "AWS_BENCH_ARM_SRC"
+_ARM_WORKDIR = "AWS_BENCH_ARM_WORKDIR"
+_ARM_NEEDS_GIT = "AWS_BENCH_ARM_NEEDS_GIT"
+
+# Runs as root before the task. Names are substituted, values are read in the
+# container. A missing mount exits nonzero: a half-built arm is how a tool ends
+# up silently unavailable and the trial scores from jq instead.
+_ARM_SETUP_SCRIPT = """
+set -e
+[ -n "${{{workdir}:-}}" ] && [ -n "${{{source}:-}}" ] || exit 0
+
+if [ ! -d "${{{source}}}" ]; then
+    echo "aws-bench: {source} points at ${{{source}}}, which is not mounted" >&2
+    exit 1
+fi
+
+if [ -n "${{{toolchain}:-}}" ]; then
+    if [ ! -d "${{{toolchain}}}" ]; then
+        echo "aws-bench: {toolchain} points at ${{{toolchain}}}, which is not mounted" >&2
+        exit 1
+    fi
+    # Symlink rather than export PATH: each agent command gets a fresh shell
+    # that inherits nothing exported here.
+    #
+    # terraform-bin is named explicitly because it is the one toolchain entry
+    # whose binary sits at its root rather than under bin/. The glob missed it,
+    # so every terraform trial got "command not found" and the audit refused
+    # the run — silently on the h-series, whose dirty tree must have carried
+    # the fix this commit makes for real.
+    for dir in "${{{toolchain}}}"/*/bin "${{{toolchain}}}"/pulumi "${{{toolchain}}}"/terraform-bin; do
+        [ -d "$dir" ] && ln -sf "$dir"/* /usr/local/bin/ 2>/dev/null || true
+    done
+fi
+
+# git, because a tool may keep its state in one. chant records a lifecycle
+# snapshot on an orphan branch and reads it back with `git ls-tree`; the
+# dataset's task image has no git, so that read returned nothing and
+# `chant search --at latest` reported "No snapshots found" — a tool answering
+# from recorded state looking exactly like a tool with no recorded state.
+if ! command -v git >/dev/null 2>&1; then
+    # Retried, and never fatal in itself. Every trial in a run reaches this at
+    # the same moment and a package manager under eight-way concurrency loses
+    # often: 34 trials across two arms died here with an opaque `exit 100` from
+    # `set -e`, which read as those tools scoring badly rather than as their
+    # agents never having started. The explicit check below is the error worth
+    # showing, so nothing in here is allowed to abort first.
+    for attempt in 5 15 30; do
+        if command -v apt-get >/dev/null 2>&1; then
+            {{ apt-get update >/dev/null 2>&1 && apt-get install -y git >/dev/null 2>&1; }} || true
+        elif command -v apk >/dev/null 2>&1; then
+            apk add --no-cache git >/dev/null 2>&1 || true
+        elif command -v yum >/dev/null 2>&1; then
+            yum install -y git >/dev/null 2>&1 || true
+        fi
+        if command -v git >/dev/null 2>&1; then
+            break
+        fi
+        sleep "$attempt"
+    done
+fi
+if [ -n "${{{needs_git}:-}}" ]; then
+    command -v git >/dev/null 2>&1 || {{
+        echo "aws-bench: git is unavailable and could not be installed; this arm keeps state in git and cannot read it" >&2
+        exit 1
+    }}
+else
+    command -v git >/dev/null 2>&1 || \
+        echo "aws-bench: git is unavailable; this arm did not ask for it, continuing" >&2
+fi
+
+rm -rf "${{{workdir}}}"
+mkdir -p "${{{workdir}}}"
+# Copy what the tool writes, share what it only reads.
+#
+# This used to be a flat `cp -a` of the whole workspace, per trial. Terraform's
+# is 1.3GB, so a 24-trial run copied about 31GB, and filling the Docker disk has
+# taken a run down more than once. The dependency trees are the bulk of it and
+# no tool writes to them: node_modules, vendored packages, chant's bundled
+# runtime, and terraform's provider binaries — 746MB of which is two files.
+#
+# The copy stays for everything else, because it is what makes the workspace
+# writable, and a read-only mount broke terraform's .terraform, cdk's cdk.out
+# and npm all at once.
+_share() {{
+    # $1 source dir, $2 dest dir, rest: child names to symlink instead of copy
+    _src="$1"; _dst="$2"; shift 2
+    mkdir -p "$_dst"
+    for _entry in "$_src"/* "$_src"/.[!.]*; do
+        [ -e "$_entry" ] || continue
+        _name="${{_entry##*/}}"
+        _shared=""
+        for _s in "$@"; do
+            [ "$_name" = "$_s" ] && _shared=1 && break
+        done
+        if [ -n "$_shared" ]; then
+            ln -s "$_entry" "$_dst/$_name"
+        else
+            cp -a "$_entry" "$_dst/"
+        fi
+    done
+}}
+
+_share "${{{source}}}" "${{{workdir}}}" node_modules vendor vendor-local .runtime
+
+# terraform's providers sit one level down, and the rest of .terraform is
+# written to, so it cannot be shared wholesale.
+if [ -d "${{{source}}}/.terraform/providers" ]; then
+    rm -rf "${{{workdir}}}/.terraform"
+    _share "${{{source}}}/.terraform" "${{{workdir}}}/.terraform" providers
+fi
+# The copy is made as root and the agent runs as someone else. Without both of
+# these the workspace is readable and useless: git refuses a repo it considers
+# dubiously owned, and a tool that writes (terraform's .terraform, cdk's
+# cdk.out) fails on a directory it cannot write.
+git config --system --add safe.directory '*' >/dev/null 2>&1 || true
+chmod -R a+rwX "${{{workdir}}}" 2>/dev/null || true
+# An arm's own launchers go on PATH. Without this the agent types the tool's
+# name, gets "command not found", and spends two or three turns finding the
+# binary before any work starts — 27 failed invocations and 22 hunting turns
+# across one 24-trial run. Every other arm's tool is already on PATH, so this
+# was a tax on exactly one of them.
+if [ -d "${{{workdir}}}/bin" ]; then
+    for exe in "${{{workdir}}}"/bin/*; do
+        [ -x "$exe" ] || continue
+        # A wrapper, not a symlink. These launchers locate their own package
+        # with `dirname $0`, so a symlink on PATH resolves the root to
+        # /usr/local and the tool dies with "exec: …/node_modules/…: not found"
+        # — worse than absent, because the agent gets a confusing error instead
+        # of a clean "command not found".
+        name=$(basename "$exe")
+        printf '#!/bin/sh\nexec "%s" "$@"\n' "$exe" > "/usr/local/bin/$name" 2>/dev/null || continue
+        chmod +x "/usr/local/bin/$name" 2>/dev/null || true
+    done
+fi
+"""
+
 
 class ClaudeCode(_HarborClaudeCode):
     """Claude Code that installs plugins from marketplaces per trial."""
@@ -36,16 +178,26 @@ class ClaudeCode(_HarborClaudeCode):
         logs_dir: Path,
         marketplaces: list[str] | None = None,
         plugins: list[str] | None = None,
+        arm_src: str | None = None,
+        arm_workdir: str | None = None,
+        toolchain: str | None = None,
+        needs_git: str | None = None,
         *args,
         **kwargs,
     ):
-        """Store the marketplaces to add and plugins to install.
+        """Store the marketplaces, plugins, and benchmark arm layout.
 
         Args:
             logs_dir: Trial logs directory, forwarded to the base agent.
             marketplaces: Marketplace git sources to add, each an ``owner/repo``
                 slug or a clone URL.
             plugins: Plugin specs to install, each ``<plugin>@<marketplace>``.
+            arm_src: Container path where the arm's prepared workspace is mounted
+                read-only. Given together with ``arm_workdir``.
+            arm_workdir: Writable container path the workspace is copied to,
+                matching the path the arm's briefing sends the agent to.
+            toolchain: Container path where the exported toolchain is mounted;
+                its binaries are symlinked onto ``PATH``.
             *args: Forwarded to the base agent.
             **kwargs: Forwarded to the base agent.
         """
@@ -56,10 +208,23 @@ class ClaudeCode(_HarborClaudeCode):
                 "marketplaces were given without plugins; a marketplace is only "
                 "added when a plugin from it is installed"
             )
+        if bool(arm_src) != bool(arm_workdir):
+            raise ValueError(
+                "arm_src and arm_workdir go together; one without the other would "
+                "leave the arm's tooling unavailable to the agent"
+            )
+        self._arm_src = arm_src
+        self._arm_workdir = arm_workdir
+        self._toolchain = toolchain
+        # Only an arm that keeps state in git is broken by git being absent.
+        # chant records a lifecycle snapshot on an orphan branch; terraform,
+        # pulumi, cdk and alchemy do not, and failing their trials over a
+        # dependency they never use measured the network, not the tool.
+        self._needs_git = needs_git
         super().__init__(logs_dir, *args, **kwargs)
 
     async def install(self, environment: BaseEnvironment) -> None:
-        """Install Claude Code, plus git when plugins are requested.
+        """Install Claude Code, the benchmark arm's tooling, and git for plugins.
 
         Claude Code shells out to ``git`` to clone a plugin marketplace, but the
         agent base image does not ship it. Install it during agent setup using
@@ -68,6 +233,7 @@ class ClaudeCode(_HarborClaudeCode):
         public marketplace clone.
         """
         await super().install(environment)
+        await self._setup_arm(environment)
 
         if not self._plugins:
             return
@@ -90,6 +256,48 @@ class ClaudeCode(_HarborClaudeCode):
             environment,
             command=('git config --global url."https://github.com/".insteadOf "git@github.com:"'),
         )
+
+    async def _setup_arm(self, environment: BaseEnvironment) -> None:
+        """Put the benchmark arm's tooling and workspace in place, or fail loudly.
+
+        Nothing happens unless the run mounts an arm, so ordinary tasks are
+        unaffected. When it does, two things have to be true before the agent
+        starts, and in the scenario-1 runs neither was:
+
+        The tool has to exist. The dataset's task image is python:3.13-slim plus
+        the AWS CLI and jq, with no JavaScript or IaC runtime, so the CDK and
+        Alchemy arms could not run a single ``cdk`` or ``alchemy`` command. The
+        agent quietly answered from ``jq`` over raw state instead and still
+        scored, which makes the result a measurement of jq, not of the tool.
+
+        The workspace has to be writable. The arm was bind-mounted read-only, so
+        ``terraform init`` could not write ``.terraform/`` — leaving
+        ``show -json`` refusing — and ``cdk ls`` died on
+        ``EROFS ... cdk.out/synth.lock``. Copying to a writable path also keeps a
+        trial from mutating the shared arm directory.
+
+        A failure here raises rather than degrading, because a degraded arm
+        produces rewards that look exactly like real ones.
+        """
+        if not self._arm_workdir or not self._arm_src:
+            return
+
+        # Supplied explicitly to the exec rather than read from the container's
+        # own environment: --agent-env lands on the agent process, and this runs
+        # as root before the agent exists.
+        env = {_ARM_WORKDIR: self._arm_workdir, _ARM_SOURCE_MOUNT: self._arm_src}
+        if self._toolchain:
+            env[_TOOLCHAIN_MOUNT] = self._toolchain
+        if self._needs_git:
+            env[_ARM_NEEDS_GIT] = str(self._needs_git)
+
+        command = _ARM_SETUP_SCRIPT.format(
+            workdir=_ARM_WORKDIR,
+            source=_ARM_SOURCE_MOUNT,
+            needs_git=_ARM_NEEDS_GIT,
+            toolchain=_TOOLCHAIN_MOUNT,
+        )
+        await self.exec_as_root(environment, command=command, env=env)
 
     def _build_register_mcp_servers_command(self) -> str | None:
         """Chain plugin installation onto the per-trial config setup command.

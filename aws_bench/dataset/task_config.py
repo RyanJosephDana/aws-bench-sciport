@@ -25,6 +25,7 @@ from harbor.tasks.client import TaskClient
 from harbor.utils.scripts import discover_script
 from pydantic import BaseModel, Field
 
+from aws_bench import emulator
 from aws_bench.constants import TASK_CACHE_DIR
 from aws_bench.dataset.models import RoleType, ScriptType
 
@@ -134,18 +135,24 @@ class AwsBenchTask(Task):
             raise NotImplementedError(
                 f"aws-bench does not support package task references; got {config.get_task_id()}."
             )
+        staging_root = config.download_dir or TASK_CACHE_DIR
         if config.is_git_task():
             task_dir = (
                 await TaskClient().download_tasks(
                     task_ids=[config.get_task_id()],
                     overwrite=config.overwrite,
-                    output_dir=config.download_dir or TASK_CACHE_DIR,
+                    output_dir=staging_root,
                 )
             ).paths[0]
-            return cls(task_dir, extra_instruction_paths)
-        if config.path is None:
-            raise ValueError("Task path must be set for a local task.")
-        return cls(config.path, extra_instruction_paths)
+        else:
+            if config.path is None:
+                raise ValueError("Task path must be set for a local task.")
+            task_dir = config.path
+        if emulator.is_active():
+            # Copy-on-stage: introspection tasks get the Claude Code judge in
+            # place of rewardkit->Bedrock; the source dataset stays untouched.
+            task_dir = emulator.stage_task_for_emulator(task_dir, staging_root)
+        return cls(task_dir, extra_instruction_paths)
 
     @staticmethod
     def is_valid_dir(task_dir: Path | str, disable_verification: bool = False) -> bool:

@@ -33,3 +33,55 @@ site/
 
 .mcp.json
 bedrock.env
+
+# Local credentials — never commit
+.bench.env
+*.env
+!.env.example
+
+# Vendored tool binaries and language runtimes for the benchmark arms. Large,
+# platform-specific and rebuildable — each arm's REPRODUCE.md says how to fetch
+# them, and benchmarks/agent-env/ now provisions them into the agent container.
+benchmarks/arms/*/vendor/
+benchmarks/arms/*/vendor-local/
+benchmarks/arms/*/.runtime/
+benchmarks/arms/terraform-ec2-multiregion/terraform
+benchmarks/arms/*/.terraform/
+benchmarks/arms/*/cdk.out/
+
+# Emulator runtime state — recreated by benchmarks/floci/reset.sh.
+benchmarks/floci/data/
+
+# prepare.py --export writes to ~/.aws-bench/agent-env. Guarded here too, since
+# an in-repo export is ~3.5GB and ruff walks anything inside the tree, including
+# the Python that ships inside Node's own share/doc.
+benchmarks/agent-env/toolchain/
+benchmarks/agent-env/workspaces/
+
+# Deployed estate state. Written by a run, rewritten by the next one, and
+# meaningless outside the emulator that produced it — every id in here is
+# floci's, against account 000000000000. It churned on every commit all through
+# the benchmark work and belongs to a run, not to the repo.
+#
+# `proof/` is excluded from the exclusion: it is a fixture, not a run artifact.
+benchmarks/arms/*/.alchemy/
+benchmarks/arms/*/.pulumi/
+benchmarks/arms/*/terraform.tfstate
+benchmarks/arms/*/terraform.tfstate.backup
+benchmarks/arms/*/cdk.out/
+!benchmarks/arms/*/proof/**
+
+# Result sets. Emitted per run, and published from chant-bench, which is where
+# the contract and the validation live. The copies that were tracked here went
+# stale the moment the emitter grew a field: they carried an older harness
+# commit, older briefing SHAs, and no cost or tooling blocks at all, while the
+# published ones for the same run ids carried all three. Two sources of truth
+# for one number, and the wrong one was the one in the repo.
+benchmarks/results/
+
+# Pulumi regenerates this per deploy — it holds only a generated
+# encryptionsalt, so it is run output rather than experiment input. Tracked, it
+# made every run after the first Pulumi one stamp `harness_commit: <sha>-dirty`
+# from identical harness code (18 of 24 records in one matrix), which is exactly
+# the signal INTENTIUS/chant-bench#26 added `-dirty` to make trustworthy.
+benchmarks/arms/pulumi-ec2-multiregion/Pulumi.dev.yaml

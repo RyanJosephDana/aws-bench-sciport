@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from uuid import UUID
 
+from aws_bench import emulator
 from aws_bench.account_management.constants import ORG_ACCESS_ROLE
 from aws_bench.dataset.models import RoleType
 from aws_bench.logging.logger import get_logger
@@ -58,6 +59,9 @@ def assume_role_for_script(
     job_id: UUID | None,
 ) -> dict[str, str]:
     """Assume an IAM role for a script/verifier, falling back to org access role."""
+    if emulator.is_active():
+        # Floci accepts unsigned requests; no STS chain to walk.
+        return emulator.static_credentials()
     if not role_name:
         role_name = ORG_ACCESS_ROLE
         logger.debug(

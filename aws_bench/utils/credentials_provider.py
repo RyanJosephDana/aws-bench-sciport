@@ -9,6 +9,7 @@ from botocore.config import Config
 from botocore.credentials import DeferredRefreshableCredentials, create_assume_role_refresher
 from botocore.exceptions import ClientError
 
+from aws_bench import emulator
 from aws_bench.account_management.constants import ORG_ACCESS_ROLE
 from aws_bench.constants import DEFAULT_REGION
 from aws_bench.exceptions import CredentialError
@@ -358,6 +359,11 @@ class CredentialProvider:
         Returns:
             Dict with AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_SESSION_TOKEN.
         """
+        if emulator.is_active():
+            # Floci accepts unsigned requests; no org-access hop exists or is
+            # needed. Same shape as the real return: env-style credential keys.
+            return emulator.static_credentials()
+
         # Hop 1: always go through the org access role
         hop1_session_name = (
             session_name

@@ -10,6 +10,7 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import logging
+import os
 from collections.abc import AsyncGenerator
 
 from harbor.agents.oracle import OracleAgent
@@ -18,6 +19,7 @@ from harbor.models.trial.config import TrialConfig
 from harbor.models.trial.paths import TrialPaths
 from harbor.trial.single_step import SingleStepTrial
 
+from aws_bench import emulator
 from aws_bench.account_management.manager import AccountManager
 from aws_bench.dataset.models import RoleType, ScriptType
 from aws_bench.dataset.task_config import AwsBenchTask, ConcurrencyMode, PhaseScript
@@ -218,6 +220,20 @@ class AwsBenchSingleStepTrial(SingleStepTrial):
         if role_type is RoleType.AGENT:
             cred_env["AWS_REGION"] = self.config.regions[0]
             cred_env["AWS_DEFAULT_REGION"] = self.config.regions[0]
+        if emulator.is_active():
+            # Point the container's AWS SDK/CLI traffic at Floci; the staged
+            # profiles above still supply the (placeholder) credentials.
+            cred_env.update(emulator.container_endpoint_env())
+            # Opt-in: deny the AGENT live access, so an arm has to answer from
+            # whatever state it recorded rather than by reading the account as
+            # it answers. Scoped to the agent because the verifier resolves the
+            # reference answer's placeholders against the estate — take that
+            # away and grading breaks rather than the arm being tested.
+            #
+            # A closed port, not an unset variable: unset sends the SDK at real
+            # AWS and hangs on a connect timeout, measuring patience.
+            if role_type is RoleType.AGENT and os.environ.get("AWS_BENCH_DENY_AGENT_LIVE"):
+                cred_env["AWS_ENDPOINT_URL"] = "http://127.0.0.1:9999"
 
         try:
             yield cred_env
@@ -381,6 +397,12 @@ class AwsBenchSingleStepTrial(SingleStepTrial):
         """
         async with self._staged_credentials(RoleType.VERIFIER) as cred_env:
             original_env = self.task.config.verifier.env
+            if emulator.is_active():
+                # The staged Claude Code judge authenticates with the same
+                # subscription OAuth token as the agent under test.
+                token = emulator.claude_oauth_token()
+                if token:
+                    cred_env = {**cred_env, "CLAUDE_CODE_OAUTH_TOKEN": token}
             self.task.config.verifier.env = resolve_env_with_creds(
                 raw_env=original_env, placeholders=self._aws_placeholders, creds=cred_env
             )
