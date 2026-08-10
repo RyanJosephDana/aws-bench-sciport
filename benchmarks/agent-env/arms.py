@@ -165,7 +165,16 @@ ARMS: dict[str, Arm] = {
         # init writes .terraform/; on the read-only mount it failed with
         # "Unable to write the module manifest file", which left show -json
         # refusing with "Required plugins are not installed".
-        setup=["terraform init -input=false -plugin-dir=.terraform/providers"],
+        #
+        # The copy vendors the CLI at the workspace root because that is what
+        # the briefing tells the agent to run (`./terraform`). Trials also get
+        # terraform on PATH from the toolchain mount; this makes the briefing's
+        # literal instruction work rather than costing every trial a failed
+        # first invocation.
+        setup=[
+            "terraform init -input=false -plugin-dir=.terraform/providers",
+            'cp "$(command -v terraform)" ./terraform',
+        ],
         smoke=[
             Smoke(
                 cmd="terraform state list",

@@ -248,7 +248,7 @@ async def test_copies_arm_to_a_writable_workdir(arm_agent: ClaudeCode):
     await arm_agent.install(environment)
 
     setup = next(c for c in _commands(environment) if "AWS_BENCH_ARM_SRC" in c)
-    assert 'cp -a "${AWS_BENCH_ARM_SRC}" "${AWS_BENCH_ARM_WORKDIR}"' in setup
+    assert '_share "${AWS_BENCH_ARM_SRC}" "${AWS_BENCH_ARM_WORKDIR}"' in setup
 
 
 @pytest.mark.asyncio
@@ -260,6 +260,10 @@ async def test_symlinks_the_toolchain_onto_path(arm_agent: ClaudeCode):
 
     setup = next(c for c in _commands(environment) if "AWS_BENCH_TOOLCHAIN" in c)
     assert "ln -sf" in setup and "/usr/local/bin/" in setup
+    # terraform-bin holds its binary at the root, not under bin/, so the glob
+    # alone misses it — the terraform-i1 audit refusal ("terraform was not on
+    # PATH in 24 trials") is what this line looks like when it is absent.
+    assert '/terraform-bin' in setup
 
 
 @pytest.mark.asyncio
