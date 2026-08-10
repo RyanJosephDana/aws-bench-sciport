@@ -32,11 +32,13 @@ estate, same questions, chant's reads on the applier's Cloud Control client.
 3. **Briefing** (`../briefing-chant-cc.md`): the sanctioned reads are the CC
    observe/status surface (`chant lifecycle diff --live`, observe output) —
    not the folded snapshot search. That difference is the experiment.
-4. **Emulator**: `ghcr.io/lex00/floci:awsbench-f670952` — same image as the
-   other CC arms. Note the caveats in `../formae-ec2-multiregion/HANDOFF.md`
-   (no UpdateResource; ListResources covers 9 types). chant's own e2e ran
-   against Floci's CC surface already, so surprises here are fork bugs to
-   file with fixes, not scenario blockers.
+4. **Emulator**: `ghcr.io/lex00/floci:awsbench-e0eb525` — same image as the
+   other CC arms. The observe path is proven against it: deploy → `lifecycle
+   snapshot --deep` → `diff --live` is quiet except one read-only-attribute
+   classification (INTENTIUS/chant#1641). Getting there took three emulator
+   fixes now in the image: IAM read models a drift engine can diff, intrinsic
+   resolution in stored policy documents, and ManagedPolicy on the CC read
+   side. Remaining caveats: no UpdateResource; ListResources covers 10 types.
 5. **REPRODUCE.md** + runbook row. Keep `search-v2` published and untouched —
    two chant arms, two briefings, one estate, and the board says which is
    which, same as Alchemy v1/v2.

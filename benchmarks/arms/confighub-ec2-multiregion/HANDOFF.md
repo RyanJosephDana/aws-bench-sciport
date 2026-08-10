@@ -11,7 +11,7 @@ test is whether an agent holding the store answers estate questions better than
 one holding a state file — and what happens on the negative set, where the
 store only knows what was put in it.
 
-## Status: gate OPEN — and this arm needs a build the others did not
+## Status: bridge BUILT (2026-08-09, see bridge/) — the SaaS half needs a human
 ConfigHub cannot apply an AWS estate out of the box. The SDK's toolchain types
 (`confighub/sdk`, `core/workerapi/types.go`) are `ConfigHub/YAML`,
 `Kubernetes/YAML`, and the `AppConfig/*` family — application config and
@@ -19,14 +19,13 @@ Kubernetes, no AWS. The arm therefore needs a **custom bridge worker** before
 it has a deploy story at all.
 
 ## The path
-1. **Write an AWS Cloud Control bridge** in Go against `confighub/sdk`
-   (pattern: `confighub/examples` → `custom-workers/hello-world-bridge`). A
-   bridge implements apply / refresh / import / destroy for units. Units carry
-   CFN-shaped resource JSON (`ConfigHub/YAML` toolchain); the bridge maps them
-   onto Cloud Control `CreateResource` / `GetResource` / `DeleteResource`
-   against the emulator endpoint.
+1. **The bridge exists** — `bridge/` in this directory: apply / refresh /
+   import / destroy over Cloud Control, tested against an in-process fake.
+   What remains is running it against hosted ConfigHub (`cub auth login`,
+   `cub worker run`) — the SaaS credential is the one piece only a human
+   holds.
 2. **Emulator side is already resolved** — the same surface the Formae arm
-   uses: `ghcr.io/lex00/floci:awsbench-f670952` (fork branch
+   uses: `ghcr.io/lex00/floci:awsbench-e0eb525` (fork branch
    `awsbench-integration-v2`, upstream PR floci-io/floci#2037) serves Cloud
    Control create/read/delete/status/list. See the Formae HANDOFF for the
    coverage caveats (no UpdateResource; ListResources limited to 9 types —

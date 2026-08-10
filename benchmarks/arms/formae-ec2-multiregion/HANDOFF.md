@@ -18,8 +18,8 @@ negative set?
 ## Status: gate CLEARED (2026-08-09) — see proof/
 The blocker was Floci serving Cloud Control *writes*. That is resolved:
 
-- `ghcr.io/lex00/floci:awsbench-f670952` (branch `awsbench-integration-v2` at
-  `f6709527`) serves `CreateResource` / `DeleteResource` / `GetResource` /
+- `ghcr.io/lex00/floci:awsbench-e0eb525` (branch `awsbench-integration-v2` at
+  `e0eb525d`) serves `CreateResource` / `DeleteResource` / `GetResource` /
   `GetResourceRequestStatus` / `ListResources`. The floating `:awsbench` tag
   points at the same image.
 - Upstream this is floci-io/floci#2037 — review blockers fixed, maintainer
@@ -72,7 +72,7 @@ has run that yet. Do it before authoring the estate.
 5. **Run** k=3 on both question sets when the harness owner says go.
 
 ## Pointers
-- Emulator: `ghcr.io/lex00/floci:awsbench-f670952`, fork branch
+- Emulator: `ghcr.io/lex00/floci:awsbench-e0eb525`, fork branch
   `awsbench-integration-v2`, upstream PR floci-io/floci#2037.
 - Plugin source: github.com/platform-engineering-labs/formae-plugin-aws.
 - Topology to match: `../terraform-ec2-multiregion/` (+ its REPRODUCE.md).
