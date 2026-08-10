@@ -1,0 +1,28 @@
+amends "@formae/forma.pkl"
+import "@formae/formae.pkl"
+import "@aws/aws.pkl"
+import "@aws/ec2/vpc.pkl"
+
+description {
+    text = "aws-bench formae gate proof: one VPC into the Floci emulator"
+    confirm = false
+}
+
+forma {
+    new formae.Stack {
+        label = "cc-gate"
+        description = "formae gate proof against Floci Cloud Control"
+    }
+
+    new formae.Target {
+        label = "aws-target"
+        config = new aws.Config {
+            region = "us-east-1"
+        }
+    }
+
+    new vpc.VPC {
+        label = "gate-vpc"
+        cidrBlock = "10.42.0.0/16"
+    }
+}

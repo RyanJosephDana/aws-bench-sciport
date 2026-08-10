@@ -15,7 +15,7 @@ questions from the datastore (`formae inventory`), and does the always-on
 reconciler close the gap that sank the record-of-own-deployments arms on the
 negative set?
 
-## Status: gate OPEN — emulator side resolved, deploy proof not yet run
+## Status: gate CLEARED (2026-08-09) — see proof/
 The blocker was Floci serving Cloud Control *writes*. That is resolved:
 
 - `ghcr.io/lex00/floci:awsbench-f670952` (branch `awsbench-integration-v2` at
