@@ -318,6 +318,15 @@ ARMS: dict[str, Arm] = {
                 "that only ever resolves us-east-1 looks like a working tool and "
                 "answers two thirds of the estate as absent",
             ),
+            Smoke(
+                cmd="./node_modules/.bin/alchemy state export us-west-1.run.ts --local",
+                must_match=r'"fqn"',
+                why="the one-call estate read the briefing leads with, new in "
+                "beta.68. A tree resolved to an older alchemy still passes the "
+                "two smokes above, and the agent then burns its turns on the "
+                "per-resource walk the export exists to replace — a version "
+                "regression reading as the tool being slow",
+            ),
         ],
         tool_pattern=r"\balchemy\s+state\b",
         # Same package name as the alchemy arm, two majors apart. Recording the

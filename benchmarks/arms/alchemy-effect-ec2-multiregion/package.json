@@ -6,7 +6,7 @@
     "@aws-sdk/client-ec2": "^3.1098.0",
     "@effect/platform-bun": "4.0.0-beta.102",
     "@effect/platform-node": "4.0.0-beta.102",
-    "alchemy": "2.0.0-beta.65",
+    "alchemy": "2.0.0-beta.70",
     "effect": "4.0.0-beta.102"
   }
 }
