@@ -81,7 +81,7 @@ reachability question. You compute them by hand below.
 
 ## What is and is not stock Alchemy v2
 
-- **Pinned beta.** `alchemy@2.0.0-beta.65` (npm dist-tag `next`; `latest` is
+- **Pinned beta.** `alchemy@2.0.0-beta.70` (npm dist-tag `next`; `latest` is
   still the v1 async 0.93.x line) + `effect@4.0.0-beta.102`. The Effect line is
   released but moving fast — expect drift on unpinned installs.
 - **Endpoint patch** (`apply-endpoint-patch.sh`). v2 has a first-class endpoint
@@ -217,5 +217,5 @@ It does not reproduce the win-rate or cost; those need the aws-bench harness
 tally the scores across the arms, see `../REPRODUCE-BENCHMARK.md`.
 
 ---
-Tested with Bun 1.3.6 + alchemy 2.0.0-beta.65 + effect 4.0.0-beta.102 against
+Tested with Bun 1.3.6 + alchemy 2.0.0-beta.70 + effect 4.0.0-beta.102 against
 Floci `ghcr.io/lex00/floci:awsbench`.
