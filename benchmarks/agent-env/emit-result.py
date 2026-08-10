@@ -237,6 +237,23 @@ def job_harness_commit(job: Path) -> str | None:
     return None
 
 
+def job_emulator(job: Path) -> str | None:
+    """The emulator image that served this job's estate, as the run recorded it.
+
+    An `image@digest`, stamped by the run script while the emulator was up.
+    The compose file names a floating tag, so the tag alone cannot say which
+    emulator a result was earned against once the tag moves. No fallback: a
+    job without the stamp predates it, and computing one now would name
+    whatever image is current rather than the one the run saw.
+    """
+    stamped = job / "emulator"
+    if stamped.is_file():
+        value = stamped.read_text().strip()
+        if value:
+            return value
+    return None
+
+
 def job_tool(job: Path) -> dict | None:
     """The tool under test and its version, as the run recorded them.
 
@@ -397,6 +414,9 @@ def emit(job_name: str) -> dict:
             "finished_at": summary.get("finished_at"),
             # What the run recorded, not what the tree says now.
             "harness_commit": job_harness_commit(job) or git_commit(REPO),
+            # Which emulator served the estate, when the run stamped it.
+            # Absent on jobs that predate the stamp — never computed later.
+            **({"emulator": emulator} if (emulator := job_emulator(job)) else {}),
         },
         "agent": {
             "name": "claude-code",
