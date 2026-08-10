@@ -56,7 +56,13 @@ if [ -n "${{{toolchain}:-}}" ]; then
     fi
     # Symlink rather than export PATH: each agent command gets a fresh shell
     # that inherits nothing exported here.
-    for dir in "${{{toolchain}}}"/*/bin "${{{toolchain}}}"/pulumi; do
+    #
+    # terraform-bin is named explicitly because it is the one toolchain entry
+    # whose binary sits at its root rather than under bin/. The glob missed it,
+    # so every terraform trial got "command not found" and the audit refused
+    # the run — silently on the h-series, whose dirty tree must have carried
+    # the fix this commit makes for real.
+    for dir in "${{{toolchain}}}"/*/bin "${{{toolchain}}}"/pulumi "${{{toolchain}}}"/terraform-bin; do
         [ -d "$dir" ] && ln -sf "$dir"/* /usr/local/bin/ 2>/dev/null || true
     done
 fi
