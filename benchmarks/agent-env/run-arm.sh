@@ -361,5 +361,16 @@ if [ -n "$TOOL_VERSION" ]; then
   printf '%s\n' "$TOOL_VERSION" > "jobs/$JOB/tool_version"
 fi
 
+# And which emulator served the estate, captured while it is still up. The
+# compose file pins `:awsbench`, and that tag moves — it has pointed at two
+# different builds already. The digest is the only name a reader can pull and
+# get this run's emulator back; fall back to the tag when the image was built
+# locally and has no repo digest.
+EMULATOR_IMAGE=$(docker ps --filter "publish=${FLOCI_PORT}" --format '{{.Image}}' | head -1)
+if [ -n "$EMULATOR_IMAGE" ]; then
+  EMULATOR_DIGEST=$(docker image inspect --format '{{join .RepoDigests ","}}' "$EMULATOR_IMAGE" 2>/dev/null | cut -d, -f1)
+  printf '%s\n' "${EMULATOR_DIGEST:-$EMULATOR_IMAGE}" > "jobs/$JOB/emulator"
+fi
+
 echo "==> [$ARM] audit: did every trial use the tool?"
 python3 benchmarks/agent-env/audit.py "jobs/$JOB"
